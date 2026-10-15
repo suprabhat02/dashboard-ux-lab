@@ -5,61 +5,64 @@
  * default slot and never imports anything from here (see spec/protocol.ts).
  *
  * All controls are server-rendered native elements, so the page is readable and
- * navigable before (or without) JavaScript; src/lab/controller.ts enhances them.
+ * navigable before (or without) JavaScript; src/lab/controller.ts enhances them,
+ * reading the locale from <html lang>.
  */
 import { PLAN_FILTERS } from '../spec/data';
-import { PLAN_LABEL } from '../spec/format';
-import { roleLabel } from '../spec/copy';
-import { DEFAULT_SETTINGS, getScenario, SCENARIOS } from '../spec/scenarios';
+import { getFormatter } from '../spec/format';
+import type { Locale } from '../spec/i18n';
+import { DEFAULT_SETTINGS, SCENARIOS } from '../spec/scenarios';
 import { TIMING } from '../spec/timing';
-import type { ImplementationId, Role } from '../spec/types';
+import type { FailureMode, ImplementationId, Role } from '../spec/types';
+import { pageI18n } from '../site/i18n';
+import LabAr from './lab-scripts/LabAr.astro';
+import LabEn from './lab-scripts/LabEn.astro';
+import LabEs from './lab-scripts/LabEs.astro';
 import '../styles/dashboard.css';
 import '../styles/lab.css';
 
 interface Props {
   implementation: ImplementationId;
+  locale: Locale;
 }
 
-const { implementation } = Astro.props;
-const loaded = getScenario('loaded');
+const { implementation, locale } = Astro.props;
+const { t, href } = pageI18n(locale);
+const fmt = getFormatter(locale);
+const loaded = t.scenarios.loaded;
 const roles: readonly Role[] = ['analyst', 'viewer', 'none'];
-const implementations: readonly { id: ImplementationId; label: string; note: string }[] =
-  [
-    { id: 'react', label: 'React', note: 'React 19 · hooks + reducer' },
-    { id: 'vanilla', label: 'Vanilla', note: 'No framework · in progress' },
-  ];
+const failures: readonly FailureMode[] = ['never', 'once', 'always'];
+const implementations: readonly ImplementationId[] = ['react', 'vanilla'];
+const seconds = (ms: number) => fmt.integer(ms / 1000);
 ---
 
 <div class="lab container">
   <div class="lab__intro">
     <div>
-      <p class="eyebrow">Playground</p>
+      <p class="eyebrow">{t.lab.eyebrow}</p>
       <h1 class="lab__title">
-        The dashboard, <span class="lab__title-accent">when things go wrong</span>
+        {t.lab.titleLead} <span class="lab__title-accent">{t.lab.titleAccent}</span>
       </h1>
-      <p class="lab__lede">
-        Pick a scenario or tune the request. Then watch the state timeline and what a
-        screen reader would hear.
-      </p>
+      <p class="lab__lede">{t.lab.lede}</p>
     </div>
 
-    <nav class="impl-switch" aria-label="Implementation">
-      {implementations.map((item) => (
+    <nav class="impl-switch" aria-label={t.lab.implNav}>
+      {implementations.map((id) => (
         <a
           class="impl-switch__link"
-          href={`/lab/${item.id}/`}
-          data-impl-link={item.id}
-          aria-current={item.id === implementation ? 'page' : undefined}
+          href={href(`/lab/${id}/`)}
+          data-impl-link={id}
+          aria-current={id === implementation ? 'page' : undefined}
         >
-          <span class="impl-switch__label">{item.label}</span>
-          <span class="impl-switch__note">{item.note}</span>
+          <span class="impl-switch__label">{t.lab.impl[id].label}</span>
+          <span class="impl-switch__note">{t.lab.impl[id].note}</span>
         </a>
       ))}
     </nav>
   </div>
 
   <div class="lab__grid">
-    <aside class="lab__rail" aria-label="Lab controls">
+    <aside class="lab__rail" aria-label={t.lab.controlsLabel}>
       <button
         class="btn lab__rail-toggle"
         type="button"
@@ -68,7 +71,7 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
         data-rail-toggle
       >
         <span>
-          Scenario: <strong data-current-scenario>{loaded.title}</strong>
+          {t.lab.railToggle} <strong data-current-scenario>{loaded.title}</strong>
         </span>
         <svg
           width="16"
@@ -86,11 +89,11 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
       <div class="lab__rail-body" id="lab-controls" data-rail-body>
         <section class="panel" aria-labelledby="controls-heading">
           <h2 class="panel__title" id="controls-heading">
-            Scenario
+            {t.lab.scenarioHeading}
           </h2>
           <form class="controls" data-controls novalidate>
             <fieldset class="presets">
-              <legend class="sr-only">Preset scenarios</legend>
+              <legend class="sr-only">{t.lab.presetsLegend}</legend>
               {SCENARIOS.map((scenario) => (
                 <label class="preset">
                   <input
@@ -100,8 +103,10 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
                     checked={scenario.id === 'loaded'}
                   />
                   <span class="preset__body">
-                    <span class="preset__title">{scenario.title}</span>
-                    <span class="preset__summary">{scenario.summary}</span>
+                    <span class="preset__title">{t.scenarios[scenario.id].title}</span>
+                    <span class="preset__summary">
+                      {t.scenarios[scenario.id].summary}
+                    </span>
                   </span>
                 </label>
               ))}
@@ -109,17 +114,17 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
 
             <details class="tune" open>
               <summary class="tune__summary">
-                Tune the request{' '}
+                {t.lab.tune}{' '}
                 <span class="pill pill--muted" data-custom-badge hidden>
-                  Custom
+                  {t.lab.custom}
                 </span>
               </summary>
               <div class="tune__body">
                 <div class="field">
                   <div class="field__row">
-                    <label for="latency">Server latency</label>
+                    <label for="latency">{t.lab.latency}</label>
                     <output for="latency" class="mono field__value" data-latency-output>
-                      {DEFAULT_SETTINGS.latencyMs} ms
+                      {t.lab.ms(fmt.integer(DEFAULT_SETTINGS.latencyMs))}
                     </output>
                   </div>
                   <input
@@ -134,16 +139,18 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
                     aria-describedby="latency-hint"
                   />
                   <p class="field__hint" id="latency-hint">
-                    Skeleton after {TIMING.skeletonDelayMs} ms · notice at{' '}
-                    {TIMING.slowAfterMs / 1000} s · cancel at{' '}
-                    {TIMING.stalledAfterMs / 1000} s
+                    {t.lab.latencyHint(
+                      fmt.integer(TIMING.skeletonDelayMs),
+                      seconds(TIMING.slowAfterMs),
+                      seconds(TIMING.stalledAfterMs),
+                    )}
                   </p>
                 </div>
 
                 <fieldset class="field segmented">
-                  <legend>Server failure</legend>
+                  <legend>{t.lab.failureLegend}</legend>
                   <div class="segmented__options">
-                    {(['never', 'once', 'always'] as const).map((mode) => (
+                    {failures.map((mode) => (
                       <label class="segmented__option">
                         <input
                           type="radio"
@@ -151,13 +158,7 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
                           value={mode}
                           checked={mode === DEFAULT_SETTINGS.failure}
                         />
-                        <span>
-                          {mode === 'never'
-                            ? 'Never'
-                            : mode === 'once'
-                              ? 'Fail once'
-                              : 'Always'}
-                        </span>
+                        <span>{t.lab.failure[mode]}</span>
                       </label>
                     ))}
                   </div>
@@ -165,21 +166,21 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
 
                 <div class="field field--split">
                   <label class="field__stack">
-                    <span>Visitor role</span>
+                    <span>{t.lab.role}</span>
                     <select class="select" name="role">
                       {roles.map((role) => (
                         <option value={role} selected={role === DEFAULT_SETTINGS.role}>
-                          {roleLabel(role)}
+                          {t.dashboard.roles[role]}
                         </option>
                       ))}
                     </select>
                   </label>
                   <label class="field__stack">
-                    <span>Plan filter</span>
+                    <span>{t.lab.planFilter}</span>
                     <select class="select" name="plan">
                       {PLAN_FILTERS.map((plan) => (
                         <option value={plan} selected={plan === DEFAULT_SETTINGS.plan}>
-                          {PLAN_LABEL[plan]}
+                          {t.dashboard.plans[plan]}
                         </option>
                       ))}
                     </select>
@@ -191,6 +192,7 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
             <div class="controls__actions">
               <button class="btn btn--primary" type="button" data-replay>
                 <svg
+                  class="icon-flip"
                   width="16"
                   height="16"
                   viewBox="0 0 24 24"
@@ -203,10 +205,10 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
                   <path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"></path>
                   <path d="M21 3v5h-5"></path>
                 </svg>
-                Replay request
+                {t.lab.replay}
               </button>
               <button class="btn" type="button" data-copy-link>
-                Copy link
+                {t.lab.copyLink}
               </button>
             </div>
             <p class="sr-only" aria-live="polite" data-chrome-status></p>
@@ -215,22 +217,22 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
 
         <section class="panel explain" aria-labelledby="explain-heading" data-explain>
           <h2 class="panel__title" id="explain-heading">
-            What you’re seeing
+            {t.lab.explainHeading}
           </h2>
           <div class="explain__item">
-            <h3>What happens</h3>
-            <p data-explain-what>{loaded.explanation.what}</p>
+            <h3>{t.lab.explainWhat}</h3>
+            <p data-explain-what>{loaded.what}</p>
           </div>
           <div class="explain__item">
-            <h3>Why</h3>
-            <p data-explain-why>{loaded.explanation.why}</p>
+            <h3>{t.lab.explainWhy}</h3>
+            <p data-explain-why>{loaded.why}</p>
           </div>
           <div class="explain__item">
-            <h3>Accessibility</h3>
-            <p data-explain-a11y>{loaded.explanation.accessibility}</p>
+            <h3>{t.lab.explainA11y}</h3>
+            <p data-explain-a11y>{loaded.accessibility}</p>
           </div>
-          <a class="explain__more" href="/scenarios/loaded/" data-explain-link>
-            Read the full “{loaded.title}” guide
+          <a class="explain__more" href={href('/scenarios/loaded/')} data-explain-link>
+            {t.lab.readGuide(loaded.title)}
           </a>
         </section>
       </div>
@@ -244,9 +246,9 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
       <section class="panel inspector" aria-labelledby="inspector-heading" data-inspector>
         <div class="inspector__head">
           <h2 class="panel__title" id="inspector-heading">
-            Inspector
+            {t.inspector.heading}
           </h2>
-          <div role="tablist" aria-label="Inspector views" class="tabs">
+          <div role="tablist" aria-label={t.inspector.tablist} class="tabs">
             <button
               role="tab"
               type="button"
@@ -255,7 +257,7 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
               aria-selected="true"
               class="tabs__tab"
             >
-              State timeline{' '}
+              {t.inspector.tabs.timeline}{' '}
               <span class="tabs__count" data-count="timeline">
                 0
               </span>
@@ -269,7 +271,7 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
               tabindex="-1"
               class="tabs__tab"
             >
-              Screen reader{' '}
+              {t.inspector.tabs.announce}{' '}
               <span class="tabs__count" data-count="announce">
                 0
               </span>
@@ -283,7 +285,7 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
               tabindex="-1"
               class="tabs__tab"
             >
-              Focus{' '}
+              {t.inspector.tabs.focus}{' '}
               <span class="tabs__count" data-count="focus">
                 0
               </span>
@@ -294,7 +296,7 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
             type="button"
             data-clear-log
           >
-            Clear
+            {t.inspector.clear}
           </button>
         </div>
 
@@ -305,11 +307,9 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
           tabindex="0"
           class="inspector__panel"
         >
-          <p class="inspector__hint">
-            Every request, state transition and loading phase, in order.
-          </p>
-          <div role="log" aria-live="off" aria-label="State timeline log">
-            <ol class="log" data-log="timeline"></ol>
+          <p class="inspector__hint">{t.inspector.hints.timeline}</p>
+          <div role="log" aria-live="off" aria-label={t.inspector.logLabels.timeline}>
+            <ol class="log" data-log="timeline" data-empty={t.inspector.empty}></ol>
           </div>
         </div>
         <div
@@ -320,12 +320,9 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
           class="inspector__panel"
           hidden
         >
-          <p class="inspector__hint">
-            Exactly what the dashboard sent to its live regions: what a screen reader user
-            hears without moving.
-          </p>
-          <div role="log" aria-live="off" aria-label="Announcements log">
-            <ol class="log" data-log="announce"></ol>
+          <p class="inspector__hint">{t.inspector.hints.announce}</p>
+          <div role="log" aria-live="off" aria-label={t.inspector.logLabels.announce}>
+            <ol class="log" data-log="announce" data-empty={t.inspector.empty}></ol>
           </div>
         </div>
         <div
@@ -336,15 +333,12 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
           class="inspector__panel"
           hidden
         >
-          <p class="inspector__hint">
-            Programmatic focus moves (rare by design) and where keyboard focus is right
-            now.
-          </p>
+          <p class="inspector__hint">{t.inspector.hints.focus}</p>
           <p class="focus-now">
-            Focused now: <code data-focus-now>—</code>
+            {t.inspector.focusNow} <code data-focus-now>—</code>
           </p>
-          <div role="log" aria-live="off" aria-label="Focus moves log">
-            <ol class="log" data-log="focus"></ol>
+          <div role="log" aria-live="off" aria-label={t.inspector.logLabels.focus}>
+            <ol class="log" data-log="focus" data-empty={t.inspector.empty}></ol>
           </div>
         </div>
       </section>
@@ -352,7 +346,7 @@ const implementations: readonly { id: ImplementationId; label: string; note: str
   </div>
 </div>
 
-<script>
-  import { initLab } from '../lab/controller';
-  initLab();
-</script>
+{/* One entry per locale so the page ships only its own catalogue. */}
+{locale === 'en' && <LabEn />}
+{locale === 'es' && <LabEs />}
+{locale === 'ar' && <LabAr />}

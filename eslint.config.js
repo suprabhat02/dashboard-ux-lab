@@ -65,22 +65,36 @@ export default defineConfig(
     files: ['src/impl-react/**'],
     extends: [reactHooks.configs.flat.recommended],
     rules: forbid(
-      ['**/impl-vanilla/**', '**/lab/**'],
-      'React must not depend on the vanilla implementation or lab chrome.',
+      ['**/impl-vanilla/**', '**/lab/**', '**/spec/i18n/all'],
+      'React must not depend on the vanilla implementation or lab chrome, or bundle every catalogue (import spec/i18n/load/<locale>).',
     ),
   },
   {
     files: ['src/impl-vanilla/**'],
     rules: forbid(
-      ['react', 'react-dom', 'react/*', '**/impl-react/**', '**/lab/**'],
-      'The vanilla implementation must not depend on React or the lab chrome.',
+      [
+        'react',
+        'react-dom',
+        'react/*',
+        '**/impl-react/**',
+        '**/lab/**',
+        '**/spec/i18n/all',
+      ],
+      'The vanilla implementation must not depend on React or the lab chrome, or bundle every catalogue.',
     ),
   },
   {
     files: ['src/lab/**'],
     rules: forbid(
-      ['react', 'react-dom', 'react/*', '**/impl-react/**', '**/impl-vanilla/**'],
-      'Lab chrome talks to implementations only through the event protocol in spec/protocol.ts.',
+      [
+        'react',
+        'react-dom',
+        'react/*',
+        '**/impl-react/**',
+        '**/impl-vanilla/**',
+        '**/spec/i18n/all',
+      ],
+      'Lab chrome talks to implementations only through spec/protocol.ts and loads one catalogue per page.',
     ),
   },
 );

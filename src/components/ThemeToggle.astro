@@ -1,12 +1,20 @@
 ---
 /** Toggles between dark and light, starting from whatever is currently shown. */
+import type { Messages } from '../spec/i18n';
+
+interface Props {
+  t: Messages;
+}
+const { t } = Astro.props;
 ---
 
 <button
   class="icon-btn theme-toggle"
   type="button"
   data-theme-toggle
-  aria-label="Switch to light theme"
+  data-label-dark={t.nav.themeTo('dark')}
+  data-label-light={t.nav.themeTo('light')}
+  aria-label={t.nav.themeTo('light')}
 >
   <svg
     class="theme-toggle__sun"
@@ -47,7 +55,10 @@
   };
   const sync = (button: HTMLButtonElement): void => {
     const next = current() === 'dark' ? 'light' : 'dark';
-    button.setAttribute('aria-label', `Switch to ${next} theme`);
+    button.setAttribute(
+      'aria-label',
+      (next === 'dark' ? button.dataset.labelDark : button.dataset.labelLight) ?? '',
+    );
     button.dataset.current = current();
   };
   for (const button of document.querySelectorAll<HTMLButtonElement>(

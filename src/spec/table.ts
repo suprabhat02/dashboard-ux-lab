@@ -1,3 +1,4 @@
+import { LOCALE_META, type Locale } from './i18n';
 import type { Account, AccountStatus } from './types';
 
 export type SortKey = 'name' | 'plan' | 'seats' | 'mrr' | 'status' | 'renewsOn';
@@ -27,9 +28,25 @@ const STATUS_ORDER: Record<AccountStatus, number> = {
   past_due: 2,
   churned: 3,
 };
-const collator = new Intl.Collator('en-US', { sensitivity: 'base', numeric: true });
+const collators = new Map<Locale, Intl.Collator>();
+function collatorFor(locale: Locale): Intl.Collator {
+  let collator = collators.get(locale);
+  if (!collator) {
+    collator = new Intl.Collator(LOCALE_META[locale].intl, {
+      sensitivity: 'base',
+      numeric: true,
+    });
+    collators.set(locale, collator);
+  }
+  return collator;
+}
 
-function compareBy(key: SortKey, a: Account, b: Account): number {
+function compareBy(
+  key: SortKey,
+  a: Account,
+  b: Account,
+  collator: Intl.Collator,
+): number {
   switch (key) {
     case 'name':
       return collator.compare(a.name, b.name);
@@ -50,11 +67,13 @@ function compareBy(key: SortKey, a: Account, b: Account): number {
 export function sortAccounts(
   accounts: readonly Account[],
   sort: SortState,
+  locale: Locale,
 ): readonly Account[] {
+  const collator = collatorFor(locale);
   const factor = sort.direction === 'ascending' ? 1 : -1;
   return [...accounts].sort(
     (a, b) =>
-      factor * compareBy(sort.key, a, b) ||
+      factor * compareBy(sort.key, a, b, collator) ||
       collator.compare(a.name, b.name) ||
       a.id.localeCompare(b.id),
   );

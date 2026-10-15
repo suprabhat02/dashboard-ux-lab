@@ -13,6 +13,7 @@
   }
   .hero__pill {
     margin-block-end: var(--space-4);
+    white-space: normal;
   }
   .hero__title {
     font-size: var(--text-hero);
@@ -42,7 +43,7 @@
 
   .state-strip {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(10.5rem, 100%), 1fr));
     gap: var(--space-3);
     margin-block-start: var(--space-7);
     padding: 0;
@@ -121,7 +122,7 @@
   }
   .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
     gap: var(--space-4);
   }
   .feature {
@@ -136,7 +137,7 @@
   }
   .principles {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
     gap: var(--space-4) var(--space-7);
     padding-inline-start: 1.5rem;
     color: var(--text-2);
@@ -252,5 +253,21 @@
 
   .upcoming {
     min-block-size: 28rem;
+  }
+}
+
+@layer components {
+  /* Direction-aware pager arrows: the arrow always points the way you read. */
+  .pager__prev::before {
+    content: '← ';
+  }
+  .pager__next::after {
+    content: ' →';
+  }
+  [dir='rtl'] .pager__prev::before {
+    content: '→ ';
+  }
+  [dir='rtl'] .pager__next::after {
+    content: ' ←';
   }
 }

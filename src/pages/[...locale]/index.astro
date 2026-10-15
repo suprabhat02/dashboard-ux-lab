@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { localePaths, pageI18n, type LocaleProps } from '../../site/i18n';
+import { SCENARIOS } from '../../spec/scenarios';
+import type { ScenarioId } from '../../spec/types';
+import '../../styles/pages.css';
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.props as LocaleProps;
+const { t, href } = pageI18n(locale);
+const h = t.home;
+const repoIssues = 'https://github.com/suprabhat02/dashboard-ux-lab/issues';
+
+const stateIcon: Record<ScenarioId, string> = {
+  loaded: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
+  loading: 'M12 3a9 9 0 1 0 9 9',
+  slow: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z',
+  empty: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM20 20l-3.5-3.5',
+  error:
+    'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z',
+  restricted: 'M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4',
+};
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.homeTitle}
+  description={t.meta.homeDescription}
+  section="home"
+>
+  <section class="hero container">
+    <p class="pill hero__pill">{h.pill}</p>
+    <h1 class="hero__title">
+      {h.titleLead} <span class="hero__accent">{h.titleAccent}</span>
+    </h1>
+    <p class="hero__lede">{h.lede}</p>
+    <div class="hero__actions">
+      <a class="btn btn--primary btn--lg" href={href('/lab/react/')}>
+        {h.openLab}
+      </a>
+      <a class="btn btn--lg" href={href('/scenarios/')}>
+        {h.readGuides}
+      </a>
+    </div>
+
+    <ol class="state-strip" role="list" aria-label={h.stripLabel}>
+      {SCENARIOS.map((scenario, index) => (
+        <li class="state-strip__item" data-scenario={scenario.id} style={`--i:${index}`}>
+          <a
+            href={`${href('/lab/react/')}?scenario=${scenario.id}`}
+            class="state-strip__link"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d={stateIcon[scenario.id]} />
+            </svg>
+            <span class="state-strip__title">{t.scenarios[scenario.id].title}</span>
+            <span class="state-strip__summary">{t.scenarios[scenario.id].summary}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container section" aria-labelledby="how-heading">
+    <p class="eyebrow">{h.howEyebrow}</p>
+    <h2 class="section__title" id="how-heading">
+      {h.howTitle}
+    </h2>
+    <div class="feature-grid">
+      {h.features.map((feature) => (
+        <article class="card feature">
+          <h3>{feature.title}</h3>
+          <p>{feature.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="container section" aria-labelledby="principles-heading">
+    <p class="eyebrow">{h.rulesEyebrow}</p>
+    <h2 class="section__title" id="principles-heading">
+      {h.rulesTitle}
+    </h2>
+    <ol class="principles">
+      {h.rules.map((rule) => (
+        <li>
+          <strong>{rule.lead}</strong> {rule.body}
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container section honest" aria-labelledby="status-heading">
+    <h2 class="section__title" id="status-heading">
+      {h.statusTitle}
+    </h2>
+    <p>{h.statusBody}</p>
+    <p>
+      <a href={href('/accessibility/')}>{h.statusA11yLink}</a>. {h.statusFeedback}{' '}
+      <a href={repoIssues}>{h.statusIssueLink}</a>.
+    </p>
+  </section>
+</BaseLayout>

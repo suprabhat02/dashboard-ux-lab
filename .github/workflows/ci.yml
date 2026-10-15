@@ -27,7 +27,9 @@ jobs:
       - run: npm run format:check
       - run: npm test
       - run: npm run build
-      - name: JavaScript size budget
+      - name: Every page exists in every locale
+        run: node scripts/check-locale-routes.mjs
+      - name: JavaScript size budget (per locale)
         run: node scripts/size-budget.mjs
       - uses: actions/upload-artifact@v4
         with:

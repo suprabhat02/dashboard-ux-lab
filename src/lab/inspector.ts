@@ -1,3 +1,4 @@
+import type { Messages } from '../spec/i18n';
 import type { LabChannel, LabTelemetry } from '../spec/protocol';
 
 /**
@@ -7,7 +8,13 @@ import type { LabChannel, LabTelemetry } from '../spec/protocol';
  * The logs use role="log" with aria-live="off": they are a visual debugging aid,
  * and announcing them would compete with the dashboard's own announcements,
  * which is the very thing the lab teaches people to avoid.
+ *
+ * State and phase names are code identifiers (they match the spec and the
+ * source), so they stay untranslated and are isolated left-to-right in Arabic.
  */
+
+/** Wrap a code identifier so it reads left-to-right inside right-to-left text. */
+const ltr = (text: string): string => `\u2066${text}\u2069`;
 
 type LogName = 'timeline' | 'announce' | 'focus';
 const MAX_ENTRIES = 60;
@@ -18,26 +25,30 @@ interface Entry {
   readonly tone?: 'info' | 'good' | 'warn' | 'bad';
 }
 
-function describe(telemetry: LabTelemetry): { log: LogName; entry: Entry } | null {
+function describe(
+  telemetry: LabTelemetry,
+  t: Messages,
+): { log: LogName; entry: Entry } | null {
+  const { kinds, entries } = t.inspector;
   switch (telemetry.type) {
     case 'ready':
       return {
         log: 'timeline',
         entry: {
-          kind: 'ready',
-          text: `${telemetry.implementation} implementation mounted`,
+          kind: kinds.ready,
+          text: entries.ready(telemetry.implementation),
         },
       };
     case 'request': {
       const text = {
-        start: `request #${telemetry.attempt} sent`,
-        settled: `response #${telemetry.attempt} received`,
-        aborted: `request #${telemetry.attempt} aborted (superseded or cancelled)`,
+        start: entries.requestStart(telemetry.attempt),
+        settled: entries.requestSettled(telemetry.attempt),
+        aborted: entries.requestAborted(telemetry.attempt),
       }[telemetry.phase];
       return {
         log: 'timeline',
         entry: {
-          kind: 'request',
+          kind: kinds.request,
           text,
           tone: telemetry.phase === 'aborted' ? 'warn' : 'info',
         },
@@ -56,19 +67,23 @@ function describe(telemetry: LabTelemetry): { log: LogName; entry: Entry } | nul
       )[telemetry.to];
       return {
         log: 'timeline',
-        entry: { kind: 'state', text: `${telemetry.from} → ${telemetry.to}`, tone },
+        entry: {
+          kind: kinds.state,
+          text: ltr(`${telemetry.from} → ${telemetry.to}`),
+          tone,
+        },
       };
     }
     case 'phase':
       return {
         log: 'timeline',
-        entry: { kind: 'phase', text: `loading phase: ${telemetry.phase}` },
+        entry: { kind: kinds.phase, text: entries.phase(ltr(telemetry.phase)) },
       };
     case 'announce':
       return {
         log: 'announce',
         entry: {
-          kind: telemetry.politeness,
+          kind: kinds[telemetry.politeness],
           text: `“${telemetry.message}”`,
           tone: telemetry.politeness === 'assertive' ? 'warn' : 'info',
         },
@@ -76,18 +91,18 @@ function describe(telemetry: LabTelemetry): { log: LogName; entry: Entry } | nul
     case 'focus':
       return {
         log: 'focus',
-        entry: { kind: 'moved', text: `${telemetry.target} — ${telemetry.reason}` },
+        entry: { kind: kinds.moved, text: `${telemetry.target} — ${telemetry.reason}` },
       };
     case 'settings':
       return {
         log: 'timeline',
-        entry: { kind: 'filter', text: 'settings changed from inside the dashboard' },
+        entry: { kind: kinds.filter, text: entries.filter },
       };
   }
 }
 
-function describeElement(element: Element | null): string {
-  if (!element || element === document.body) return 'page body (focus lost)';
+function describeElement(element: Element | null, lostLabel: string): string {
+  if (!element || element === document.body) return lostLabel;
   const role = element.getAttribute('role') ?? element.tagName.toLowerCase();
   const fieldLabel =
     element instanceof HTMLInputElement || element instanceof HTMLSelectElement
@@ -98,7 +113,7 @@ function describeElement(element: Element | null): string {
   return text ? `${role} “${text}”` : role;
 }
 
-export function initInspector(channel: LabChannel): void {
+export function initInspector(channel: LabChannel, t: Messages): void {
   const root = document.querySelector<HTMLElement>('[data-inspector]');
   if (!root) return;
   const startedAt = performance.now();
@@ -140,7 +155,7 @@ export function initInspector(channel: LabChannel): void {
   };
 
   channel.onTelemetry((telemetry) => {
-    const described = describe(telemetry);
+    const described = describe(telemetry, t);
     if (described) append(described.log, described.entry, telemetry.at);
   });
 
@@ -155,7 +170,11 @@ export function initInspector(channel: LabChannel): void {
   /* Live "focused now" readout. */
   const focusNow = root.querySelector('[data-focus-now]');
   document.addEventListener('focusin', () => {
-    if (focusNow) focusNow.textContent = describeElement(document.activeElement);
+    if (focusNow)
+      focusNow.textContent = describeElement(
+        document.activeElement,
+        t.inspector.focusLost,
+      );
   });
 
   /* APG Tabs: automatic activation. */
@@ -177,10 +196,14 @@ export function initInspector(channel: LabChannel): void {
     });
     tab.addEventListener('keydown', (event) => {
       const last = tabs.length - 1;
+      // In right-to-left layouts the next tab sits to the left (APG Tabs, RTL note).
+      const rtl = getComputedStyle(tab).direction === 'rtl';
+      const forward = rtl ? 'ArrowLeft' : 'ArrowRight';
+      const backward = rtl ? 'ArrowRight' : 'ArrowLeft';
       const target =
-        event.key === 'ArrowRight'
+        event.key === forward
           ? tabs[index === last ? 0 : index + 1]
-          : event.key === 'ArrowLeft'
+          : event.key === backward
             ? tabs[index === 0 ? last : index - 1]
             : event.key === 'Home'
               ? tabs[0]

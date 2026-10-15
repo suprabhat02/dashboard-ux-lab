@@ -13,6 +13,12 @@ a person. Record results, with date, browser and AT version, on /accessibility/.
 For each: is each announcement heard once, at the right time, without interrupting?
 Does focus land where docs/spec.md §6 says? Are KPI deltas read as sentences?
 
+## Languages
+
+- [ ] Arabic with VoiceOver (macOS/iOS) and NVDA: correct language switching, numbers read correctly, RTL reading order
+- [ ] Arabic layout: chart mirrored, tabs arrow keys reversed, no clipped diacritics, no letter-spacing
+- [ ] Spanish and Arabic copy reviewed by a native speaker
+
 ## Visual and input
 
 - [ ] Keyboard only: every control reachable, visible focus, no traps

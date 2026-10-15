@@ -1,6 +1,4 @@
 import { useId, useMemo, useState } from 'react';
-import { COPY } from '../../spec/copy';
-import { formatDate, formatValue, PLAN_LABEL, STATUS_LABEL } from '../../spec/format';
 import {
   COLUMNS,
   DEFAULT_SORT,
@@ -10,6 +8,7 @@ import {
   type SortState,
 } from '../../spec/table';
 import type { Account, PlanFilter } from '../../spec/types';
+import { useI18n } from '../i18n';
 import { SortIcon } from './Icons';
 
 /**
@@ -23,28 +22,33 @@ export function AccountsTable({
   readonly accounts: readonly Account[];
   readonly plan: PlanFilter;
 }) {
+  const { t, fmt, locale } = useI18n();
   const [sort, setSort] = useState<SortState>(DEFAULT_SORT);
-  const rows = useMemo(() => sortAccounts(accounts, sort), [accounts, sort]);
+  const rows = useMemo(
+    () => sortAccounts(accounts, sort, locale),
+    [accounts, sort, locale],
+  );
   const captionId = useId();
 
   const cell = (account: Account, key: SortKey) => {
     switch (key) {
       case 'name':
-        return account.name;
+        // Company names are Latin-script proper nouns; isolate them inside RTL text.
+        return <bdi>{account.name}</bdi>;
       case 'plan':
-        return <span className="plan-tag">{PLAN_LABEL[account.plan]}</span>;
+        return <span className="plan-tag">{t.dashboard.plans[account.plan]}</span>;
       case 'seats':
-        return formatValue(account.seats, 'count');
+        return fmt.value(account.seats, 'count');
       case 'mrr':
-        return formatValue(account.mrr, 'currency');
+        return fmt.value(account.mrr, 'currency');
       case 'status':
         return (
           <span className="status" data-status={account.status}>
-            {STATUS_LABEL[account.status]}
+            {t.dashboard.statuses[account.status]}
           </span>
         );
       case 'renewsOn':
-        return formatDate(account.renewsOn);
+        return fmt.date(account.renewsOn);
     }
   };
 
@@ -57,7 +61,7 @@ export function AccountsTable({
     >
       <table className="table">
         <caption id={captionId}>
-          {COPY.widgets.accountsCaption(accounts.length, plan)}
+          {t.dashboard.accountsCaption(accounts.length, t.dashboard.plans[plan])}
         </caption>
         <thead>
           <tr>
@@ -75,7 +79,7 @@ export function AccountsTable({
                     setSort((current) => nextSort(current, column.key));
                   }}
                 >
-                  {COPY.table[column.key]}
+                  {t.dashboard.columns[column.key]}
                   <SortIcon className="sort-btn__icon" />
                 </button>
               </th>

@@ -1,22 +1,22 @@
 import { useId, useMemo, useState, type CSSProperties } from 'react';
 import { buildChartModel, CHART } from '../../spec/chart';
-import { COPY } from '../../spec/copy';
-import { formatCompactCurrency, formatMonthLong, formatValue } from '../../spec/format';
 import type { RevenuePoint } from '../../spec/types';
+import { useI18n } from '../i18n';
 
 /**
  * Hand-built SVG bar chart. The accessible name is a one-sentence summary of the
  * trend; the full numbers are one button away as a real table (APG disclosure).
  * Individual bars are not focusable: twelve tab stops would cost keyboard users
- * more than the table they can open instead.
+ * more than the table they can open instead. Geometry (including RTL mirroring)
+ * comes from the spec, so this component never branches on direction.
  */
 export function RevenueChart({ points }: { readonly points: readonly RevenuePoint[] }) {
-  const model = useMemo(() => buildChartModel(points), [points]);
+  const { t, fmt, locale } = useI18n();
+  const model = useMemo(() => buildChartModel(points, locale), [points, locale]);
   const [showTable, setShowTable] = useState(false);
   const tableId = useId();
-  const { padding, width, height } = CHART;
-  const latest = model.bars.at(-1);
-  const latestPoint = points.at(-1);
+  const { width, height } = CHART;
+  const latest = model.bars.find((bar) => bar.isLatest);
 
   return (
     <>
@@ -28,20 +28,20 @@ export function RevenueChart({ points }: { readonly points: readonly RevenuePoin
           aria-label={model.summary}
         >
           {model.ticks.map((tick) => (
-            <g key={tick.label}>
+            <g key={tick.y}>
               <line
                 className="chart__grid"
-                x1={padding.left}
-                x2={width - padding.right}
+                x1={model.axis.gridX1}
+                x2={model.axis.gridX2}
                 y1={tick.y}
                 y2={tick.y}
               />
               <text
                 className="chart__tick"
-                x={padding.left - 10}
+                x={model.axis.labelX}
                 y={tick.y}
                 dy="0.32em"
-                textAnchor="end"
+                textAnchor={model.axis.labelAnchor}
               >
                 {tick.label}
               </text>
@@ -71,14 +71,14 @@ export function RevenueChart({ points }: { readonly points: readonly RevenuePoin
               </text>
             </g>
           ))}
-          {latest && latestPoint && (
+          {latest && model.latestLabel && (
             <text
               className="chart__value"
               x={latest.x + latest.width / 2}
               y={latest.y - 6}
               textAnchor="middle"
             >
-              {formatCompactCurrency(latestPoint.mrr)}
+              {model.latestLabel}
             </text>
           )}
         </svg>
@@ -94,29 +94,29 @@ export function RevenueChart({ points }: { readonly points: readonly RevenuePoin
             setShowTable((open) => !open);
           }}
         >
-          {showTable ? COPY.widgets.hideTable : COPY.widgets.showTable}
+          {showTable ? t.dashboard.hideTable : t.dashboard.showTable}
         </button>
       </div>
 
       <div id={tableId} hidden={!showTable}>
         <div className="table-scroll table-scroll--compact">
           <table className="table table--compact">
-            <caption>{COPY.widgets.revenueCaption}</caption>
+            <caption>{t.dashboard.revenueCaption}</caption>
             <thead>
               <tr>
                 <th scope="col" className="table__plain-th">
-                  Month
+                  {t.dashboard.monthHeader}
                 </th>
                 <th scope="col" className="table__plain-th" data-numeric>
-                  MRR
+                  {t.dashboard.columns.mrr}
                 </th>
               </tr>
             </thead>
             <tbody>
               {points.map((point) => (
                 <tr key={point.month}>
-                  <th scope="row">{formatMonthLong(point.month)}</th>
-                  <td data-numeric>{formatValue(point.mrr, 'currency')}</td>
+                  <th scope="row">{fmt.monthLong(point.month)}</th>
+                  <td data-numeric>{fmt.value(point.mrr, 'currency')}</td>
                 </tr>
               ))}
             </tbody>

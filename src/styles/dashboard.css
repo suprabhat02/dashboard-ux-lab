@@ -69,7 +69,8 @@
     appearance: none;
     min-block-size: 40px;
     min-inline-size: 11rem;
-    padding: var(--space-2) 2.25rem var(--space-2) var(--space-3);
+    padding-block: var(--space-2);
+    padding-inline: var(--space-3) 2.25rem;
     border: 1px solid color-mix(in oklch, var(--text) 14%, transparent);
     border-radius: var(--radius-control);
     background:
@@ -80,6 +81,11 @@
     font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
+  }
+  [dir='rtl'] .select {
+    background-position:
+      left 0.75rem center,
+      0 0;
   }
   .select:hover {
     border-color: color-mix(in oklch, var(--text) 24%, transparent);
@@ -575,8 +581,8 @@
     position: absolute;
     z-index: 2;
     inset-block-start: clamp(11rem, 24cqi, 14rem);
-    inset-inline: 50% auto;
-    translate: -50% 0;
+    inset-inline: 0;
+    margin-inline: auto;
     inline-size: min(36rem, 100% - 2rem);
     background: color-mix(in oklch, var(--bg-card) 88%, var(--warning));
     box-shadow: var(--shadow);

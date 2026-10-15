@@ -1,13 +1,21 @@
 ---
 import spaceGroteskLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import notoKufiArabic from '@fontsource-variable/noto-kufi-arabic/files/noto-kufi-arabic-arabic-wght-normal.woff2?url';
 import '@fontsource-variable/space-grotesk/wght.css';
 import '@fontsource-variable/geist-mono/wght.css';
+/* Arabic glyphs only. Its @font-face is scoped by unicode-range, so English and
+   Spanish pages never download it. */
+import '@fontsource-variable/noto-kufi-arabic/wght.css';
 import '../styles/base.css';
 import '../styles/tokens.css';
+import LanguageSwitcher from '../components/LanguageSwitcher.astro';
 import ThemeScript from '../components/ThemeScript.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import { DEFAULT_LOCALE, LOCALE_META, type Locale } from '../spec/i18n';
+import { alternatesFor, pageI18n } from '../site/i18n';
 
 interface Props {
+  locale: Locale;
   /** Page title, without the site suffix. */
   title: string;
   description: string;
@@ -16,14 +24,18 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title, description, section, noindex = false } = Astro.props;
-const fullTitle = section === 'home' ? title : `${title} · Dashboard UX Lab`;
+const { locale, title, description, section, noindex = false } = Astro.props;
+const { t, dir, htmlLang, href } = pageI18n(locale);
+const fullTitle = section === 'home' ? title : `${title} · ${t.meta.siteName}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const alternates = alternatesFor(Astro.url.pathname);
+const defaultAlternate = alternates.find((alt) => alt.locale === DEFAULT_LOCALE);
 const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
+const ogLocale = { en: 'en_US', es: 'es_ES', ar: 'ar_AR' }[locale];
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={htmlLang} dir={dir} data-locale={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,6 +44,21 @@ const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
+    {!noindex &&
+      alternates.map((alt) => (
+        <link
+          rel="alternate"
+          hreflang={LOCALE_META[alt.locale].htmlLang}
+          href={new URL(alt.href, Astro.site)}
+        />
+      ))}
+    {!noindex && defaultAlternate && (
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={new URL(defaultAlternate.href, Astro.site)}
+      />
+    )}
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#000d18" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f6fbfe" media="(prefers-color-scheme: light)" />
@@ -44,8 +71,12 @@ const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
       type="font/woff2"
       crossorigin
     />
+    {dir === 'rtl' && (
+      <link rel="preload" href={notoKufiArabic} as="font" type="font/woff2" crossorigin />
+    )}
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Dashboard UX Lab" />
+    <meta property="og:site_name" content={t.meta.siteName} />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -55,11 +86,11 @@ const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
   </head>
   <body>
     <a class="skip-link" href="#main">
-      Skip to content
+      {t.nav.skip}
     </a>
     <header class="site-header">
       <div class="container site-header__inner">
-        <a class="brand" href="/" aria-label="Dashboard UX Lab, home">
+        <a class="brand" href={href('/')} aria-label={t.nav.homeLabel}>
           <span class="brand__mark" aria-hidden="true">
             <svg
               width="18"
@@ -73,31 +104,37 @@ const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
               <path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path>
             </svg>
           </span>
-          <span>Dashboard UX Lab</span>
-          <span class="brand__by">by Suprabhat</span>
+          <span lang="en" dir="ltr">
+            Dashboard UX Lab
+          </span>
+          <span class="brand__by">{t.nav.by}</span>
         </a>
-        <nav class="site-nav" aria-label="Main">
-          <a href="/lab/react/" aria-current={section === 'lab' ? 'page' : undefined}>
-            Lab
+        <nav class="site-nav" aria-label={t.nav.main}>
+          <a
+            href={href('/lab/react/')}
+            aria-current={section === 'lab' ? 'page' : undefined}
+          >
+            {t.nav.lab}
           </a>
           <a
-            href="/scenarios/"
+            href={href('/scenarios/')}
             aria-current={section === 'scenarios' ? 'page' : undefined}
           >
-            Scenarios
+            {t.nav.scenarios}
           </a>
           <a
             class="nav-optional"
-            href="/accessibility/"
+            href={href('/accessibility/')}
             aria-current={section === 'accessibility' ? 'page' : undefined}
           >
-            Accessibility
+            {t.nav.accessibility}
           </a>
           <a class="nav-optional" href={repoUrl}>
-            GitHub
+            {t.nav.github}
           </a>
-          <ThemeToggle />
         </nav>
+        <LanguageSwitcher locale={locale} label={t.nav.language} />
+        <ThemeToggle t={t} />
       </div>
     </header>
 
@@ -108,12 +145,12 @@ const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
     <footer class="site-footer">
       <div class="container site-footer__inner">
         <p>
-          Built by <a href="https://suprabhat-dev.com/">Suprabhat Kumar</a>. Mock data
-          only; no tracking.
+          {t.footer.builtBy} <a href="https://suprabhat-dev.com/">Suprabhat Kumar</a>.{' '}
+          {t.footer.note}
         </p>
         <p>
-          <a href={repoUrl}>Source on GitHub</a> ·{' '}
-          <a href={`${repoUrl}/issues`}>Report an issue</a>
+          <a href={repoUrl}>{t.footer.source}</a> ·{' '}
+          <a href={`${repoUrl}/issues`}>{t.footer.report}</a>
         </p>
       </div>
     </footer>

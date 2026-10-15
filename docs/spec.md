@@ -98,3 +98,12 @@ The playground chrome and an implementation never import each other. They exchan
 - implementation → chrome: `ready`, `request`, `state`, `phase`, `announce`, `focus`, `settings`
 
 An implementation must work with no chrome present (it reads the URL on start).
+
+## 9. Languages
+
+Every page and every string exists in English (`/`), Spanish (`/es/`) and Arabic
+(`/ar/`, right-to-left). Implementations receive the locale from the page and read all
+text from `src/spec/i18n`; they never hard-code copy. In RTL the chart mirrors (newest
+month on the left, values on the right); tabs swap arrow-key direction; numbers use
+Latin digits; currency, request IDs and code identifiers stay left-to-right.
+See [ADR 0004](decisions/0004-internationalisation.md).

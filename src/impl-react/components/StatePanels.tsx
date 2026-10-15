@@ -1,6 +1,6 @@
 import type { Ref } from 'react';
-import { COPY, roleLabel } from '../../spec/copy';
 import type { DashboardError, PlanFilter, Role } from '../../spec/types';
+import { useI18n } from '../i18n';
 import {
   AlertIcon,
   ClockIcon,
@@ -16,6 +16,11 @@ import {
  * and a permission problem ask different things of the user.
  */
 
+/** Request IDs are machine strings: always left-to-right, even in Arabic. */
+function Code({ children }: { readonly children: string }) {
+  return <code dir="ltr">{children}</code>;
+}
+
 export function ErrorState({
   error,
   retrying,
@@ -27,15 +32,16 @@ export function ErrorState({
   readonly onRetry: () => void;
   readonly retryRef: Ref<HTMLButtonElement>;
 }) {
+  const { t } = useI18n();
   return (
     <div className="state state--error" data-state="error">
       <span className="state__icon">
         <AlertIcon />
       </span>
-      <h3 className="state__title">{COPY.error.title}</h3>
-      <p className="state__body">{COPY.error.body}</p>
+      <h3 className="state__title">{t.dashboard.error.title}</h3>
+      <p className="state__body">{t.dashboard.error.body}</p>
       <p className="state__meta">
-        {COPY.error.requestIdLabel} <code>{error.requestId}</code>
+        {t.dashboard.error.requestIdLabel} <Code>{error.requestId}</Code>
       </p>
       <div className="state__actions">
         {/* aria-disabled (not disabled) keeps focus on the button while the retry runs. */}
@@ -48,8 +54,8 @@ export function ErrorState({
             if (!retrying) onRetry();
           }}
         >
-          <RefreshIcon size={16} />
-          {retrying ? COPY.error.retrying : COPY.error.retry}
+          <RefreshIcon size={16} className="icon-flip" />
+          {retrying ? t.dashboard.error.retrying : t.dashboard.error.retry}
         </button>
       </div>
     </div>
@@ -57,15 +63,16 @@ export function ErrorState({
 }
 
 export function ForbiddenState({ error }: { readonly error: DashboardError }) {
+  const { t } = useI18n();
   return (
     <div className="state state--forbidden" data-state="forbidden">
       <span className="state__icon">
         <LockIcon />
       </span>
-      <h3 className="state__title">{COPY.forbidden.title}</h3>
-      <p className="state__body">{COPY.forbidden.body}</p>
+      <h3 className="state__title">{t.dashboard.forbidden.title}</h3>
+      <p className="state__body">{t.dashboard.forbidden.body}</p>
       <p className="state__meta">
-        {COPY.forbidden.requestIdLabel} <code>{error.requestId}</code>
+        {t.dashboard.forbidden.requestIdLabel} <Code>{error.requestId}</Code>
       </p>
     </div>
   );
@@ -78,16 +85,17 @@ export function EmptyState({
   readonly plan: PlanFilter;
   readonly onReset: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="state state--empty" data-state="empty">
       <span className="state__icon">
         <SearchIcon />
       </span>
-      <h3 className="state__title">{COPY.empty.title(plan)}</h3>
-      <p className="state__body">{COPY.empty.body}</p>
+      <h3 className="state__title">{t.dashboard.empty.title(t.dashboard.plans[plan])}</h3>
+      <p className="state__body">{t.dashboard.empty.body}</p>
       <div className="state__actions">
         <button type="button" className="btn btn--primary" onClick={onReset}>
-          {COPY.empty.action}
+          {t.dashboard.empty.action}
         </button>
       </div>
     </div>
@@ -101,13 +109,14 @@ export function CancelledState({
   readonly onReload: () => void;
   readonly reloadRef: Ref<HTMLButtonElement>;
 }) {
+  const { t } = useI18n();
   return (
     <div className="state state--cancelled" data-state="cancelled">
       <span className="state__icon">
         <StopIcon />
       </span>
-      <h3 className="state__title">{COPY.cancelled.title}</h3>
-      <p className="state__body">{COPY.cancelled.body}</p>
+      <h3 className="state__title">{t.dashboard.cancelled.title}</h3>
+      <p className="state__body">{t.dashboard.cancelled.body}</p>
       <div className="state__actions">
         <button
           ref={reloadRef}
@@ -115,8 +124,8 @@ export function CancelledState({
           className="btn btn--primary"
           onClick={onReload}
         >
-          <RefreshIcon size={16} />
-          {COPY.cancelled.action}
+          <RefreshIcon size={16} className="icon-flip" />
+          {t.dashboard.cancelled.action}
         </button>
       </div>
     </div>
@@ -130,14 +139,20 @@ export function RestrictedWidget({
   readonly role: Role;
   readonly requiredRole: Role;
 }) {
+  const { t } = useI18n();
+  const roles = t.dashboard.roles;
   return (
     <div className="restricted" data-state="widget-restricted">
       <p className="restricted__title">
         <LockIcon size={18} />
-        {COPY.widgetRestricted.title}
+        {t.dashboard.widgetRestricted.title}
       </p>
-      <p className="restricted__body">{COPY.widgetRestricted.body(role, requiredRole)}</p>
-      <p className="pill pill--muted">Current role: {roleLabel(role)}</p>
+      <p className="restricted__body">
+        {t.dashboard.widgetRestricted.body(roles[role], roles[requiredRole])}
+      </p>
+      <p className="pill pill--muted">
+        {t.dashboard.widgetRestricted.currentRole(roles[role])}
+      </p>
     </div>
   );
 }
@@ -149,21 +164,19 @@ export function SlowNotice({
   readonly stalled: boolean;
   readonly onCancel: () => void;
 }) {
+  const { t } = useI18n();
+  const copy = t.dashboard.loading;
   return (
     <div className="notice" data-state={stalled ? 'stalled' : 'slow'}>
       <ClockIcon className="notice__icon" />
       <div className="notice__text">
-        <p className="notice__title">
-          {stalled ? COPY.loading.stalledTitle : COPY.loading.slowTitle}
-        </p>
-        <p className="notice__body">
-          {stalled ? COPY.loading.stalledBody : COPY.loading.slowBody}
-        </p>
+        <p className="notice__title">{stalled ? copy.stalledTitle : copy.slowTitle}</p>
+        <p className="notice__body">{stalled ? copy.stalledBody : copy.slowBody}</p>
       </div>
       {stalled && (
         <button type="button" className="btn btn--sm" onClick={onCancel}>
           <StopIcon size={14} />
-          {COPY.loading.cancel}
+          {copy.cancel}
         </button>
       )}
     </div>

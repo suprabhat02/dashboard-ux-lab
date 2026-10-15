@@ -1,0 +1,40 @@
+---
+import LabShell from '../../../components/LabShell.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { localePaths, pageI18n, type LocaleProps } from '../../../site/i18n';
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.props as LocaleProps;
+const { t, href } = pageI18n(locale);
+const copy = t.lab.vanilla;
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.labVanillaTitle}
+  description={t.meta.labVanillaDescription}
+  section="lab"
+  noindex
+>
+  <LabShell implementation="vanilla" locale={locale}>
+    <section class="state state--empty upcoming" aria-labelledby="upcoming-title">
+      <span class="pill">{copy.pill}</span>
+      <h2 class="state__title" id="upcoming-title">
+        {copy.title}
+      </h2>
+      <p class="state__body">{copy.body}</p>
+      <div class="state__actions">
+        <a class="btn btn--primary" href={href('/lab/react/')} data-impl-link="react">
+          {copy.openReact}
+        </a>
+        <a
+          class="btn"
+          href="https://github.com/suprabhat02/dashboard-ux-lab/blob/main/docs/spec.md"
+        >
+          {copy.readSpec}
+        </a>
+      </div>
+    </section>
+  </LabShell>
+</BaseLayout>

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { localePaths, pageI18n, type LocaleProps } from '../../../site/i18n';
+import { SCENARIOS } from '../../../spec/scenarios';
+import '../../../styles/pages.css';
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.props as LocaleProps;
+const { t, href } = pageI18n(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.scenariosTitle}
+  description={t.meta.scenariosDescription}
+  section="scenarios"
+>
+  <div class="container doc">
+    <p class="eyebrow">{t.guides.eyebrow}</p>
+    <h1 class="doc__title">{t.guides.title}</h1>
+    <p class="doc__lede">{t.guides.lede}</p>
+    <ul class="guide-list" role="list">
+      {SCENARIOS.map((scenario) => (
+        <li>
+          <a class="card guide-card" href={href(`/scenarios/${scenario.id}/`)}>
+            <span class="guide-card__title">{t.scenarios[scenario.id].title}</span>
+            <span class="guide-card__summary">{t.scenarios[scenario.id].summary}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>

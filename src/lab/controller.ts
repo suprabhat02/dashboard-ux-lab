@@ -1,5 +1,12 @@
-import { roleLabel } from '../spec/copy';
-import { PLAN_LABEL } from '../spec/format';
+import { getFormatter, type Formatter } from '../spec/format';
+import {
+  getMessages,
+  isLocale,
+  DEFAULT_LOCALE,
+  localizePath,
+  type Locale,
+  type Messages,
+} from '../spec/i18n';
 import { createLabChannel, type LabChannel, type LabTelemetry } from '../spec/protocol';
 import { getScenario, isScenarioId, matchScenario } from '../spec/scenarios';
 import { clampLatency } from '../spec/timing';
@@ -11,7 +18,8 @@ import { initInspector } from './inspector';
  * Lab chrome controller (framework-free, shared by both lab pages).
  *
  * Owns the controls, the URL and the explanation panel. Talks to whichever
- * implementation is on the page only through the lab channel.
+ * implementation is on the page only through the lab channel. The locale is
+ * read from <html data-locale>; every visible string comes from the catalogue.
  */
 
 // The type parameter mirrors querySelector<T>: callers name the element type they expect.
@@ -22,28 +30,34 @@ function must<T extends Element>(root: ParentNode, selector: string): T {
   return element;
 }
 
-const FAILURE_LABEL: Record<FailureMode, string> = {
-  never: 'never fails',
-  once: 'fails once',
-  always: 'always fails',
-};
+function pageLocale(): Locale {
+  const value = document.documentElement.dataset.locale;
+  return isLocale(value) ? value : DEFAULT_LOCALE;
+}
 
-function describeCustom(settings: LabSettings): {
-  what: string;
-  why: string;
-  a11y: string;
-} {
+function describeCustom(
+  settings: LabSettings,
+  t: Messages,
+  fmt: Formatter,
+): { what: string; why: string; a11y: string } {
   return {
-    what:
-      `Custom: ${settings.latencyMs} ms latency, server ${FAILURE_LABEL[settings.failure]}, ` +
-      `${roleLabel(settings.role)} role, ${PLAN_LABEL[settings.plan]}.`,
-    why: 'Mix the knobs to find edge cases: a slow request that then fails, a viewer on an empty filter, a retry that keeps failing. The dashboard follows the same rules for every combination.',
-    a11y: 'Watch the Screen reader tab: every change you trigger produces at most one announcement per state, never a queue.',
+    what: t.lab.customWhat(
+      t.lab.ms(fmt.integer(settings.latencyMs)),
+      t.lab.customFailure[settings.failure],
+      t.dashboard.roles[settings.role],
+      t.dashboard.plans[settings.plan],
+    ),
+    why: t.lab.customWhy,
+    a11y: t.lab.customA11y,
   };
 }
 
 export function initLab(target: EventTarget = window): LabChannel {
   const channel = createLabChannel(target);
+  const locale = pageLocale();
+  const t = getMessages(locale);
+  const fmt = getFormatter(locale);
+  const ms = (value: number): string => t.lab.ms(fmt.integer(value));
   const form = must<HTMLFormElement>(document, '[data-controls]');
   const latency = must<HTMLInputElement>(form, 'input[name="latency"]');
   const latencyOutput = must<HTMLOutputElement>(form, '[data-latency-output]');
@@ -70,14 +84,14 @@ export function initLab(target: EventTarget = window): LabChannel {
       radio.checked = radio.value === settings.failure;
     }
     latency.value = String(settings.latencyMs);
-    latencyOutput.textContent = `${settings.latencyMs} ms`;
+    latencyOutput.textContent = ms(settings.latencyMs);
     role.value = settings.role;
     plan.value = settings.plan;
     customBadge.hidden = preset !== null;
-    currentScenario.textContent = preset ? getScenario(preset).title : 'Custom';
+    currentScenario.textContent = preset ? t.scenarios[preset].title : t.lab.custom;
 
-    const explanation = preset ? getScenario(preset).explanation : null;
-    const custom = describeCustom(settings);
+    const explanation = preset ? t.scenarios[preset] : null;
+    const custom = describeCustom(settings, t, fmt);
     must<HTMLElement>(document, '[data-explain-what]').textContent =
       explanation?.what ?? custom.what;
     must<HTMLElement>(document, '[data-explain-why]').textContent =
@@ -87,8 +101,8 @@ export function initLab(target: EventTarget = window): LabChannel {
     const link = must<HTMLAnchorElement>(document, '[data-explain-link]');
     link.hidden = preset === null;
     if (preset) {
-      link.href = `/scenarios/${preset}/`;
-      link.textContent = `Read the full “${getScenario(preset).title}” guide`;
+      link.href = localizePath(locale, `/scenarios/${preset}/`);
+      link.textContent = t.lab.readGuide(t.scenarios[preset].title);
     }
 
     // Keep the implementation switch on the same scenario.
@@ -97,7 +111,10 @@ export function initLab(target: EventTarget = window): LabChannel {
       '[data-impl-link]',
     )) {
       const implementation = anchor.dataset.implLink ?? 'react';
-      anchor.setAttribute('href', `/lab/${implementation}/${query ? `?${query}` : ''}`);
+      anchor.setAttribute(
+        'href',
+        `${localizePath(locale, `/lab/${implementation}/`)}${query ? `?${query}` : ''}`,
+      );
     }
   };
 
@@ -134,7 +151,7 @@ export function initLab(target: EventTarget = window): LabChannel {
   });
   // Live readout while dragging; the request itself only re-runs on release (`change`).
   latency.addEventListener('input', () => {
-    latencyOutput.textContent = `${latency.value} ms`;
+    latencyOutput.textContent = ms(Number(latency.value));
   });
   form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -148,15 +165,15 @@ export function initLab(target: EventTarget = window): LabChannel {
   copyButton.addEventListener('click', () => {
     void navigator.clipboard.writeText(window.location.href).then(
       () => {
-        status.textContent = 'Link copied to clipboard.';
-        copyButton.textContent = 'Copied';
+        status.textContent = t.lab.linkCopied;
+        copyButton.textContent = t.lab.copied;
         setTimeout(() => {
-          copyButton.textContent = 'Copy link';
+          copyButton.textContent = t.lab.copyLink;
           status.textContent = '';
         }, 2000);
       },
       () => {
-        status.textContent = 'Couldn’t copy. Copy the address bar instead.';
+        status.textContent = t.lab.copyFailed;
       },
     );
   });
@@ -184,7 +201,7 @@ export function initLab(target: EventTarget = window): LabChannel {
     render();
   });
 
-  initInspector(channel);
+  initInspector(channel, t);
   render();
   return channel;
 }

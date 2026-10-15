@@ -7,3 +7,4 @@ Rules for this folder:
 - Emit the markup contract in `docs/spec.md` §7 so the shared CSS and tests apply.
 - Done when `tests/e2e/implementations.ts` lists `'vanilla'` and the suite passes unchanged.
 - Keep a divergence log in `docs/divergence-log.md` as you go.
+- Support all three locales from day one: read text from `../spec/i18n`, load one catalogue per page (`spec/i18n/load/<locale>`), and pass the shared e2e suite in every locale, including RTL.

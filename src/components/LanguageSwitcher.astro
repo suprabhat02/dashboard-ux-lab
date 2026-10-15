@@ -1,0 +1,45 @@
+---
+/**
+ * Language switcher: plain links to the same page in each locale (no JS needed,
+ * crawlable, works with hreflang). A small script carries the current query
+ * string across, so the lab keeps its scenario when the language changes.
+ */
+import { LOCALE_META, type Locale } from '../spec/i18n';
+import { alternatesFor } from '../site/i18n';
+
+interface Props {
+  locale: Locale;
+  label: string;
+}
+const { locale, label } = Astro.props;
+const alternates = alternatesFor(Astro.url.pathname);
+---
+
+<nav class="lang-switch" aria-label={label}>
+  <ul role="list">
+    {alternates.map((alt) => (
+      <li>
+        <a
+          href={alt.href}
+          hreflang={LOCALE_META[alt.locale].htmlLang}
+          lang={LOCALE_META[alt.locale].htmlLang}
+          aria-current={alt.locale === locale ? 'true' : undefined}
+          data-locale-link
+        >
+          <span class="lang-switch__full">{LOCALE_META[alt.locale].label}</span>
+          <span class="lang-switch__short" aria-hidden="true">
+            {LOCALE_META[alt.locale].short}
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<script>
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-locale-link]')) {
+    link.addEventListener('click', () => {
+      link.search = window.location.search;
+    });
+  }
+</script>

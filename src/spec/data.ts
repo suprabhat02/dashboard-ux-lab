@@ -195,7 +195,6 @@ function buildKpis(records: readonly AccountRecord[]): readonly Kpi[] {
   return [
     {
       id: 'mrr',
-      label: 'Monthly recurring revenue',
       value: mrrIn(records, LAST),
       previous: mrrIn(records, prev),
       format: 'currency',
@@ -203,7 +202,6 @@ function buildKpis(records: readonly AccountRecord[]): readonly Kpi[] {
     },
     {
       id: 'activeAccounts',
-      label: 'Active accounts',
       value: activeIn(records, LAST),
       previous: activeIn(records, prev),
       format: 'count',
@@ -211,7 +209,6 @@ function buildKpis(records: readonly AccountRecord[]): readonly Kpi[] {
     },
     {
       id: 'arpa',
-      label: 'Avg. revenue per account',
       value: arpaIn(records, LAST) ?? 0,
       previous: arpaIn(records, prev),
       format: 'currency',
@@ -219,7 +216,6 @@ function buildKpis(records: readonly AccountRecord[]): readonly Kpi[] {
     },
     {
       id: 'churnRate',
-      label: 'Monthly churn',
       value: churnRateIn(records, LAST) ?? 0,
       previous: churnRateIn(records, prev),
       format: 'percent',
@@ -269,3 +265,7 @@ export function buildDashboard(
 export function isEmptyDashboard(data: DashboardData): boolean {
   return data.kpis.length === 0 && data.revenue.length === 0;
 }
+
+/** The month the dashboard reports on, and the month deltas compare against. */
+export const CURRENT_MONTH: string = MONTHS[11];
+export const PREVIOUS_MONTH: string = MONTHS[10];

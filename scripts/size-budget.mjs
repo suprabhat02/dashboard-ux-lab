@@ -5,12 +5,19 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
-const BUDGETS_KB = {
+const LOCALE_PREFIXES = ['', 'es/', 'ar/'];
+const BASE_BUDGETS_KB = {
   // React 19 client runtime alone is ~64 KB gz; implementation + spec + chrome ~15 KB.
   'lab/react/index.html': 90,
   'lab/vanilla/index.html': 20,
   'index.html': 5,
 };
+// Every locale gets the same budget: a page must not grow because of other languages.
+const BUDGETS_KB = Object.fromEntries(
+  LOCALE_PREFIXES.flatMap((prefix) =>
+    Object.entries(BASE_BUDGETS_KB).map(([page, kb]) => [`${prefix}${page}`, kb]),
+  ),
+);
 
 function chunksFor(html) {
   const imports = new Set();

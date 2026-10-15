@@ -53,7 +53,6 @@ export type ValueFormat = 'currency' | 'count' | 'percent';
 
 export interface Kpi {
   readonly id: KpiId;
-  readonly label: string;
   readonly value: number;
   /** Same metric one month earlier, for the delta. `null` when there is no prior value. */
   readonly previous: number | null;

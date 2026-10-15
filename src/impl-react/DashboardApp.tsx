@@ -7,9 +7,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { COPY } from '../spec/copy';
-import { isEmptyDashboard, PLAN_FILTERS } from '../spec/data';
-import { PLAN_LABEL } from '../spec/format';
+import { CURRENT_MONTH, isEmptyDashboard, PLAN_FILTERS } from '../spec/data';
+import type { Locale } from '../spec/i18n';
 import { fetchDashboard, isAbortError } from '../spec/mock-api';
 import { createLabChannel, type LabChannel } from '../spec/protocol';
 import type {
@@ -35,6 +34,7 @@ import {
 import { useAnnouncer } from './hooks/useAnnouncer';
 import { useLabSettingsSync } from './hooks/useLabSettingsSync';
 import { useLoadingPhase } from './hooks/useLoadingPhase';
+import { I18nProvider, useI18n } from './i18n';
 import { dashboardReducer, initialState } from './state';
 
 type FocusIntent = 'title' | 'reload' | null;
@@ -69,13 +69,14 @@ function LoadedContent({
   readonly data: DashboardData;
   readonly settings: LabSettings;
 }) {
+  const { t } = useI18n();
   return (
     <div className="dash__grid">
       <KpiGrid kpis={data.kpis} />
-      <Widget title={COPY.widgets.revenue} meta="Last 12 months">
+      <Widget title={t.dashboard.revenue} meta={t.dashboard.revenueMeta}>
         <RevenueChart points={data.revenue} />
       </Widget>
-      <Widget title={COPY.widgets.accounts} meta={PLAN_LABEL[data.plan]}>
+      <Widget title={t.dashboard.accounts} meta={t.dashboard.plans[data.plan]}>
         {data.accounts.access === 'granted' ? (
           <AccountsTable accounts={data.accounts.value} plan={data.plan} />
         ) : (
@@ -90,13 +91,14 @@ function LoadedContent({
 }
 
 function SkeletonContent() {
+  const { t } = useI18n();
   return (
     <div className="dash__grid" aria-hidden="true">
       <KpiSkeletons />
-      <Widget title={COPY.widgets.revenue} meta="Last 12 months">
+      <Widget title={t.dashboard.revenue} meta={t.dashboard.revenueMeta}>
         <ChartSkeleton />
       </Widget>
-      <Widget title={COPY.widgets.accounts}>
+      <Widget title={t.dashboard.accounts}>
         <TableSkeleton />
       </Widget>
     </div>
@@ -104,10 +106,24 @@ function SkeletonContent() {
 }
 
 /**
- * React implementation root. Owns the request lifecycle; renders one of the
- * states defined in the spec; reports what it does over the lab channel.
+ * React implementation root. The locale comes from the page (one URL per
+ * locale), so it is a prop, not state.
  */
-export default function DashboardApp() {
+export default function DashboardApp({ locale }: { readonly locale: Locale }) {
+  return (
+    <I18nProvider locale={locale}>
+      <Dashboard />
+    </I18nProvider>
+  );
+}
+
+/**
+ * Owns the request lifecycle; renders one of the states defined in the spec;
+ * reports what it does over the lab channel.
+ */
+function Dashboard() {
+  const { t, fmt } = useI18n();
+  const copy = t.dashboard;
   const [channel] = useState<LabChannel>(() => createLabChannel(window));
   const [state, dispatch] = useReducer(dashboardReducer, undefined, () =>
     initialState(
@@ -205,23 +221,24 @@ export default function DashboardApp() {
     const { userInitiated, settings } = request;
     switch (view.status) {
       case 'success':
-        if (isEmptyDashboard(view.data)) announce(COPY.empty.announce(settings.plan));
-        else if (userInitiated) announce(COPY.loaded.announce(settings.plan));
+        if (isEmptyDashboard(view.data))
+          announce(copy.empty.announce(copy.plans[settings.plan]));
+        else if (userInitiated) announce(copy.loaded.announce(copy.plans[settings.plan]));
         break;
       case 'error':
-        announce(COPY.error.announce, view.attempt > 1 ? 'assertive' : 'polite');
+        announce(copy.error.announce, view.attempt > 1 ? 'assertive' : 'polite');
         break;
       case 'forbidden':
-        if (userInitiated) announce(COPY.forbidden.announce);
+        if (userInitiated) announce(copy.forbidden.announce);
         break;
       case 'cancelled':
-        announce(COPY.cancelled.announce);
+        announce(copy.cancelled.announce);
         break;
       case 'loading':
       case 'idle':
         break;
     }
-  }, [view, request, channel, announce]);
+  }, [view, request, channel, announce, copy]);
 
   const previousPhase = useRef<LoadingPhase | null>(null);
   useEffect(() => {
@@ -232,18 +249,18 @@ export default function DashboardApp() {
     if (!request.userInitiated && phase === 'skeleton') return;
     switch (phase) {
       case 'skeleton':
-        if (!retryingFrom) announce(COPY.loading.announce);
+        if (!retryingFrom) announce(copy.loading.announce);
         break;
       case 'slow':
-        announce(COPY.loading.slowTitle);
+        announce(copy.loading.slowTitle);
         break;
       case 'stalled':
-        announce(`${COPY.loading.stalledTitle} ${COPY.loading.stalledBody}`);
+        announce(`${copy.loading.stalledTitle} ${copy.loading.stalledBody}`);
         break;
       case 'pending':
         break;
     }
-  }, [phase, request.userInitiated, retryingFrom, channel, announce]);
+  }, [phase, request.userInitiated, retryingFrom, channel, announce, copy]);
 
   /* ── Focus management: only when the focused control disappeared ─────── */
 
@@ -261,18 +278,18 @@ export default function DashboardApp() {
       reloadRef.current.focus();
       channel.emit({
         type: 'focus',
-        target: `button “${COPY.cancelled.action}”`,
-        reason: 'Cancel button was removed',
+        target: copy.focus.button(copy.cancelled.action),
+        reason: copy.focus.cancelRemoved,
       });
     } else if (intent === 'title' && view.status !== 'error' && titleRef.current) {
       titleRef.current.focus();
       channel.emit({
         type: 'focus',
-        target: `heading “${COPY.dashboardTitle}”`,
-        reason: 'Action button was removed',
+        target: copy.focus.heading(copy.title),
+        reason: copy.focus.actionRemoved,
       });
     }
-  }, [view.status, channel]);
+  }, [view.status, channel, copy]);
 
   /* ── Render ──────────────────────────────────────────────────────────── */
 
@@ -339,15 +356,15 @@ export default function DashboardApp() {
     >
       <header className="dash__header">
         <div>
-          <p className="dash__company">{COPY.company}</p>
+          <p className="dash__company">{copy.company}</p>
           <h2 className="dash__title" id={titleId} ref={titleRef} tabIndex={-1}>
-            {COPY.dashboardTitle}
+            {copy.title}
           </h2>
-          <p className="dash__subtitle">{COPY.dashboardSubtitle}</p>
+          <p className="dash__subtitle">{copy.subtitle(fmt.monthLong(CURRENT_MONTH))}</p>
         </div>
         {view.status !== 'forbidden' && (
           <label className="dash__filter">
-            {COPY.filter.label}
+            {copy.filterLabel}
             <select
               className="select"
               value={request.settings.plan}
@@ -357,7 +374,7 @@ export default function DashboardApp() {
             >
               {PLAN_FILTERS.map((plan) => (
                 <option key={plan} value={plan}>
-                  {PLAN_LABEL[plan]}
+                  {copy.plans[plan]}
                 </option>
               ))}
             </select>

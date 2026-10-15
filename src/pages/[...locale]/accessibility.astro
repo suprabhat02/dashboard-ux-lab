@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { localePaths, pageI18n, type LocaleProps } from '../../site/i18n';
+import { LOCALE_META } from '../../spec/i18n';
+import '../../styles/dashboard.css';
+import '../../styles/pages.css';
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.props as LocaleProps;
+const { t } = pageI18n(locale);
+const page = t.accessibilityPage;
+const updated = new Intl.DateTimeFormat(LOCALE_META[locale].intl, {
+  dateStyle: 'long',
+  timeZone: 'UTC',
+}).format(new Date('2026-10-15T00:00:00Z'));
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.accessibilityTitle}
+  description={t.meta.accessibilityDescription}
+  section="accessibility"
+>
+  <div class="container doc">
+    <p class="eyebrow">{page.eyebrow}</p>
+    <h1 class="doc__title">{page.title}</h1>
+    <p class="doc__lede">{page.lede}</p>
+
+    <h2>{page.matrixTitle}</h2>
+    <div class="table-scroll" role="region" aria-labelledby="matrix-caption" tabindex="0">
+      <table class="table">
+        <caption id="matrix-caption">{page.caption(updated)}</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="table__plain-th">
+              {page.check}
+            </th>
+            <th scope="col" class="table__plain-th">
+              {page.status}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {page.rows.map((row) => (
+            <tr>
+              <th scope="row">{row.check}</th>
+              <td>{row.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>{page.knownTitle}</h2>
+    <ul>
+      {page.known.map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+
+    <h2>{page.reportTitle}</h2>
+    <p>{page.reportBody}</p>
+    <p>
+      <a href="https://github.com/suprabhat02/dashboard-ux-lab/issues/new">
+        {page.reportLink}
+      </a>
+    </p>
+  </div>
+</BaseLayout>

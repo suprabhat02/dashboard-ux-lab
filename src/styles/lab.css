@@ -52,7 +52,13 @@
     border-radius: var(--radius-control);
     color: var(--text-2);
     text-decoration: none;
-    min-inline-size: 9.5rem;
+    min-inline-size: min(9.5rem, 100%);
+  }
+  @media (max-width: 40rem) {
+    .impl-switch {
+      grid-auto-columns: minmax(0, 1fr);
+      inline-size: 100%;
+    }
   }
   .impl-switch__link:hover {
     background: var(--surface-strong);
@@ -171,7 +177,7 @@
   .preset:has(input:checked) {
     border-color: var(--accent-border);
     background: var(--accent-subtle);
-    box-shadow: inset 3px 0 0 var(--accent);
+    border-inline-start: 3px solid var(--accent);
   }
   .preset:has(input:focus-visible) {
     outline: 3px solid var(--accent);
@@ -455,7 +461,7 @@
     scrollbar-width: thin;
   }
   .log:empty::before {
-    content: 'Nothing yet. Change a scenario or replay the request.';
+    content: attr(data-empty);
     color: var(--text-3);
     font-family: var(--font-sans);
     font-size: var(--text-sm);

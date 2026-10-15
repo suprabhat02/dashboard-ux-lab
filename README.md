@@ -7,6 +7,9 @@ The same dashboard is being built twice, in **React** and in **framework-free
 TypeScript**, from one shared behaviour spec and verified by one shared test suite,
 so the two approaches can be compared on equal terms.
 
+Available in **English**, **Español** and **العربية** (right-to-left), with every
+feature shipped in all three — enforced by the build ([ADR 0004](docs/decisions/0004-internationalisation.md)).
+
 **Live (after first deploy):** https://lab.suprabhat-dev.com · **Author:** [Suprabhat Kumar](https://suprabhat-dev.com)
 
 ## Status
@@ -16,6 +19,7 @@ so the two approaches can be compared on equal terms.
 | Shared spec, mock API, copy, CSS      | ✅ Done                                              |
 | React implementation                  | ✅ Done                                              |
 | Playground: controls + inspector      | ✅ Done                                              |
+| English, Spanish, Arabic (RTL)        | ✅ Done (Spanish/Arabic await native review)         |
 | Scenario guides                       | ✅ Done                                              |
 | Unit + e2e + axe tests                | ✅ Passing locally (Chromium); CI covers all engines |
 | Vanilla implementation                | 🚧 Next milestone                                    |
@@ -32,7 +36,7 @@ so the two approaches can be compared on equal terms.
 
 ```
 src/
-  spec/           Framework-free contract: types, mock data + API, timings, copy,
+  spec/           Framework-free contract: types, mock data + API, timings, i18n catalogues,
                   formatting, chart geometry, table sorting, lab event protocol
   impl-react/     React 19 implementation (reducer + effect, no fetching library)
   impl-vanilla/   Framework-free implementation (next milestone)
@@ -50,6 +54,10 @@ Boundaries are enforced by ESLint (see [ADR 0002](docs/decisions/0002-implementa
 
 **Runtime dependencies:** React + React DOM (React page only) and two self-hosted
 variable fonts (Space Grotesk, Geist Mono). No UI, chart, state or CSS library.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md): every change ships in all three languages.
 
 ## Develop
 
