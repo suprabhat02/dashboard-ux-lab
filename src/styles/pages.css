@@ -47,6 +47,11 @@
   /* ── Illustrations (Storyset, inlined and theme-aware) ───── */
   .illustration {
     --illustration-accent: var(--accent);
+    /* Storyset neutrals, remapped per theme (light-dark follows color-scheme). */
+    --ill-ink: light-dark(#263238, oklch(0.9 0.02 235));
+    --ill-ink-2: light-dark(#455a64, oklch(0.74 0.035 235));
+    --ill-paper: light-dark(#ffffff, var(--bg-3));
+    --ill-mist: light-dark(#e6edf2, var(--surface-strong));
     margin: 0;
   }
   .illustration__svg {

@@ -20,9 +20,9 @@ Choose **Hidden** background when downloading, so the illustration sits on the p
 ## Adding one
 
 1. Open the illustration on storyset.com and choose the style.
-2. Set the colour to **`#00BAFF`** exactly. The build swaps that colour for the
-   theme's accent (`--illustration-accent`), so the illustration matches both the
-   light and dark themes.
+2. Any colour works. The build detects the illustration's key colour and swaps it
+   for the theme accent (`--illustration-accent`), maps Storyset's neutrals to theme
+   tokens and removes the background scenery, so it matches light and dark themes.
 3. Download as **SVG** and save it as `src/assets/illustrations/<slot>.svg`.
 4. `npm run build`. The image appears, sized by CSS, marked decorative
    (`aria-hidden`), and the footer adds the required “Illustrations by Storyset”

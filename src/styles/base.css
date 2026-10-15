@@ -100,7 +100,6 @@
     color: var(--text);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    scrollbar-gutter: stable;
     font-optical-sizing: auto;
   }
 
@@ -271,8 +270,22 @@
       margin-inline-start: auto;
     }
   }
+  @media (max-width: 30rem) {
+    .site-header__inner {
+      gap: var(--space-2);
+    }
+    .site-header__tools {
+      gap: 0;
+    }
+  }
   @media (max-width: 24rem) {
     .wordmark__text {
+      display: none;
+    }
+  }
+  /* Smallest phones: the chevrons go; the buttons still expose aria-expanded. */
+  @media (max-width: 21rem) {
+    .site-header .menu__chevron {
       display: none;
     }
   }

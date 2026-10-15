@@ -231,6 +231,33 @@ test.describe('internationalisation', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   });
 
+  test('@responsive the header stays on one row inside the page gutters', async ({
+    page,
+  }) => {
+    for (const width of [320, 390, 768]) {
+      await page.setViewportSize({ width, height: 640 });
+      for (const locale of LOCALES) {
+        await page.goto(localizePath(locale, '/lab/react/'));
+        const box = await page.evaluate(() => {
+          const inner = document
+            .querySelector('.site-header__inner')!
+            .getBoundingClientRect();
+          const header = document.querySelector('.site-header')!.getBoundingClientRect();
+          return {
+            start: inner.left,
+            end: document.documentElement.clientWidth - inner.right,
+            height: header.height,
+          };
+        });
+        expect(box.height, `${locale} @${width}`).toBeLessThan(72);
+        expect(Math.abs(box.start - box.end), `${locale} @${width}`).toBeLessThanOrEqual(
+          2,
+        );
+        expect(box.start, `${locale} @${width}`).toBeGreaterThanOrEqual(8);
+      }
+    }
+  });
+
   test('switching language keeps the page and the lab settings', async ({ page }) => {
     await page.goto(`${localizePath('en', '/lab/react/')}?scenario=empty`);
     await page.locator('[aria-controls="menu-language"]').click();
