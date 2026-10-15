@@ -9,7 +9,7 @@ import {
 } from '../../spec/table';
 import type { Account, PlanFilter } from '../../spec/types';
 import { useI18n } from '../i18n';
-import { SortIcon } from './Icons';
+import { Icon } from './Icons';
 
 /**
  * Sortable table following the APG "Sortable Table" example: native table
@@ -80,7 +80,7 @@ export function AccountsTable({
                   }}
                 >
                   {t.dashboard.columns[column.key]}
-                  <SortIcon className="sort-btn__icon" />
+                  <Icon name="sort" size={14} className="sort-btn__icon" />
                 </button>
               </th>
             ))}

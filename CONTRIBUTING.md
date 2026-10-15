@@ -38,7 +38,14 @@ It then exists at `/x/`, `/es/x/` and `/ar/x/`. Link with `href('/x/')` from `pa
 Client code imports catalogues only through `spec/i18n/load/<locale>`.
 `spec/i18n/all` is for pages and tests (ESLint enforces this).
 
-## 2. Both implementations follow one spec
+## 2. Visual language
+
+See [ADR 0005](docs/decisions/0005-visual-language.md): no gradients, pill badges,
+eyebrow labels or boxed icons; icons only from `src/spec/icons.ts` (Lucide);
+illustrations only from Storyset via `docs/illustrations.md`; the header stays on
+one row at every width and in every language (tested).
+
+## 3. Both implementations follow one spec
 
 - `src/spec/` holds data and pure functions only, framework-free.
 - `impl-react/` and `impl-vanilla/` import only from `spec/`, never from each other.

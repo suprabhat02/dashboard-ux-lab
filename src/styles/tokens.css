@@ -54,7 +54,6 @@
     --divider: color-mix(in oklch, var(--text) 8%, transparent);
     --border: color-mix(in oklch, var(--text) 7%, transparent);
     --line: var(--divider);
-    --gradient-brand: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
     --shadow: 0 24px 70px oklch(0 0 0 / 0.4);
     --shadow-sm: 0 2px 12px oklch(0 0 0 / 0.35);
     --shadow-card: 0 1px 1px oklch(0 0 0 / 0.2), 0 4px 24px oklch(0 0 0 / 0.3);

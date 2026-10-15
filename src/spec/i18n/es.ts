@@ -7,18 +7,18 @@ export const es: Messages = {
   meta: {
     siteName: 'Dashboard UX Lab',
     homeTitle:
-      'Dashboard UX Lab — cómo debe comportarse un dashboard cuando los datos no son perfectos',
+      'Dashboard UX Lab — cómo debe comportarse un panel cuando los datos no son perfectos',
     homeDescription:
-      'Un laboratorio interactivo de estados de dashboards: carga, respuestas lentas, resultados vacíos, fallos con reintento y acceso restringido. Hecho en React y en TypeScript sin framework a partir de una misma especificación.',
+      'Un laboratorio interactivo de estados de paneles: carga, respuestas lentas, resultados vacíos, fallos con reintento y acceso restringido. Hecho en React y en TypeScript sin framework a partir de una misma especificación.',
     labReactTitle: 'Implementación en React',
     labReactDescription:
-      'Prueba un dashboard en React en condiciones reales: carga, respuestas lentas, resultados vacíos, fallos con reintento y acceso restringido.',
+      'Prueba un panel en React en condiciones reales: carga, respuestas lentas, resultados vacíos, fallos con reintento y acceso restringido.',
     labVanillaTitle: 'Implementación vanilla (en curso)',
     labVanillaDescription:
       'La implementación sin framework del Dashboard UX Lab, construida a partir de la misma especificación que la versión en React.',
     scenariosTitle: 'Guías de escenarios',
     scenariosDescription:
-      'Cómo debe comportarse un dashboard en seis escenarios reales: cargado, cargando, lento, vacío, error con reintento y acceso restringido.',
+      'Cómo debe comportarse un panel en seis escenarios reales: cargado, cargando, lento, vacío, error con reintento y acceso restringido.',
     guideTitle: (scenario) => `${scenario}: guía del escenario`,
     accessibilityTitle: 'Accesibilidad',
     accessibilityDescription:
@@ -30,18 +30,19 @@ export const es: Messages = {
   nav: {
     skip: 'Saltar al contenido',
     homeLabel: 'Dashboard UX Lab, inicio',
-    by: 'por Suprabhat',
     main: 'Principal',
     lab: 'Laboratorio',
     scenarios: 'Escenarios',
     accessibility: 'Accesibilidad',
     github: 'GitHub',
     language: 'Idioma',
-    themeTo: (theme) =>
-      theme === 'dark' ? 'Cambiar al tema oscuro' : 'Cambiar al tema claro',
+    menu: 'Menú',
+    theme: 'Tema',
+    themes: { light: 'Claro', dark: 'Oscuro', system: 'Sistema' },
   },
 
   footer: {
+    illustrations: 'Ilustraciones de Storyset',
     builtBy: 'Creado por',
     note: 'Solo datos de prueba; sin rastreo.',
     source: 'Código en GitHub',
@@ -49,31 +50,143 @@ export const es: Messages = {
   },
 
   home: {
-    pill: 'Código abierto · React ahora, vanilla después',
-    titleLead: 'Los dashboards pasan la mitad de su vida',
-    titleAccent: 'sin cargar.',
-    lede: 'Un laboratorio interactivo de los estados que casi todas las demos omiten: cargando, lento, vacío, con error y sin acceso. Rompe el dashboard a propósito y observa qué cambió, qué oyó un lector de pantalla y adónde fue el foco.',
-    openLab: 'Abrir el laboratorio',
-    readGuides: 'Leer las guías de escenarios',
-    stripLabel: 'Los seis escenarios',
-    howEyebrow: 'Cómo funciona',
-    howTitle: 'Un espacio para experimentar, no una captura de pantalla',
-    features: [
-      {
-        title: 'Rómpelo a propósito',
-        body: 'Ajusta la latencia del servidor de 0 a 15 segundos, haz que la API falle una vez o siempre, cambia el rol del visitante. Cada combinación sigue las mismas reglas escritas.',
-      },
-      {
-        title: 'Mira lo que no se ve',
-        body: 'El inspector muestra cada transición de estado, cada anuncio de la región en vivo y cada movimiento programático del foco: el comportamiento que nunca aparece en una captura.',
-      },
-      {
-        title: 'Compara dos implementaciones con justicia',
-        body: 'La misma especificación, API simulada, textos y CSS, implementados por separado en React y en TypeScript sin framework, y verificados con una misma batería de pruebas. La versión vanilla es el siguiente hito.',
-      },
-    ],
-    rulesEyebrow: 'Las reglas',
-    rulesTitle: 'Seis decisiones que el laboratorio hace visibles',
+    hero: {
+      title: 'Diseña los estados del panel que nadie captura en pantalla',
+      lede: 'Un panel real pasa gran parte del tiempo cargando, esperando a servicios lentos, sin nada que mostrar, fallando u ocultando datos que la persona no tiene permiso para ver. Este laboratorio te permite provocar cada uno de esos estados a propósito y ver cómo debe responder un panel bien hecho: en pantalla, en el lector de pantalla y con el foco del teclado.',
+      openLab: 'Abrir el laboratorio',
+      readGuides: 'Leer las guías de escenarios',
+    },
+    problem: {
+      title: 'El problema',
+      intro:
+        'Los diseños y las demos de paneles casi siempre muestran el caso ideal: los datos llegan al instante, todos los filtros devuelven resultados y cualquier persona puede verlo todo. En producción, los demás estados son habituales, y es ahí donde se gana o se pierde la confianza.',
+      symptomsTitle: 'Con qué se encuentran realmente las personas usuarias',
+      symptoms: [
+        'Un indicador de carga que nunca cambia, sin ninguna pista de si algo sigue ocurriendo.',
+        'Contenido que salta de sitio a medida que cada widget termina de cargar en un momento distinto.',
+        'Un gráfico en blanco para un filtro que simplemente no encontró nada, sin ninguna explicación.',
+        '«Algo salió mal» ante un problema de permisos, con un botón Reintentar que nunca podrá servir.',
+        'Botones de reintento que envían la misma solicitud dos veces, y respuestas tardías que sobrescriben datos más recientes.',
+        'Personas que usan lector de pantalla y no oyen nada cuando cambian los datos, u oyen una cola de avisos desfasados.',
+        'El foco del teclado que salta al principio de la página cuando desaparece un botón.',
+      ],
+    },
+    traditional: {
+      title: 'Cómo se suele resolver',
+      intro:
+        'La mayoría de los equipos llega a estos estados del mismo modo, un atajo tras otro:',
+      steps: [
+        {
+          title: 'El diseño cubre el estado con datos',
+          body: 'Las maquetas muestran datos completos. Los estados de carga, vacío y error se dejan para después o se reducen a un indicador y un mensaje genéricos.',
+        },
+        {
+          title: 'Cada componente improvisa',
+          body: 'Cada widget añade su propio indicador y su propio texto de error, así que los tiempos, la redacción y la forma de recuperarse cambian dentro de la misma página.',
+        },
+        {
+          title: 'Las pruebas dependen de ralentizar la red a mano',
+          body: 'Alguien limita la red del navegador una vez, echa un vistazo y sigue adelante. El comportamiento nunca se documenta, así que se va desviando.',
+        },
+        {
+          title: 'La accesibilidad se revisa al final',
+          body: 'Los avisos y el comportamiento del foco se revisan en una auditoría tardía, cuando cambiarlos sale caro.',
+        },
+      ],
+      why: 'Ninguno de estos pasos es un error por sí solo. Juntos hacen que nadie se responsabilice de los estados que más ven las personas en condiciones reales.',
+    },
+    approach: {
+      title: 'Cómo ayuda este laboratorio',
+      intro:
+        'El laboratorio trata cada estado como un comportamiento de primera clase y especificado, y hace visibles las partes de ese comportamiento que normalmente no se ven.',
+      points: [
+        {
+          title: 'Una especificación de comportamiento por escrito',
+          body: 'Los tiempos (nada durante 300 ms, esqueletos hasta los 3 s, una explicación a los 3 s y Cancelar a los 8 s), los textos, los avisos y las reglas del foco están documentados, así que se pueden revisar y debatir.',
+        },
+        {
+          title: 'Escenarios reproducibles',
+          body: 'Cada combinación de latencia, fallo, rol y filtro es un enlace. Quien diseña, quien desarrolla y quien prueba pueden ver exactamente el mismo estado.',
+        },
+        {
+          title: 'Un inspector para lo que las capturas no muestran',
+          body: 'Una línea de tiempo en directo muestra cada solicitud y cada cambio de estado, cada mensaje enviado al lector de pantalla y cada movimiento programático del foco.',
+        },
+        {
+          title: 'Una especificación, dos implementaciones',
+          body: 'El mismo comportamiento se está construyendo en React y en TypeScript sin framework, y una misma batería de pruebas verifica ambas, así que la comparación es justa.',
+        },
+        {
+          title: 'Tres idiomas, incluido uno de derecha a izquierda',
+          body: 'Todo funciona en inglés, español y árabe, con diseños reflejados, formatos numéricos locales y reglas de plural propias.',
+        },
+      ],
+    },
+    comparison: {
+      title: 'En qué se diferencia de las herramientas que quizá ya usas',
+      intro:
+        'El laboratorio es una referencia, no un sustituto. Estas herramientas son excelentes en lo suyo; la tabla muestra hasta dónde llega cada una.',
+      caption:
+        'Herramientas habituales para construir y probar los estados de un panel, y qué cubre cada una',
+      columns: { tool: 'Herramienta', strength: 'Sirve para', gap: 'Lo que no te da' },
+      rows: [
+        {
+          tool: 'Herramientas para desarrolladores del navegador (limitación de red)',
+          strength: 'Ralentizar o bloquear solicitudes reales para ver qué ocurre.',
+          gap: 'Una definición de lo que debería ocurrir, estados repetibles que se puedan compartir o una vista de los avisos y del foco.',
+        },
+        {
+          tool: 'Mock Service Worker (MSW)',
+          strength:
+            'Simular respuestas, retrasos y errores de la API en el navegador y en las pruebas.',
+          gap: 'Criterios sobre cómo debe responder la interfaz a esas respuestas.',
+        },
+        {
+          tool: 'Storybook',
+          strength:
+            'Construir y documentar componentes de forma aislada, con una historia por estado.',
+          gap: 'Las transiciones entre estados a lo largo del tiempo, como una solicitud lenta que acaba en error y luego en un reintento.',
+        },
+        {
+          tool: 'Bibliotecas de componentes (esqueletos, estados vacíos y de resultado)',
+          strength: 'Piezas listas para cada estado.',
+          gap: 'Cuándo mostrar cada una, durante cuánto tiempo y qué anunciar.',
+        },
+        {
+          tool: 'Bibliotecas de obtención de datos (TanStack Query, SWR)',
+          strength:
+            'Estado de las solicitudes, caché, reintentos y cancelación en el código.',
+          gap: 'El diseño de cada estado tal como lo ve la persona usuaria.',
+        },
+        {
+          tool: 'Dashboard UX Lab',
+          strength:
+            'Una referencia especificada, inspeccionable y comprobable del comportamiento de cada estado, en tres idiomas.',
+          gap: 'Componentes para producción o una biblioteca que instalar. Úsalo junto con las herramientas anteriores.',
+        },
+      ],
+    },
+    audience: {
+      title: 'Para quién es',
+      groups: [
+        {
+          title: 'Desarrolladores front-end',
+          body: 'Ver cómo funcionan juntos la gestión de solicitudes, la cancelación, los avisos y la gestión del foco, y leer el código que hay detrás.',
+        },
+        {
+          title: 'Diseño y producto',
+          body: 'Usar los escenarios y las guías como lista de comprobación y como vocabulario común para especificar los estados más allá del caso ideal.',
+        },
+        {
+          title: 'Revisión de accesibilidad y pruebas',
+          body: 'Reproducir cualquier estado desde un enlace y ver exactamente qué se anunció y adónde fue el foco.',
+        },
+      ],
+    },
+    scenariosTitle: 'Seis escenarios para explorar',
+    scenariosIntro:
+      'Cada uno abre el laboratorio en ese estado. Todos los escenarios tienen además una guía escrita.',
+    rulesTitle: 'Seis reglas que sigue el laboratorio',
     rules: [
       {
         lead: 'Sin esqueleto en respuestas rápidas.',
@@ -81,38 +194,36 @@ export const es: Messages = {
       },
       {
         lead: 'Lento es tiempo, no un estado.',
-        body: 'El mensaje escala a los 3 s; cancelar aparece a los 8 s.',
+        body: 'El mensaje cambia a los 3 s; Cancelar aparece a los 8 s.',
       },
       {
         lead: 'Vacío es una respuesta, no un error.',
         body: 'Nombra el filtro y ofrece una salida.',
       },
       {
-        lead: 'Los fallos se explican y se recuperan.',
-        body: 'ID de solicitud, un solo reintento, sin envíos dobles.',
+        lead: 'Los fallos se explican y se pueden resolver.',
+        body: 'Un ID de solicitud, un solo reintento, sin envíos duplicados.',
       },
       {
-        lead: 'Prohibido no es fallido.',
-        body: 'Sin reintento para un 403; di quién puede dar acceso.',
+        lead: 'Sin permiso no es lo mismo que fallido.',
+        body: 'Sin reintento ante un 403; explica quién puede dar acceso.',
       },
       {
-        lead: 'Anunciar una vez, mover el foco poco.',
-        body: 'Solo cuando desaparece el control enfocado.',
+        lead: 'Anunciar una vez, mover el foco lo justo.',
+        body: 'Solo cuando desaparece el control que tenía el foco.',
       },
     ],
     statusTitle: 'Estado del proyecto',
     statusBody:
-      'La implementación en React, la especificación compartida y las pruebas automáticas están listas. Las pruebas manuales con lectores de pantalla y dispositivos reales están en curso y se publicarán en la página de accesibilidad, con los problemas conocidos.',
+      'La implementación en React, la especificación compartida y las pruebas automáticas ya están listas. Las pruebas manuales con lectores de pantalla y en dispositivos reales están en curso; los resultados y los problemas conocidos se publican en la página de accesibilidad.',
     statusA11yLink: 'Ver el estado de accesibilidad',
     statusFeedback:
       'Lo más útil que puedes aportar son comentarios sobre la especificación:',
-    statusIssueLink: 'abre una incidencia',
+    statusIssueLink: 'abre una incidencia en GitHub',
   },
 
   lab: {
-    eyebrow: 'Laboratorio',
-    titleLead: 'El dashboard,',
-    titleAccent: 'cuando algo sale mal',
+    title: 'El panel, cuando algo sale mal',
     lede: 'Elige un escenario o ajusta la solicitud. Después observa la línea de estados y lo que oiría un lector de pantalla.',
     implNav: 'Implementación',
     impl: {
@@ -151,18 +262,17 @@ export const es: Messages = {
       always: 'siempre falla',
     },
     customWhy:
-      'Combina los controles para encontrar casos límite: una solicitud lenta que luego falla, un lector con un filtro vacío, un reintento que sigue fallando. El dashboard sigue las mismas reglas en todas las combinaciones.',
+      'Combina los controles para encontrar casos límite: una solicitud lenta que luego falla, un lector con un filtro vacío, un reintento que sigue fallando. El panel sigue las mismas reglas en todas las combinaciones.',
     customA11y:
       'Mira la pestaña Lector de pantalla: cada cambio que provocas produce como mucho un anuncio por estado, nunca una cola.',
     vanilla: {
-      pill: 'Siguiente hito',
       title: 'La implementación vanilla está en construcción',
       body: 'Se escribirá a partir de la especificación, no portando el código de React, y deberá superar la misma batería de pruebas de extremo a extremo antes de publicarse aquí. Hasta entonces, los controles de esta página solo actualizan la URL.',
       openReact: 'Abrir la versión en React',
       readSpec: 'Leer la especificación',
     },
     noscript:
-      'Este dashboard interactivo necesita JavaScript. Las guías de escenarios funcionan sin él.',
+      'Este panel interactivo necesita JavaScript. Las guías de escenarios funcionan sin él.',
   },
 
   inspector: {
@@ -173,7 +283,7 @@ export const es: Messages = {
     hints: {
       timeline: 'Cada solicitud, transición de estado y fase de carga, en orden.',
       announce:
-        'Exactamente lo que el dashboard envió a sus regiones en vivo: lo que oye un usuario de lector de pantalla sin moverse.',
+        'Exactamente lo que el panel envió a sus regiones en vivo: lo que oye un usuario de lector de pantalla sin moverse.',
       focus:
         'Movimientos programáticos del foco (raros por diseño) y dónde está el foco del teclado ahora.',
     },
@@ -202,7 +312,7 @@ export const es: Messages = {
       requestAborted: (attempt) =>
         `solicitud n.º ${attempt} cancelada (sustituida o anulada)`,
       phase: (phase) => `fase de carga: ${phase}`,
-      filter: 'ajustes cambiados desde el propio dashboard',
+      filter: 'ajustes cambiados desde el propio panel',
     },
   },
 
@@ -261,7 +371,7 @@ export const es: Messages = {
       noData: 'No hay datos de ingresos.',
     },
     loading: {
-      announce: 'Cargando los datos del dashboard.',
+      announce: 'Cargando los datos del panel.',
       slowTitle: 'Esto está tardando más de lo habitual.',
       slowBody: 'El servidor sigue trabajando. No hace falta recargar.',
       stalledTitle: 'Seguimos esperando al servidor.',
@@ -270,7 +380,7 @@ export const es: Messages = {
     },
     cancelled: {
       title: 'Solicitud cancelada',
-      body: 'El dashboard no se ha actualizado. Vuelve a cargarlo cuando quieras.',
+      body: 'El panel no se ha actualizado. Vuelve a cargarlo cuando quieras.',
       action: 'Volver a cargar',
       announce: 'Solicitud cancelada.',
     },
@@ -281,18 +391,18 @@ export const es: Messages = {
       announce: (plan) => `No hay resultados para ${plan}.`,
     },
     error: {
-      title: 'No hemos podido cargar este dashboard',
+      title: 'No hemos podido cargar este panel',
       body: 'El servicio de analítica no está disponible temporalmente (503). Normalmente se resuelve volviendo a intentarlo.',
       requestIdLabel: 'ID de solicitud',
       retry: 'Reintentar',
       retrying: 'Reintentando…',
-      announce: 'El dashboard no se pudo cargar. Puedes reintentarlo.',
+      announce: 'El panel no se pudo cargar. Puedes reintentarlo.',
     },
     forbidden: {
-      title: 'No tienes acceso a este dashboard',
-      body: 'Los dashboards de ingresos están limitados a finanzas y dirección. Pide a un administrador del espacio de trabajo el rol de Lector o Analista.',
+      title: 'No tienes acceso a este panel',
+      body: 'Los paneles de ingresos están limitados a finanzas y dirección. Pide a un administrador del espacio de trabajo el rol de Lector o Analista.',
       requestIdLabel: 'Referencia',
-      announce: 'No tienes acceso a este dashboard.',
+      announce: 'No tienes acceso a este panel.',
     },
     widgetRestricted: {
       title: 'Los detalles de las cuentas están restringidos',
@@ -300,7 +410,7 @@ export const es: Messages = {
         `Tu rol de ${current} permite ver totales y tendencias. Los ingresos por cuenta requieren el rol de ${required}.`,
       currentRole: (role) => `Rol actual: ${role}`,
     },
-    loaded: { announce: (plan) => `Dashboard actualizado: ${plan}.` },
+    loaded: { announce: (plan) => `Panel actualizado: ${plan}.` },
     focus: {
       heading: (text) => `encabezado «${text}»`,
       button: (text) => `botón «${text}»`,
@@ -316,7 +426,7 @@ export const es: Messages = {
       what: 'Los datos llegan en unos 0,7 segundos. Los esqueletos aparecen a los 300 ms y se sustituyen por contenido exactamente del mismo tamaño.',
       why: 'El caso ideal es la referencia con la que se mide cualquier otro estado. Reservar las dimensiones finales mantiene el desplazamiento del diseño cerca de cero.',
       accessibility:
-        'La región del dashboard se marca como ocupada mientras carga. No se anuncia nada en la primera carga; un cambio que provocas se anuncia una vez al terminar.',
+        'La región del panel se marca como ocupada mientras carga. No se anuncia nada en la primera carga; un cambio que provocas se anuncia una vez al terminar.',
       guidance: [
         'Reserva el tamaño final de cada widget antes de que lleguen los datos, para que el contenido sustituya a los marcadores en lugar de empujar la página.',
         'Anuncia solo las actualizaciones que causó el usuario. Anunciar la carga inicial compite con el lector de pantalla mientras lee la página.',
@@ -334,7 +444,7 @@ export const es: Messages = {
       what: 'Durante los primeros 300 ms no cambia nada. Después, los esqueletos mantienen la forma de cada widget hasta que llegan los datos.',
       why: 'La mayoría de respuestas son rápidas. Retrasar el esqueleto evita un destello de marcadores en solicitudes rápidas y sigue dando información en las lentas.',
       accessibility:
-        '«Cargando los datos del dashboard» se anuncia una vez y la región lleva aria-busy para que los lectores de pantalla no lean contenido a medio dibujar.',
+        '«Cargando los datos del panel» se anuncia una vez y la región lleva aria-busy para que los lectores de pantalla no lean contenido a medio dibujar.',
       guidance: [
         'Retrasa los esqueletos unos 300 ms. Por debajo de eso, un marcador parece un fallo, no un progreso.',
         'Los esqueletos deben reflejar el diseño real (número de tarjetas, altura del gráfico, filas de la tabla), no un bloque genérico.',
@@ -365,7 +475,7 @@ export const es: Messages = {
     empty: {
       title: 'Resultados vacíos',
       summary: 'La solicitud funciona, pero nada coincide con el filtro.',
-      what: 'El plan Legacy no tiene cuentas. El dashboard explica por qué está vacío y ofrece un siguiente paso.',
+      what: 'El plan Legacy no tiene cuentas. El panel explica por qué está vacío y ofrece un siguiente paso.',
       why: 'Vacío es una respuesta correcta, no un error. Debe decir qué se buscó, por qué no hubo coincidencias y cómo llegar a datos útiles.',
       accessibility:
         'El mensaje de vacío se anuncia una vez y la acción de recuperación es un botón normal, accesible justo después del filtro.',
@@ -382,10 +492,10 @@ export const es: Messages = {
     error: {
       title: 'Error con reintento',
       summary: 'La primera solicitud falla con un 503. Reintentar lo resuelve.',
-      what: 'El servidor responde con un fallo temporal. El dashboard lo explica con lenguaje claro, muestra un ID de solicitud y ofrece reintentar.',
+      what: 'El servidor responde con un fallo temporal. El panel lo explica con lenguaje claro, muestra un ID de solicitud y ofrece reintentar.',
       why: 'Los fallos temporales son habituales y suelen recuperarse. Un mensaje claro y una única acción evidente resuelven la mayoría de sesiones sin soporte.',
       accessibility:
-        'El fallo se anuncia. Mientras se reintenta, el foco se queda en el botón Reintentar; cuando funciona y el botón desaparece, el foco pasa al encabezado del dashboard para no perderse nunca.',
+        'El fallo se anuncia. Mientras se reintenta, el foco se queda en el botón Reintentar; cuando funciona y el botón desaparece, el foco pasa al encabezado del panel para no perderse nunca.',
       guidance: [
         'Di qué falló y qué puede hacer el usuario, no solo un código de estado.',
         'Muestra un ID de solicitud que se pueda dar a soporte.',
@@ -399,8 +509,8 @@ export const es: Messages = {
     },
     restricted: {
       title: 'Acceso restringido',
-      summary: 'El visitante no tiene acceso a este dashboard.',
-      what: 'El servidor responde con un 403. En lugar de un error, el dashboard explica quién puede dar acceso. No hay botón de reintentar, porque reintentar no ayuda.',
+      summary: 'El visitante no tiene acceso a este panel.',
+      what: 'El servidor responde con un 403. En lugar de un error, el panel explica quién puede dar acceso. No hay botón de reintentar, porque reintentar no ayuda.',
       why: 'Los problemas de permisos no son fallos. Tratarlos como errores invita a reintentos inútiles; explicar cómo obtener acceso los resuelve. Prueba el rol «Lector» para ver un único widget restringido.',
       accessibility:
         'La restricción se anuncia una vez y la explicación es texto normal, no una alerta. Los encabezados se mantienen para que la estructura de la página siga siendo navegable.',
@@ -417,7 +527,6 @@ export const es: Messages = {
   },
 
   guides: {
-    eyebrow: 'Guías',
     title: 'Guías de escenarios',
     lede: 'Cada guía explica un estado: qué debe ocurrir, por qué, cómo se anuncia y qué errores pretende sacar a la luz. Cada guía enlaza con el laboratorio con ese escenario ya seleccionado.',
     breadcrumb: 'Ruta de navegación',
@@ -441,7 +550,6 @@ export const es: Messages = {
   },
 
   accessibilityPage: {
-    eyebrow: 'Estado de las pruebas',
     title: 'Accesibilidad',
     lede: 'Esta página dice qué se ha probado y cómo. Las comprobaciones automáticas solo detectan una parte de lo que importa, así que aquí nada se califica de «accesible» hasta haberlo probado con tecnologías de apoyo reales.',
     matrixTitle: 'Matriz de pruebas',

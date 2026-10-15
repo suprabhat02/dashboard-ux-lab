@@ -15,6 +15,7 @@ import { DEFAULT_SETTINGS, SCENARIOS } from '../spec/scenarios';
 import { TIMING } from '../spec/timing';
 import type { FailureMode, ImplementationId, Role } from '../spec/types';
 import { pageI18n } from '../site/i18n';
+import Icon from './Icon.astro';
 import LabAr from './lab-scripts/LabAr.astro';
 import LabEn from './lab-scripts/LabEn.astro';
 import LabEs from './lab-scripts/LabEs.astro';
@@ -39,10 +40,7 @@ const seconds = (ms: number) => fmt.integer(ms / 1000);
 <div class="lab container">
   <div class="lab__intro">
     <div>
-      <p class="eyebrow">{t.lab.eyebrow}</p>
-      <h1 class="lab__title">
-        {t.lab.titleLead} <span class="lab__title-accent">{t.lab.titleAccent}</span>
-      </h1>
+      <h1 class="lab__title">{t.lab.title}</h1>
       <p class="lab__lede">{t.lab.lede}</p>
     </div>
 
@@ -115,7 +113,7 @@ const seconds = (ms: number) => fmt.integer(ms / 1000);
             <details class="tune" open>
               <summary class="tune__summary">
                 {t.lab.tune}{' '}
-                <span class="pill pill--muted" data-custom-badge hidden>
+                <span class="tune__custom" data-custom-badge hidden>
                   {t.lab.custom}
                 </span>
               </summary>
@@ -191,20 +189,7 @@ const seconds = (ms: number) => fmt.integer(ms / 1000);
 
             <div class="controls__actions">
               <button class="btn btn--primary" type="button" data-replay>
-                <svg
-                  class="icon-flip"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  aria-hidden="true"
-                >
-                  <path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"></path>
-                  <path d="M21 3v5h-5"></path>
-                </svg>
+                <Icon name="retry" size={16} />
                 {t.lab.replay}
               </button>
               <button class="btn" type="button" data-copy-link>

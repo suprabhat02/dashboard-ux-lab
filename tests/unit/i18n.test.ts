@@ -32,6 +32,10 @@ const SAME_IN_ALL_LOCALES = new Set([
   'notFound.eyebrow',
   'lab.impl.react.label',
   'lab.impl.react.note',
+  // Product names in the comparison table (MSW, Storybook, this project)
+  'home.comparison.rows[1].tool',
+  'home.comparison.rows[2].tool',
+  'home.comparison.rows[5].tool',
   // Assistive technology + browser product names
   'accessibilityPage.rows[2].check',
   'accessibilityPage.rows[3].check',

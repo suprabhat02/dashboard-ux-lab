@@ -1,14 +1,7 @@
 import type { Ref } from 'react';
 import type { DashboardError, PlanFilter, Role } from '../../spec/types';
 import { useI18n } from '../i18n';
-import {
-  AlertIcon,
-  ClockIcon,
-  LockIcon,
-  RefreshIcon,
-  SearchIcon,
-  StopIcon,
-} from './Icons';
+import { Icon } from './Icons';
 
 /*
  * Each state is a distinct component with distinct copy and actions. They are
@@ -36,7 +29,7 @@ export function ErrorState({
   return (
     <div className="state state--error" data-state="error">
       <span className="state__icon">
-        <AlertIcon />
+        <Icon name="error" size={28} />
       </span>
       <h3 className="state__title">{t.dashboard.error.title}</h3>
       <p className="state__body">{t.dashboard.error.body}</p>
@@ -54,7 +47,7 @@ export function ErrorState({
             if (!retrying) onRetry();
           }}
         >
-          <RefreshIcon size={16} className="icon-flip" />
+          <Icon name="retry" size={16} />
           {retrying ? t.dashboard.error.retrying : t.dashboard.error.retry}
         </button>
       </div>
@@ -67,7 +60,7 @@ export function ForbiddenState({ error }: { readonly error: DashboardError }) {
   return (
     <div className="state state--forbidden" data-state="forbidden">
       <span className="state__icon">
-        <LockIcon />
+        <Icon name="forbidden" size={28} />
       </span>
       <h3 className="state__title">{t.dashboard.forbidden.title}</h3>
       <p className="state__body">{t.dashboard.forbidden.body}</p>
@@ -89,7 +82,7 @@ export function EmptyState({
   return (
     <div className="state state--empty" data-state="empty">
       <span className="state__icon">
-        <SearchIcon />
+        <Icon name="empty" size={28} />
       </span>
       <h3 className="state__title">{t.dashboard.empty.title(t.dashboard.plans[plan])}</h3>
       <p className="state__body">{t.dashboard.empty.body}</p>
@@ -113,7 +106,7 @@ export function CancelledState({
   return (
     <div className="state state--cancelled" data-state="cancelled">
       <span className="state__icon">
-        <StopIcon />
+        <Icon name="cancel" size={28} />
       </span>
       <h3 className="state__title">{t.dashboard.cancelled.title}</h3>
       <p className="state__body">{t.dashboard.cancelled.body}</p>
@@ -124,7 +117,7 @@ export function CancelledState({
           className="btn btn--primary"
           onClick={onReload}
         >
-          <RefreshIcon size={16} className="icon-flip" />
+          <Icon name="retry" size={16} />
           {t.dashboard.cancelled.action}
         </button>
       </div>
@@ -144,13 +137,13 @@ export function RestrictedWidget({
   return (
     <div className="restricted" data-state="widget-restricted">
       <p className="restricted__title">
-        <LockIcon size={18} />
+        <Icon name="restricted" size={18} />
         {t.dashboard.widgetRestricted.title}
       </p>
       <p className="restricted__body">
         {t.dashboard.widgetRestricted.body(roles[role], roles[requiredRole])}
       </p>
-      <p className="pill pill--muted">
+      <p className="restricted__role">
         {t.dashboard.widgetRestricted.currentRole(roles[role])}
       </p>
     </div>
@@ -168,14 +161,14 @@ export function SlowNotice({
   const copy = t.dashboard.loading;
   return (
     <div className="notice" data-state={stalled ? 'stalled' : 'slow'}>
-      <ClockIcon className="notice__icon" />
+      <Icon name="slow" className="notice__icon" />
       <div className="notice__text">
         <p className="notice__title">{stalled ? copy.stalledTitle : copy.slowTitle}</p>
         <p className="notice__body">{stalled ? copy.stalledBody : copy.slowBody}</p>
       </div>
       {stalled && (
         <button type="button" className="btn btn--sm" onClick={onCancel}>
-          <StopIcon size={14} />
+          <Icon name="cancel" size={14} />
           {copy.cancel}
         </button>
       )}

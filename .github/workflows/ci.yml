@@ -25,6 +25,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
+      - name: Visual rules (no gradients)
+        run: node scripts/check-visual-rules.mjs
       - run: npm test
       - run: npm run build
       - name: Every page exists in every locale

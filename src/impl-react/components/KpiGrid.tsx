@@ -1,6 +1,7 @@
 import { PREVIOUS_MONTH } from '../../spec/data';
 import type { Kpi } from '../../spec/types';
 import { useI18n } from '../i18n';
+import { Icon } from './Icons';
 
 function KpiCard({ kpi }: { readonly kpi: Kpi }) {
   const { t, fmt } = useI18n();
@@ -11,6 +12,7 @@ function KpiCard({ kpi }: { readonly kpi: Kpi }) {
       <p className="kpi__value">{fmt.value(kpi.value, kpi.format)}</p>
       {delta && (
         <p className="kpi__delta" data-tone={delta.tone}>
+          <Icon name={delta.direction} size={14} />
           <span aria-hidden="true">{delta.label}</span>
           <span className="sr-only">{delta.description}</span>
         </p>

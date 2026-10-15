@@ -50,18 +50,19 @@ export const en = {
   nav: {
     skip: 'Skip to content',
     homeLabel: 'Dashboard UX Lab, home',
-    by: 'by Suprabhat',
     main: 'Main',
     lab: 'Lab',
     scenarios: 'Scenarios',
     accessibility: 'Accessibility',
     github: 'GitHub',
     language: 'Language',
-    themeTo: (theme: 'dark' | 'light'): string =>
-      theme === 'dark' ? 'Switch to dark theme' : 'Switch to light theme',
+    menu: 'Menu',
+    theme: 'Theme',
+    themes: { light: 'Light', dark: 'Dark', system: 'System' },
   },
 
   footer: {
+    illustrations: 'Illustrations by Storyset',
     builtBy: 'Built by',
     note: 'Mock data only; no tracking.',
     source: 'Source on GitHub',
@@ -69,39 +70,149 @@ export const en = {
   },
 
   home: {
-    pill: 'Open source · React now, vanilla next',
-    titleLead: 'Dashboards spend half their life',
-    titleAccent: 'not loaded.',
-    lede: 'An interactive lab for the states most demos skip: loading, slow, empty, failed and forbidden. Break the dashboard on purpose, then see exactly what changed, what a screen reader heard and where focus went.',
-    openLab: 'Open the lab',
-    readGuides: 'Read the scenario guides',
-    stripLabel: 'The six scenarios',
-    howEyebrow: 'How it works',
-    howTitle: 'A playground, not a screenshot',
-    features: [
-      {
-        title: 'Break it on purpose',
-        body: 'Drag server latency from 0 to 15 seconds, make the API fail once or forever, switch the visitor’s role. Every combination follows the same written rules.',
-      },
-      {
-        title: 'See the invisible parts',
-        body: 'The inspector shows each state transition, every live-region announcement and every programmatic focus move: the behaviour that never appears in screenshots.',
-      },
-      {
-        title: 'Compare two builds fairly',
-        body: 'The same spec, mock API, copy and CSS, implemented separately in React and in framework-free TypeScript, checked by one shared test suite. The vanilla build is the next milestone.',
-      },
-    ],
-    rulesEyebrow: 'The rules',
-    rulesTitle: 'Six decisions the lab makes visible',
+    hero: {
+      title: 'Design the dashboard states nobody screenshots',
+      lede: 'Real dashboards spend much of their time loading, waiting on slow services, showing nothing, failing or hiding data a viewer isn’t allowed to see. This lab lets you trigger each of those states on purpose and see exactly how a well-built dashboard should respond: on screen, to a screen reader and to keyboard focus.',
+      openLab: 'Open the lab',
+      readGuides: 'Read the scenario guides',
+    },
+    problem: {
+      title: 'The problem',
+      intro:
+        'Dashboard designs and demos almost always show the happy path: data arrives instantly, every filter returns results and every viewer may see everything. In production, the other states are common, and they are where trust is won or lost.',
+      symptomsTitle: 'What users actually run into',
+      symptoms: [
+        'A spinner that never changes, with no sign of whether anything is still happening.',
+        'Content that jumps around as each widget finishes loading at a different time.',
+        'A blank chart for a filter that simply matched nothing, with no explanation.',
+        '“Something went wrong” for a permissions problem, with a Retry button that can never help.',
+        'Retry buttons that send the same request twice, and late responses that overwrite newer data.',
+        'Screen reader users who hear nothing when data changes, or hear a queue of stale announcements.',
+        'Keyboard focus that jumps to the top of the page when a button disappears.',
+      ],
+    },
+    traditional: {
+      title: 'How it is usually handled',
+      intro: 'Most teams reach these states the same way, one shortcut at a time:',
+      steps: [
+        {
+          title: 'The design covers the loaded state',
+          body: 'Mock-ups show full data. Loading, empty and error states are left for later, or reduced to a single generic spinner and message.',
+        },
+        {
+          title: 'Each component improvises',
+          body: 'Every widget adds its own spinner and error text, so timing, wording and recovery differ across the same page.',
+        },
+        {
+          title: 'Testing relies on slowing the network by hand',
+          body: 'Someone throttles the browser’s network once, glances at the result and moves on. The behaviour is never written down, so it drifts.',
+        },
+        {
+          title: 'Accessibility is checked at the end',
+          body: 'Announcements and focus behaviour are reviewed in a late audit, when changing them is expensive.',
+        },
+      ],
+      why: 'None of these steps is wrong on its own. Together, they mean nobody owns the states users see most often under real conditions.',
+    },
+    approach: {
+      title: 'How this lab helps',
+      intro:
+        'The lab treats every state as a first-class, specified behaviour, and makes the invisible parts of that behaviour visible.',
+      points: [
+        {
+          title: 'A written behaviour specification',
+          body: 'Timings (nothing for 300 ms, skeletons until 3 s, an explanation at 3 s, Cancel at 8 s), copy, announcements and focus rules are documented, so they can be reviewed and argued with.',
+        },
+        {
+          title: 'Reproducible scenarios',
+          body: 'Every combination of latency, failure, role and filter is a link. A designer, developer and tester can all look at exactly the same state.',
+        },
+        {
+          title: 'An inspector for what screenshots miss',
+          body: 'A live timeline shows each request and state change, every message sent to screen readers and every programmatic focus move.',
+        },
+        {
+          title: 'One specification, two implementations',
+          body: 'The same behaviour is being built in React and in plain TypeScript, and one shared test suite checks both, so the comparison is fair.',
+        },
+        {
+          title: 'Three languages, including right-to-left',
+          body: 'Everything works in English, Spanish and Arabic, including mirrored layouts, local number formats and plural rules.',
+        },
+      ],
+    },
+    comparison: {
+      title: 'How it compares with tools you may already use',
+      intro:
+        'The lab is a reference, not a replacement. These tools are excellent at what they do; the table shows where each one stops.',
+      caption:
+        'Common tools for building and testing dashboard states, and what each covers',
+      columns: { tool: 'Tool', strength: 'Good for', gap: 'What it does not give you' },
+      rows: [
+        {
+          tool: 'Browser developer tools (network throttling)',
+          strength: 'Slowing or blocking real requests to see what happens.',
+          gap: 'A definition of what should happen, repeatable states you can share, or a view of announcements and focus.',
+        },
+        {
+          tool: 'Mock Service Worker (MSW)',
+          strength:
+            'Mocking API responses, delays and errors in the browser and in tests.',
+          gap: 'Guidance on how the interface should respond to those responses.',
+        },
+        {
+          tool: 'Storybook',
+          strength:
+            'Building and documenting components in isolation, one story per state.',
+          gap: 'Transitions between states over time, such as a slow request becoming an error and then a retry.',
+        },
+        {
+          tool: 'Component libraries (skeleton, empty and result components)',
+          strength: 'Ready-made building blocks for each state.',
+          gap: 'When to show which one, for how long, and what to announce.',
+        },
+        {
+          tool: 'Data-fetching libraries (TanStack Query, SWR)',
+          strength: 'Request status, caching, retries and cancellation in code.',
+          gap: 'The user-facing design of each status.',
+        },
+        {
+          tool: 'Dashboard UX Lab',
+          strength:
+            'A specified, inspectable, testable reference for the behaviour of each state, in three languages.',
+          gap: 'Production components or a library to install. Use it alongside the tools above.',
+        },
+      ],
+    },
+    audience: {
+      title: 'Who it is for',
+      groups: [
+        {
+          title: 'Front-end developers',
+          body: 'See request handling, cancellation, announcements and focus management working together, and read the code behind them.',
+        },
+        {
+          title: 'Designers and product managers',
+          body: 'Use the scenarios and guides as a checklist and a shared vocabulary for specifying the states beyond the happy path.',
+        },
+        {
+          title: 'Accessibility reviewers and testers',
+          body: 'Reproduce any state from a link and see exactly what was announced and where focus went.',
+        },
+      ],
+    },
+    scenariosTitle: 'Six scenarios to explore',
+    scenariosIntro:
+      'Each one opens the lab in that state. Every scenario also has a written guide.',
+    rulesTitle: 'Six rules the lab follows',
     rules: [
       {
         lead: 'No skeleton for fast responses.',
-        body: 'Placeholders appear only after 300ms.',
+        body: 'Placeholders appear only after 300 ms.',
       },
       {
         lead: 'Slow is time, not a state.',
-        body: 'The message escalates at 3s; cancel appears at 8s.',
+        body: 'The message changes at 3 s; Cancel appears at 8 s.',
       },
       {
         lead: 'Empty is an answer, not an error.',
@@ -109,11 +220,11 @@ export const en = {
       },
       {
         lead: 'Failures are explained and recoverable.',
-        body: 'Request ID, one Retry, no double submit.',
+        body: 'A request ID, one Retry, no double submission.',
       },
       {
         lead: 'Forbidden is not failed.',
-        body: 'No retry for a 403; say who can grant access.',
+        body: 'No Retry for a 403; explain who can grant access.',
       },
       {
         lead: 'Announce once, move focus rarely.',
@@ -122,16 +233,14 @@ export const en = {
     ],
     statusTitle: 'Where the project stands',
     statusBody:
-      'The React implementation, shared spec and automated tests are in place. Manual screen reader and real-device testing is in progress and will be published on the accessibility page, including known issues.',
+      'The React implementation, the shared specification and the automated tests are in place. Manual testing with screen readers and on real devices is in progress; results and known issues are published on the accessibility page.',
     statusA11yLink: 'Read the accessibility status',
-    statusFeedback: 'Feedback on the spec is the most useful thing you can give:',
-    statusIssueLink: 'open an issue',
+    statusFeedback: 'The most useful contribution is feedback on the specification:',
+    statusIssueLink: 'open an issue on GitHub',
   },
 
   lab: {
-    eyebrow: 'Playground',
-    titleLead: 'The dashboard,',
-    titleAccent: 'when things go wrong',
+    title: 'The dashboard, when things go wrong',
     lede: 'Pick a scenario or tune the request. Then watch the state timeline and what a screen reader would hear.',
     implNav: 'Implementation',
     impl: {
@@ -170,7 +279,6 @@ export const en = {
     customA11y:
       'Watch the Screen reader tab: every change you trigger produces at most one announcement per state, never a queue.',
     vanilla: {
-      pill: 'Next milestone',
       title: 'The vanilla implementation is being built',
       body: 'It will be written from the written spec, not ported from the React code, and must pass the same end-to-end test suite before it ships here. Until then, the controls on this page only update the URL.',
       openReact: 'Open the React version',
@@ -445,7 +553,6 @@ export const en = {
   } satisfies Record<ScenarioId, ScenarioCopy>,
 
   guides: {
-    eyebrow: 'Guides',
     title: 'Scenario guides',
     lede: 'Each guide explains one state: what should happen, why, how it is announced, and the mistakes it is designed to expose. Every guide links to the live lab with that scenario preselected.',
     breadcrumb: 'Breadcrumb',
@@ -469,7 +576,6 @@ export const en = {
   },
 
   accessibilityPage: {
-    eyebrow: 'Testing status',
     title: 'Accessibility',
     lede: 'This page says what has been tested and how. Automated checks catch only part of what matters, so nothing here is called “accessible” until it has been tested with real assistive technology.',
     matrixTitle: 'Testing matrix',

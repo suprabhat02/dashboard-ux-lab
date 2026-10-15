@@ -199,8 +199,41 @@ test.describe('internationalisation', () => {
     }
   });
 
+  test('@responsive the header stays on one row at 320px in every language', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    for (const locale of LOCALES) {
+      await page.goto(localizePath(locale, '/lab/react/'));
+      const header = await page.locator('.site-header__inner').boundingBox();
+      expect(header?.height, locale).toBeLessThanOrEqual(64);
+    }
+  });
+
+  test('header dropdowns: theme choice applies and Escape returns focus', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const trigger = page.locator('[aria-controls="menu-theme"]');
+    await trigger.click();
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await page.locator('[data-theme-option="dark"]').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('[data-theme-option="dark"]')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.keyboard.press('Escape');
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(trigger).toBeFocused();
+    // The choice survives navigation.
+    await page.goto('/scenarios/');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  });
+
   test('switching language keeps the page and the lab settings', async ({ page }) => {
     await page.goto(`${localizePath('en', '/lab/react/')}?scenario=empty`);
+    await page.locator('[aria-controls="menu-language"]').click();
     await page.locator('[data-locale-link][hreflang="ar"]').click();
     await expect(page).toHaveURL(/\/ar\/lab\/react\/\?scenario=empty$/);
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
