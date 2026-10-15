@@ -7,6 +7,7 @@
  */
 import {
   ArrowDown,
+  ArrowRight,
   ArrowUp,
   ChartColumnBig,
   Check,
@@ -24,6 +25,8 @@ import {
   Minus,
   Monitor,
   Moon,
+  Pause,
+  Play,
   RotateCw,
   SearchX,
   ServerCrash,
@@ -50,6 +53,9 @@ export const ICONS = {
   up: ArrowUp,
   down: ArrowDown,
   flat: Minus,
+  arrow: ArrowRight,
+  play: Play,
+  pause: Pause,
   // Scenario and state icons
   loaded: ChartColumnBig,
   loading: Hourglass,
@@ -66,4 +72,7 @@ export const ICONS = {
 export type IconName = keyof typeof ICONS;
 
 /** Icons that point in the reading direction and must mirror in right-to-left layouts. */
-export const DIRECTIONAL_ICONS: ReadonlySet<IconName> = new Set<IconName>(['retry']);
+export const DIRECTIONAL_ICONS: ReadonlySet<IconName> = new Set<IconName>([
+  'retry',
+  'arrow',
+]);

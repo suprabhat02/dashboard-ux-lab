@@ -1,0 +1,156 @@
+---
+/**
+ * Live preview of the six dashboard states (APG "tabbed carousel" pattern).
+ *
+ * - The miniature dashboard is decorative (aria-hidden): every state it shows is
+ *   described in words by the matching tab panel.
+ * - Rotation is opt-out (Pause control, WCAG 2.2.2), never starts under
+ *   prefers-reduced-motion, pauses while the widget has focus or the pointer,
+ *   and stops for good once the visitor picks a state.
+ * - Without JavaScript the first state and its description render as static
+ *   content and the controls are hidden.
+ */
+import Icon from '../Icon.astro';
+import { buildDashboard, CURRENT_MONTH } from '../../spec/data';
+import { getFormatter } from '../../spec/format';
+import { pageI18n } from '../../site/i18n';
+import { SCENARIOS } from '../../spec/scenarios';
+import type { Locale } from '../../spec/i18n';
+import SectionHead from './SectionHead.astro';
+
+interface Props {
+  locale: Locale;
+  index: number;
+}
+
+const { locale, index } = Astro.props;
+const { t, href } = pageI18n(locale);
+const demo = t.home.demo;
+const fmt = getFormatter(locale);
+const data = buildDashboard('all', 'analyst');
+const kpis = data.kpis.slice(0, 3);
+const peak = Math.max(...data.revenue.map((point) => point.mrr));
+const bars = data.revenue.map((point) => (point.mrr / peak).toFixed(3));
+const first = SCENARIOS[0]?.id ?? 'loaded';
+---
+
+<section
+  class="home-section demo"
+  aria-labelledby="demo-title"
+  data-demo
+  data-label-play={demo.play}
+  data-label-pause={demo.pause}
+>
+  <div class="container">
+    <SectionHead id="demo-title" index={index} title={demo.title} intro={demo.intro} />
+
+    <div class="demo__layout">
+      <div class="demo__frame reveal" data-demo-tilt>
+        <div class="mock" aria-hidden="true" data-demo-mock data-state={first}>
+          <div class="mock__bar">
+            <Icon name="logo" size={16} />
+            <span class="mock__company">{t.dashboard.company}</span>
+            <span class="mock__month">{fmt.monthLong(CURRENT_MONTH)}</span>
+          </div>
+          <div class="mock__body">
+            <div class="mock__kpis">
+              {kpis.map((kpi) => (
+                <div class="mock__kpi">
+                  <span class="mock__label">{t.dashboard.kpi[kpi.id]}</span>
+                  <span class="mock__value">
+                    <span class="mock__number">{fmt.value(kpi.value, kpi.format)}</span>
+                    <span class="mock__dash">—</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div class="mock__chart">
+              <div class="mock__bars">
+                {bars.map((height) => (
+                  <span class="mock__col" style={`--h: ${height}`} />
+                ))}
+              </div>
+              <p class="mock__notice" data-for="slow">
+                <Icon name="slow" size={16} />
+                <span>{t.scenarios.slow.title}</span>
+              </p>
+              {(['empty', 'error', 'restricted'] as const).map((state) => (
+                <div class="mock__overlay" data-for={state}>
+                  <Icon name={state} size={28} />
+                  <span class="mock__overlay-title">{t.scenarios[state].title}</span>
+                  {state === 'error' && (
+                    <span class="mock__fake-btn">
+                      <Icon name="retry" size={14} />
+                      {t.dashboard.error.retry}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo__side reveal">
+        <div class="demo__controls" data-demo-controls>
+          <div class="demo__tabs" role="tablist" aria-label={demo.controlsLabel}>
+            {SCENARIOS.map((scenario) => (
+              <button
+                class="demo__tab"
+                type="button"
+                role="tab"
+                id={`demo-tab-${scenario.id}`}
+                aria-controls={`demo-panel-${scenario.id}`}
+                aria-selected={scenario.id === first ? 'true' : 'false'}
+                tabindex={scenario.id === first ? 0 : -1}
+                data-state={scenario.id}
+              >
+                <Icon name={scenario.id} size={18} />
+                <span>{t.scenarios[scenario.id].title}</span>
+              </button>
+            ))}
+          </div>
+          <button
+            class="demo__toggle"
+            type="button"
+            data-demo-toggle
+            aria-label={demo.play}
+          >
+            <Icon name="pause" size={18} class="demo__icon-pause" />
+            <Icon name="play" size={18} class="demo__icon-play" />
+            <span class="demo__progress" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="demo__panels" data-demo-panels aria-live="polite">
+          {SCENARIOS.map((scenario) => (
+            <div
+              class="demo__panel"
+              role="tabpanel"
+              id={`demo-panel-${scenario.id}`}
+              aria-labelledby={`demo-tab-${scenario.id}`}
+              hidden={scenario.id !== first}
+            >
+              <p class="demo__caption">{demo.captions[scenario.id]}</p>
+              <a
+                class="link-arrow"
+                href={`${href('/lab/react/')}?scenario=${scenario.id}`}
+              >
+                {demo.openInLab}
+                <span class="sr-only">: {t.scenarios[scenario.id].title}</span>
+                <Icon name="arrow" size={18} />
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+  <noscript>
+    <style>
+      [data-demo-controls] {
+        display: none;
+      }
+    </style>
+  </noscript>
+</section>

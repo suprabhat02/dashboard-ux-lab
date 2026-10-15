@@ -25,6 +25,14 @@ distract from a project whose credibility depends on restraint and precision.
 - **Illustrations: Storyset only**, inlined as SVG and recoloured to the theme
   accent at build time (`docs/illustrations.md`), decorative (`aria-hidden`), with
   the required attribution in the footer.
+- **Motion is scroll-linked and optional** (home page, `src/styles/home.css`).
+  Reveals animate transform, blur and colour only — never opacity, so text is
+  always legible and contrast checks never see a half-faded frame. Scroll-driven
+  effects sit inside `@supports (animation-timeline: view())` and
+  `prefers-reduced-motion: no-preference`; without either, the page is static and
+  complete. The live state preview follows the APG tabbed-carousel pattern: a
+  Pause control (WCAG 2.2.2), no auto-rotation under reduced motion, a pause while
+  it has focus or the pointer, and announcements only when the visitor drives it.
 - **Header: always one row.** Language and theme are dropdowns (APG disclosure
   pattern); on narrow screens the section links move into a Menu dropdown.
 

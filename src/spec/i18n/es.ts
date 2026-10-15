@@ -183,6 +183,43 @@ export const es: Messages = {
         },
       ],
     },
+    demo: {
+      title: 'Un panel, seis estados, en directo',
+      intro:
+        'El mismo widget recorre todos los estados que especifica el laboratorio. Elige uno para fijarlo o deja que avance solo.',
+      controlsLabel: 'Estado de la vista previa',
+      play: 'Reproducir la vista previa',
+      pause: 'Pausar la vista previa',
+      openInLab: 'Abrir este estado en el laboratorio',
+      captions: {
+        loaded:
+          'Los datos llegan en menos de un segundo y el contenido sustituye a marcadores exactamente del mismo tamaño.',
+        loading:
+          'Durante los primeros 300 ms no cambia nada. Después, los esqueletos mantienen la forma de lo que va a llegar.',
+        slow: 'A los 3 segundos la interfaz lo dice, en lugar de girar en silencio.',
+        empty:
+          'Nada coincide con el filtro. El panel explica por qué y ofrece una salida.',
+        error:
+          'Un fallo temporal, explicado con palabras claras, con un ID de solicitud y un único Reintentar.',
+        restricted:
+          'Sin acceso no es un error: no hay Reintentar, solo quién puede dar acceso.',
+      },
+    },
+    statement:
+      'Un panel se juzga menos por cómo se ve con datos perfectos que por cómo se comporta cuando esos datos llegan tarde, faltan, fallan o no se pueden ver.',
+    stats: {
+      label: 'El laboratorio en cifras',
+      scenarios: 'escenarios, cada uno con su guía escrita',
+      languages: 'idiomas, incluido el árabe de derecha a izquierda',
+      implementations: 'implementaciones independientes de una misma especificación',
+      engines: 'motores de navegador probados en cada cambio',
+    },
+    cta: {
+      title: 'Rompe un panel a propósito',
+      body: 'Ralentízalo, haz que falle, quítale el acceso y observa qué hace una interfaz bien construida al respecto.',
+      primary: 'Abrir el laboratorio',
+      secondary: 'Leer la especificación en GitHub',
+    },
     scenariosTitle: 'Seis escenarios para explorar',
     scenariosIntro:
       'Cada uno abre el laboratorio en ese estado. Todos los escenarios tienen además una guía escrita.',

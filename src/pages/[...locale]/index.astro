@@ -1,19 +1,34 @@
 ---
 import Icon from '../../components/Icon.astro';
 import Illustration from '../../components/Illustration.astro';
+import SectionHead from '../../components/home/SectionHead.astro';
+import StateDemo from '../../components/home/StateDemo.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { localePaths, pageI18n, type LocaleProps } from '../../site/i18n';
+import { LOCALES } from '../../spec/i18n';
 import { SCENARIOS } from '../../spec/scenarios';
 import '../../styles/dashboard.css';
 import '../../styles/pages.css';
+import '../../styles/home.css';
 
 export const getStaticPaths = localePaths;
 
 const { locale } = Astro.props as LocaleProps;
 const { t, href } = pageI18n(locale);
 const h = t.home;
-const repoIssues = 'https://github.com/suprabhat02/dashboard-ux-lab/issues';
+const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
 const lastRow = h.comparison.rows.length - 1;
+
+/* Facts, not marketing: each number is derived from the code that it describes. */
+const IMPLEMENTATIONS = 2;
+const BROWSER_ENGINES = 3; // Chromium, Firefox, WebKit — see .github/workflows/ci.yml
+const stats = [
+  { value: SCENARIOS.length, label: h.stats.scenarios },
+  { value: LOCALES.length, label: h.stats.languages },
+  { value: IMPLEMENTATIONS, label: h.stats.implementations },
+  { value: BROWSER_ENGINES, label: h.stats.engines },
+];
+const statementWords = h.statement.split(' ');
 ---
 
 <BaseLayout
@@ -22,173 +37,248 @@ const lastRow = h.comparison.rows.length - 1;
   description={t.meta.homeDescription}
   section="home"
 >
-  <section class="hero container" aria-labelledby="hero-title">
-    <div class="hero__text">
-      <h1 class="hero__title" id="hero-title">
-        {h.hero.title}
-      </h1>
-      <p class="hero__lede">{h.hero.lede}</p>
-      <p class="hero__actions">
-        <a class="btn btn--primary btn--lg" href={href('/lab/react/')}>
-          {h.hero.openLab}
-        </a>
-        <a class="btn btn--lg" href={href('/scenarios/')}>
-          {h.hero.readGuides}
-        </a>
-      </p>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <h1 class="hero__title" id="hero-title">
+          {h.hero.title}
+        </h1>
+        <p class="hero__lede">{h.hero.lede}</p>
+        <p class="hero__actions">
+          <a class="btn btn--primary btn--xl" href={href('/lab/react/')}>
+            {h.hero.openLab}
+            <Icon name="arrow" size={20} />
+          </a>
+          <a class="btn btn--xl" href={href('/scenarios/')}>
+            {h.hero.readGuides}
+          </a>
+        </p>
+      </div>
+      <Illustration slot="hero" class="hero__art" />
     </div>
-    <Illustration slot="hero" class="hero__art" />
-  </section>
 
-  <section class="section container split" aria-labelledby="problem-title">
-    <div class="split__text">
-      <h2 class="section__title" id="problem-title">
-        {h.problem.title}
-      </h2>
-      <p class="section__intro">{h.problem.intro}</p>
-      <h3 class="section__subtitle">{h.problem.symptomsTitle}</h3>
-      <ul class="symptoms">
-        {h.problem.symptoms.map((item) => (
-          <li>{item}</li>
-        ))}
-      </ul>
-    </div>
-    <Illustration slot="problem" class="split__art" />
-  </section>
-
-  <section class="section container" aria-labelledby="traditional-title">
-    <h2 class="section__title" id="traditional-title">
-      {h.traditional.title}
-    </h2>
-    <p class="section__intro">{h.traditional.intro}</p>
-    <ol class="steps">
-      {h.traditional.steps.map((step) => (
-        <li class="steps__item">
-          <h3>{step.title}</h3>
-          <p>{step.body}</p>
-        </li>
-      ))}
-    </ol>
-    <p class="section__note">{h.traditional.why}</p>
-  </section>
-
-  <section
-    class="section container split split--reverse"
-    aria-labelledby="approach-title"
-  >
-    <div class="split__text">
-      <h2 class="section__title" id="approach-title">
-        {h.approach.title}
-      </h2>
-      <p class="section__intro">{h.approach.intro}</p>
-      <ul class="points">
-        {h.approach.points.map((point) => (
-          <li>
-            <h3>{point.title}</h3>
-            <p>{point.body}</p>
+    <div class="container">
+      <ul class="stats" aria-label={h.stats.label}>
+        {stats.map((stat) => (
+          <li class="stats__item">
+            <span class="stats__value">{stat.value}</span>
+            <span class="stats__label">{stat.label}</span>
           </li>
         ))}
       </ul>
     </div>
-    <Illustration slot="approach" class="split__art" />
   </section>
 
-  <section class="section container" aria-labelledby="comparison-title">
-    <h2 class="section__title" id="comparison-title">
-      {h.comparison.title}
-    </h2>
-    <p class="section__intro">{h.comparison.intro}</p>
-    <div
-      class="table-scroll comparison"
-      role="region"
-      aria-labelledby="comparison-caption"
-      tabindex="0"
-    >
-      <table class="table">
-        <caption id="comparison-caption">{h.comparison.caption}</caption>
-        <thead>
-          <tr>
-            <th scope="col" class="table__plain-th">
-              {h.comparison.columns.tool}
-            </th>
-            <th scope="col" class="table__plain-th">
-              {h.comparison.columns.strength}
-            </th>
-            <th scope="col" class="table__plain-th">
-              {h.comparison.columns.gap}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {h.comparison.rows.map((row, index) => (
-            <tr class:list={{ comparison__ours: index === lastRow }}>
-              <th scope="row">{row.tool}</th>
-              <td>{row.strength}</td>
-              <td>{row.gap}</td>
-            </tr>
+  <StateDemo locale={locale} index={1} />
+
+  <div class="home-section statement-wrap">
+    <p class="container statement">
+      {statementWords.map((word, i) => (
+        <>
+          <span class="statement__word">{word}</span>
+          {i < statementWords.length - 1 && ' '}
+        </>
+      ))}
+    </p>
+  </div>
+
+  <section class="home-section" aria-labelledby="problem-title">
+    <div class="container split">
+      <div class="split__text">
+        <SectionHead
+          id="problem-title"
+          index={2}
+          title={h.problem.title}
+          intro={h.problem.intro}
+        />
+        <h3 class="subhead reveal">{h.problem.symptomsTitle}</h3>
+        <ul class="symptoms">
+          {h.problem.symptoms.map((item) => (
+            <li class="reveal">
+              <Icon name="flat" size={18} class="symptoms__mark" />
+              <span>{item}</span>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      </div>
+      <Illustration slot="problem" class="split__art reveal" />
     </div>
   </section>
 
-  <section class="section container" aria-labelledby="audience-title">
-    <h2 class="section__title" id="audience-title">
-      {h.audience.title}
-    </h2>
-    <ul class="columns">
-      {h.audience.groups.map((group) => (
-        <li>
-          <h3>{group.title}</h3>
-          <p>{group.body}</p>
-        </li>
-      ))}
-    </ul>
+  <section class="home-section home-section--tint" aria-labelledby="traditional-title">
+    <div class="container">
+      <SectionHead
+        id="traditional-title"
+        index={3}
+        title={h.traditional.title}
+        intro={h.traditional.intro}
+      />
+      <ol class="timeline">
+        {h.traditional.steps.map((step) => (
+          <li class="timeline__item reveal">
+            <h3 class="timeline__title">{step.title}</h3>
+            <p>{step.body}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="callout reveal">{h.traditional.why}</p>
+    </div>
   </section>
 
-  <section class="section container" aria-labelledby="scenarios-title">
-    <h2 class="section__title" id="scenarios-title">
-      {h.scenariosTitle}
-    </h2>
-    <p class="section__intro">{h.scenariosIntro}</p>
-    <ul class="scenario-list">
-      {SCENARIOS.map((scenario) => (
-        <li>
-          <a
-            class="scenario-link"
-            href={`${href('/lab/react/')}?scenario=${scenario.id}`}
-            data-scenario={scenario.id}
-          >
-            <Icon name={scenario.id} size={22} class="scenario-link__icon" />
-            <span class="scenario-link__title">{t.scenarios[scenario.id].title}</span>
-            <span class="scenario-link__summary">{t.scenarios[scenario.id].summary}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
+  <section class="home-section" aria-labelledby="approach-title">
+    <div class="container split split--reverse">
+      <div class="split__text">
+        <SectionHead
+          id="approach-title"
+          index={4}
+          title={h.approach.title}
+          intro={h.approach.intro}
+        />
+        <ul class="points">
+          {h.approach.points.map((point) => (
+            <li class="points__item reveal">
+              <Icon name="check" size={20} class="points__mark" />
+              <div>
+                <h3>{point.title}</h3>
+                <p>{point.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <Illustration slot="approach" class="split__art reveal" />
+    </div>
   </section>
 
-  <section class="section container" aria-labelledby="rules-title">
-    <h2 class="section__title" id="rules-title">
-      {h.rulesTitle}
-    </h2>
-    <ol class="rules">
-      {h.rules.map((rule) => (
-        <li>
-          <strong>{rule.lead}</strong> {rule.body}
-        </li>
-      ))}
-    </ol>
+  <section class="home-section" aria-labelledby="comparison-title">
+    <div class="container">
+      <SectionHead
+        id="comparison-title"
+        index={5}
+        title={h.comparison.title}
+        intro={h.comparison.intro}
+      />
+      <div
+        class="table-scroll comparison reveal"
+        role="region"
+        aria-labelledby="comparison-caption"
+        tabindex="0"
+      >
+        <table class="table">
+          <caption id="comparison-caption">{h.comparison.caption}</caption>
+          <thead>
+            <tr>
+              <th scope="col" class="table__plain-th">
+                {h.comparison.columns.tool}
+              </th>
+              <th scope="col" class="table__plain-th">
+                {h.comparison.columns.strength}
+              </th>
+              <th scope="col" class="table__plain-th">
+                {h.comparison.columns.gap}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {h.comparison.rows.map((row, index) => (
+              <tr class:list={{ comparison__ours: index === lastRow }}>
+                <th scope="row">{row.tool}</th>
+                <td>{row.strength}</td>
+                <td>{row.gap}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </section>
 
-  <section class="section container" aria-labelledby="status-title">
-    <h2 class="section__title" id="status-title">
-      {h.statusTitle}
-    </h2>
-    <p class="section__intro">{h.statusBody}</p>
-    <p>
-      <a href={href('/accessibility/')}>{h.statusA11yLink}</a>. {h.statusFeedback}{' '}
-      <a href={repoIssues}>{h.statusIssueLink}</a>.
-    </p>
+  <section class="home-section home-section--tint" aria-labelledby="scenarios-title">
+    <div class="container">
+      <SectionHead
+        id="scenarios-title"
+        index={6}
+        title={h.scenariosTitle}
+        intro={h.scenariosIntro}
+      />
+      <ul class="tiles">
+        {SCENARIOS.map((scenario) => (
+          <li class="reveal">
+            <a
+              class="tile"
+              href={`${href('/lab/react/')}?scenario=${scenario.id}`}
+              data-scenario={scenario.id}
+            >
+              <Icon name={scenario.id} size={28} class="tile__icon" />
+              <span class="tile__title">{t.scenarios[scenario.id].title}</span>
+              <span class="tile__summary">{t.scenarios[scenario.id].summary}</span>
+              <Icon name="arrow" size={20} class="tile__arrow" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="rules-title">
+    <div class="container">
+      <SectionHead id="rules-title" index={7} title={h.rulesTitle} />
+      <ol class="rules">
+        {h.rules.map((rule) => (
+          <li class="rules__item reveal">
+            <h3 class="rules__lead">{rule.lead}</h3>
+            <p>{rule.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="home-section" aria-labelledby="audience-title">
+    <div class="container">
+      <SectionHead id="audience-title" index={8} title={h.audience.title} />
+      <ul class="columns">
+        {h.audience.groups.map((group) => (
+          <li class="reveal">
+            <h3>{group.title}</h3>
+            <p>{group.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="cta-title">
+    <div class="container cta__inner">
+      <h2 class="cta__title reveal" id="cta-title">
+        {h.cta.title}
+      </h2>
+      <p class="cta__body reveal">{h.cta.body}</p>
+      <p class="hero__actions reveal">
+        <a class="btn btn--primary btn--xl" href={href('/lab/react/')}>
+          {h.cta.primary}
+          <Icon name="arrow" size={20} />
+        </a>
+        <a class="btn btn--xl" href={repoUrl}>
+          {h.cta.secondary}
+        </a>
+      </p>
+      <div class="cta__status" aria-labelledby="status-title" role="group">
+        <h3 class="cta__status-title" id="status-title">
+          {h.statusTitle}
+        </h3>
+        <p>
+          {h.statusBody} <a href={href('/accessibility/')}>{h.statusA11yLink}</a>.{' '}
+          {h.statusFeedback} <a href={`${repoUrl}/issues`}>{h.statusIssueLink}</a>.
+        </p>
+      </div>
+    </div>
   </section>
 </BaseLayout>
+
+<script>
+  import { initHome } from '../../site/home';
+  initHome();
+</script>

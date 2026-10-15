@@ -201,6 +201,41 @@ export const en = {
         },
       ],
     },
+    demo: {
+      title: 'One dashboard, six states, live',
+      intro:
+        'The same widget cycles through every state this lab specifies. Choose a state to hold it, or let it play.',
+      controlsLabel: 'Preview state',
+      play: 'Play the preview',
+      pause: 'Pause the preview',
+      openInLab: 'Open this state in the lab',
+      captions: {
+        loaded:
+          'Data arrives in under a second, and content replaces placeholders of exactly the same size.',
+        loading:
+          'For the first 300 ms nothing changes. Then skeletons hold the shape of what is coming.',
+        slow: 'At 3 seconds the interface says so, instead of spinning in silence.',
+        empty: 'Nothing matched the filter. The dashboard says why and offers a way out.',
+        error:
+          'A temporary failure, explained in plain words, with a request ID and a single Retry.',
+        restricted: 'No access is not an error: no Retry, just who can grant access.',
+      },
+    },
+    statement:
+      'A dashboard is judged less by how it looks with perfect data than by how it behaves while that data is late, missing, failing or off-limits.',
+    stats: {
+      label: 'The lab in numbers',
+      scenarios: 'scenarios, each with a written guide',
+      languages: 'languages, including right-to-left Arabic',
+      implementations: 'independent implementations of one spec',
+      engines: 'browser engines tested on every change',
+    },
+    cta: {
+      title: 'Break a dashboard on purpose',
+      body: 'Slow it down, make it fail, take away access, and watch what a well-built interface does about it.',
+      primary: 'Open the lab',
+      secondary: 'Read the spec on GitHub',
+    },
     scenariosTitle: 'Six scenarios to explore',
     scenariosIntro:
       'Each one opens the lab in that state. Every scenario also has a written guide.',
