@@ -1,0 +1,358 @@
+---
+/**
+ * The playground chrome shared by both lab pages: scenario controls, the
+ * explanation panel and the inspector. The implementation renders into the
+ * default slot and never imports anything from here (see spec/protocol.ts).
+ *
+ * All controls are server-rendered native elements, so the page is readable and
+ * navigable before (or without) JavaScript; src/lab/controller.ts enhances them.
+ */
+import { PLAN_FILTERS } from '../spec/data';
+import { PLAN_LABEL } from '../spec/format';
+import { roleLabel } from '../spec/copy';
+import { DEFAULT_SETTINGS, getScenario, SCENARIOS } from '../spec/scenarios';
+import { TIMING } from '../spec/timing';
+import type { ImplementationId, Role } from '../spec/types';
+import '../styles/dashboard.css';
+import '../styles/lab.css';
+
+interface Props {
+  implementation: ImplementationId;
+}
+
+const { implementation } = Astro.props;
+const loaded = getScenario('loaded');
+const roles: readonly Role[] = ['analyst', 'viewer', 'none'];
+const implementations: readonly { id: ImplementationId; label: string; note: string }[] =
+  [
+    { id: 'react', label: 'React', note: 'React 19 · hooks + reducer' },
+    { id: 'vanilla', label: 'Vanilla', note: 'No framework · in progress' },
+  ];
+---
+
+<div class="lab container">
+  <div class="lab__intro">
+    <div>
+      <p class="eyebrow">Playground</p>
+      <h1 class="lab__title">
+        The dashboard, <span class="lab__title-accent">when things go wrong</span>
+      </h1>
+      <p class="lab__lede">
+        Pick a scenario or tune the request. Then watch the state timeline and what a
+        screen reader would hear.
+      </p>
+    </div>
+
+    <nav class="impl-switch" aria-label="Implementation">
+      {implementations.map((item) => (
+        <a
+          class="impl-switch__link"
+          href={`/lab/${item.id}/`}
+          data-impl-link={item.id}
+          aria-current={item.id === implementation ? 'page' : undefined}
+        >
+          <span class="impl-switch__label">{item.label}</span>
+          <span class="impl-switch__note">{item.note}</span>
+        </a>
+      ))}
+    </nav>
+  </div>
+
+  <div class="lab__grid">
+    <aside class="lab__rail" aria-label="Lab controls">
+      <button
+        class="btn lab__rail-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="lab-controls"
+        data-rail-toggle
+      >
+        <span>
+          Scenario: <strong data-current-scenario>{loaded.title}</strong>
+        </span>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="m6 9 6 6 6-6"></path>
+        </svg>
+      </button>
+
+      <div class="lab__rail-body" id="lab-controls" data-rail-body>
+        <section class="panel" aria-labelledby="controls-heading">
+          <h2 class="panel__title" id="controls-heading">
+            Scenario
+          </h2>
+          <form class="controls" data-controls novalidate>
+            <fieldset class="presets">
+              <legend class="sr-only">Preset scenarios</legend>
+              {SCENARIOS.map((scenario) => (
+                <label class="preset">
+                  <input
+                    type="radio"
+                    name="scenario"
+                    value={scenario.id}
+                    checked={scenario.id === 'loaded'}
+                  />
+                  <span class="preset__body">
+                    <span class="preset__title">{scenario.title}</span>
+                    <span class="preset__summary">{scenario.summary}</span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+
+            <details class="tune" open>
+              <summary class="tune__summary">
+                Tune the request{' '}
+                <span class="pill pill--muted" data-custom-badge hidden>
+                  Custom
+                </span>
+              </summary>
+              <div class="tune__body">
+                <div class="field">
+                  <div class="field__row">
+                    <label for="latency">Server latency</label>
+                    <output for="latency" class="mono field__value" data-latency-output>
+                      {DEFAULT_SETTINGS.latencyMs} ms
+                    </output>
+                  </div>
+                  <input
+                    class="range"
+                    id="latency"
+                    name="latency"
+                    type="range"
+                    min={TIMING.minLatencyMs}
+                    max={TIMING.maxLatencyMs}
+                    step="100"
+                    value={DEFAULT_SETTINGS.latencyMs}
+                    aria-describedby="latency-hint"
+                  />
+                  <p class="field__hint" id="latency-hint">
+                    Skeleton after {TIMING.skeletonDelayMs} ms · notice at{' '}
+                    {TIMING.slowAfterMs / 1000} s · cancel at{' '}
+                    {TIMING.stalledAfterMs / 1000} s
+                  </p>
+                </div>
+
+                <fieldset class="field segmented">
+                  <legend>Server failure</legend>
+                  <div class="segmented__options">
+                    {(['never', 'once', 'always'] as const).map((mode) => (
+                      <label class="segmented__option">
+                        <input
+                          type="radio"
+                          name="failure"
+                          value={mode}
+                          checked={mode === DEFAULT_SETTINGS.failure}
+                        />
+                        <span>
+                          {mode === 'never'
+                            ? 'Never'
+                            : mode === 'once'
+                              ? 'Fail once'
+                              : 'Always'}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <div class="field field--split">
+                  <label class="field__stack">
+                    <span>Visitor role</span>
+                    <select class="select" name="role">
+                      {roles.map((role) => (
+                        <option value={role} selected={role === DEFAULT_SETTINGS.role}>
+                          {roleLabel(role)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label class="field__stack">
+                    <span>Plan filter</span>
+                    <select class="select" name="plan">
+                      {PLAN_FILTERS.map((plan) => (
+                        <option value={plan} selected={plan === DEFAULT_SETTINGS.plan}>
+                          {PLAN_LABEL[plan]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              </div>
+            </details>
+
+            <div class="controls__actions">
+              <button class="btn btn--primary" type="button" data-replay>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"></path>
+                  <path d="M21 3v5h-5"></path>
+                </svg>
+                Replay request
+              </button>
+              <button class="btn" type="button" data-copy-link>
+                Copy link
+              </button>
+            </div>
+            <p class="sr-only" aria-live="polite" data-chrome-status></p>
+          </form>
+        </section>
+
+        <section class="panel explain" aria-labelledby="explain-heading" data-explain>
+          <h2 class="panel__title" id="explain-heading">
+            What you’re seeing
+          </h2>
+          <div class="explain__item">
+            <h3>What happens</h3>
+            <p data-explain-what>{loaded.explanation.what}</p>
+          </div>
+          <div class="explain__item">
+            <h3>Why</h3>
+            <p data-explain-why>{loaded.explanation.why}</p>
+          </div>
+          <div class="explain__item">
+            <h3>Accessibility</h3>
+            <p data-explain-a11y>{loaded.explanation.accessibility}</p>
+          </div>
+          <a class="explain__more" href="/scenarios/loaded/" data-explain-link>
+            Read the full “{loaded.title}” guide
+          </a>
+        </section>
+      </div>
+    </aside>
+
+    <div class="lab__stage">
+      <div class="stage">
+        <slot />
+      </div>
+
+      <section class="panel inspector" aria-labelledby="inspector-heading" data-inspector>
+        <div class="inspector__head">
+          <h2 class="panel__title" id="inspector-heading">
+            Inspector
+          </h2>
+          <div role="tablist" aria-label="Inspector views" class="tabs">
+            <button
+              role="tab"
+              type="button"
+              id="tab-timeline"
+              aria-controls="panel-timeline"
+              aria-selected="true"
+              class="tabs__tab"
+            >
+              State timeline{' '}
+              <span class="tabs__count" data-count="timeline">
+                0
+              </span>
+            </button>
+            <button
+              role="tab"
+              type="button"
+              id="tab-announce"
+              aria-controls="panel-announce"
+              aria-selected="false"
+              tabindex="-1"
+              class="tabs__tab"
+            >
+              Screen reader{' '}
+              <span class="tabs__count" data-count="announce">
+                0
+              </span>
+            </button>
+            <button
+              role="tab"
+              type="button"
+              id="tab-focus"
+              aria-controls="panel-focus"
+              aria-selected="false"
+              tabindex="-1"
+              class="tabs__tab"
+            >
+              Focus{' '}
+              <span class="tabs__count" data-count="focus">
+                0
+              </span>
+            </button>
+          </div>
+          <button
+            class="btn btn--ghost btn--sm inspector__clear"
+            type="button"
+            data-clear-log
+          >
+            Clear
+          </button>
+        </div>
+
+        <div
+          role="tabpanel"
+          id="panel-timeline"
+          aria-labelledby="tab-timeline"
+          tabindex="0"
+          class="inspector__panel"
+        >
+          <p class="inspector__hint">
+            Every request, state transition and loading phase, in order.
+          </p>
+          <div role="log" aria-live="off" aria-label="State timeline log">
+            <ol class="log" data-log="timeline"></ol>
+          </div>
+        </div>
+        <div
+          role="tabpanel"
+          id="panel-announce"
+          aria-labelledby="tab-announce"
+          tabindex="0"
+          class="inspector__panel"
+          hidden
+        >
+          <p class="inspector__hint">
+            Exactly what the dashboard sent to its live regions: what a screen reader user
+            hears without moving.
+          </p>
+          <div role="log" aria-live="off" aria-label="Announcements log">
+            <ol class="log" data-log="announce"></ol>
+          </div>
+        </div>
+        <div
+          role="tabpanel"
+          id="panel-focus"
+          aria-labelledby="tab-focus"
+          tabindex="0"
+          class="inspector__panel"
+          hidden
+        >
+          <p class="inspector__hint">
+            Programmatic focus moves (rare by design) and where keyboard focus is right
+            now.
+          </p>
+          <p class="focus-now">
+            Focused now: <code data-focus-now>—</code>
+          </p>
+          <div role="log" aria-live="off" aria-label="Focus moves log">
+            <ol class="log" data-log="focus"></ol>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initLab } from '../lab/controller';
+  initLab();
+</script>

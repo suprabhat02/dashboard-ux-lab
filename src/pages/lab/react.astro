@@ -1,0 +1,18 @@
+---
+import DashFallback from '../../components/DashFallback.astro';
+import LabShell from '../../components/LabShell.astro';
+import DashboardApp from '../../impl-react/DashboardApp';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="React implementation"
+  description="Play with a React dashboard under real-world conditions: loading, slow responses, empty results, failures with retry and restricted access."
+  section="lab"
+>
+  <LabShell implementation="react">
+    <DashboardApp client:only="react">
+      <DashFallback slot="fallback" />
+    </DashboardApp>
+  </LabShell>
+</BaseLayout>

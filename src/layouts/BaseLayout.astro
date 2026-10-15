@@ -1,0 +1,121 @@
+---
+import spaceGroteskLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import '@fontsource-variable/space-grotesk/wght.css';
+import '@fontsource-variable/geist-mono/wght.css';
+import '../styles/base.css';
+import '../styles/tokens.css';
+import ThemeScript from '../components/ThemeScript.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+
+interface Props {
+  /** Page title, without the site suffix. */
+  title: string;
+  description: string;
+  /** Section for aria-current in the nav. */
+  section?: 'home' | 'lab' | 'scenarios' | 'accessibility';
+  noindex?: boolean;
+}
+
+const { title, description, section, noindex = false } = Astro.props;
+const fullTitle = section === 'home' ? title : `${title} · Dashboard UX Lab`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <ThemeScript />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#000d18" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6fbfe" media="(prefers-color-scheme: light)" />
+    <meta name="author" content="Suprabhat Kumar" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href={spaceGroteskLatin}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dashboard UX Lab" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@SuprabhatKarn97" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="/" aria-label="Dashboard UX Lab, home">
+          <span class="brand__mark" aria-hidden="true">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+            >
+              <path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path>
+            </svg>
+          </span>
+          <span>Dashboard UX Lab</span>
+          <span class="brand__by">by Suprabhat</span>
+        </a>
+        <nav class="site-nav" aria-label="Main">
+          <a href="/lab/react/" aria-current={section === 'lab' ? 'page' : undefined}>
+            Lab
+          </a>
+          <a
+            href="/scenarios/"
+            aria-current={section === 'scenarios' ? 'page' : undefined}
+          >
+            Scenarios
+          </a>
+          <a
+            class="nav-optional"
+            href="/accessibility/"
+            aria-current={section === 'accessibility' ? 'page' : undefined}
+          >
+            Accessibility
+          </a>
+          <a class="nav-optional" href={repoUrl}>
+            GitHub
+          </a>
+          <ThemeToggle />
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container site-footer__inner">
+        <p>
+          Built by <a href="https://suprabhat-dev.com/">Suprabhat Kumar</a>. Mock data
+          only; no tracking.
+        </p>
+        <p>
+          <a href={repoUrl}>Source on GitHub</a> ·{' '}
+          <a href={`${repoUrl}/issues`}>Report an issue</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

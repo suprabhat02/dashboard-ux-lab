@@ -1,0 +1,36 @@
+---
+import LabShell from '../../components/LabShell.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Vanilla implementation (in progress)"
+  description="The framework-free implementation of the Dashboard UX Lab, built from the same spec as the React version."
+  section="lab"
+  noindex
+>
+  <LabShell implementation="vanilla">
+    <section class="state state--empty upcoming" aria-labelledby="upcoming-title">
+      <span class="pill">Next milestone</span>
+      <h2 class="state__title" id="upcoming-title">
+        The vanilla implementation is being built
+      </h2>
+      <p class="state__body">
+        It will be written from the written spec, not ported from the React code, and must
+        pass the same end-to-end test suite before it ships here. Until then, the controls
+        on this page only update the URL.
+      </p>
+      <div class="state__actions">
+        <a class="btn btn--primary" href="/lab/react/" data-impl-link="react">
+          Open the React version
+        </a>
+        <a
+          class="btn"
+          href="https://github.com/suprabhat02/dashboard-ux-lab/blob/main/docs/spec.md"
+        >
+          Read the spec
+        </a>
+      </div>
+    </section>
+  </LabShell>
+</BaseLayout>

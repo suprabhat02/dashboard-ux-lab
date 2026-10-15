@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/pages.css';
+---
+
+<BaseLayout title="Page not found" description="This page doesn’t exist." noindex>
+  <div class="container doc">
+    <p class="eyebrow">404</p>
+    <h1 class="doc__title">An empty state of our own</h1>
+    <p class="doc__lede">The request worked, but nothing lives at this address.</p>
+    <p>
+      <a class="btn btn--primary" href="/">
+        Back to the lab
+      </a>
+    </p>
+  </div>
+</BaseLayout>

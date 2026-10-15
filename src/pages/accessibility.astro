@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/dashboard.css';
+import '../styles/pages.css';
+
+const matrix = [
+  {
+    check: 'axe-core in every scenario (Chromium, automated)',
+    status: 'Automated in CI',
+  },
+  {
+    check: 'Keyboard-only walkthrough of every scenario',
+    status: 'Automated in CI; manual pass pending',
+  },
+  { check: 'NVDA + Firefox (Windows)', status: 'Not yet tested' },
+  { check: 'VoiceOver + Safari (macOS)', status: 'Not yet tested' },
+  { check: 'VoiceOver + Safari (iOS)', status: 'Not yet tested' },
+  { check: 'TalkBack + Chrome (Android)', status: 'Not yet tested' },
+  { check: '400% zoom / 320px reflow', status: 'Not yet tested' },
+  { check: 'Windows forced colours', status: 'Styles written; not yet verified' },
+] as const;
+---
+
+<BaseLayout
+  title="Accessibility"
+  description="What has and hasn’t been tested in the Dashboard UX Lab, how, and the known issues."
+  section="accessibility"
+>
+  <div class="container doc">
+    <p class="eyebrow">Testing status</p>
+    <h1 class="doc__title">Accessibility</h1>
+    <p class="doc__lede">
+      This page says what has been tested and how. Automated checks catch only part of
+      what matters, so nothing here is called “accessible” until it has been tested with
+      real assistive technology.
+    </p>
+
+    <h2>Testing matrix</h2>
+    <div class="table-scroll" role="region" aria-labelledby="matrix-caption" tabindex="0">
+      <table class="table">
+        <caption id="matrix-caption">Last updated 15 October 2026</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="table__plain-th">
+              Check
+            </th>
+            <th scope="col" class="table__plain-th">
+              Status
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {matrix.map((row) => (
+            <tr>
+              <th scope="row">{row.check}</th>
+              <td>{row.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Known issues</h2>
+    <ul>
+      <li>
+        Individual chart bars are not keyboard-focusable by design; the data is available
+        as a table.
+      </li>
+      <li>The vanilla implementation is not built yet.</li>
+      <li>
+        On narrow screens the chart scales down and its axis labels become small; the
+        “Show data as table” view is the readable alternative until a narrow-screen chart
+        layout lands.
+      </li>
+    </ul>
+
+    <h2>Report a problem</h2>
+    <p>
+      If something doesn’t work with your setup, please
+      <a href="https://github.com/suprabhat02/dashboard-ux-lab/issues/new">
+        open an issue
+      </a>{' '}
+      and include your browser and assistive technology.
+    </p>
+  </div>
+</BaseLayout>

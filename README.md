@@ -1,0 +1,87 @@
+# Dashboard UX Lab
+
+**An interactive lab for how dashboards should behave when data isn’t perfect:**
+loading, slow responses, empty results, failures with retry, and restricted access.
+
+The same dashboard is being built twice, in **React** and in **framework-free
+TypeScript**, from one shared behaviour spec and verified by one shared test suite,
+so the two approaches can be compared on equal terms.
+
+**Live (after first deploy):** https://lab.suprabhat-dev.com · **Author:** [Suprabhat Kumar](https://suprabhat-dev.com)
+
+## Status
+
+| Part                                  | Status                                               |
+| ------------------------------------- | ---------------------------------------------------- |
+| Shared spec, mock API, copy, CSS      | ✅ Done                                              |
+| React implementation                  | ✅ Done                                              |
+| Playground: controls + inspector      | ✅ Done                                              |
+| Scenario guides                       | ✅ Done                                              |
+| Unit + e2e + axe tests                | ✅ Passing locally (Chromium); CI covers all engines |
+| Vanilla implementation                | 🚧 Next milestone                                    |
+| Manual screen reader / device testing | ⏳ Not yet — see [checklist](docs/manual-testing.md) |
+
+## What you can do in the lab
+
+- Pick a scenario preset, or tune **latency**, **failure mode**, **role** and **plan filter**.
+- Watch the **inspector**: every state transition, every live-region announcement and
+  every programmatic focus move.
+- Share any combination: settings live in the URL.
+
+## Architecture
+
+```
+src/
+  spec/           Framework-free contract: types, mock data + API, timings, copy,
+                  formatting, chart geometry, table sorting, lab event protocol
+  impl-react/     React 19 implementation (reducer + effect, no fetching library)
+  impl-vanilla/   Framework-free implementation (next milestone)
+  lab/            Playground chrome (vanilla TS): controls, explanation, inspector
+  styles/         Shared CSS (cascade layers, OKLCH tokens, container queries)
+  pages/          Astro pages: home, lab, scenario guides, accessibility
+tests/
+  unit/           Vitest: spec + React reducer
+  e2e/            Playwright + axe: one suite, run against every implementation
+docs/             Behaviour spec, decision log, manual testing checklist
+```
+
+Boundaries are enforced by ESLint (see [ADR 0002](docs/decisions/0002-implementation-boundaries.md)):
+`spec/` imports nothing, implementations import only `spec/`, and neither imports the other.
+
+**Runtime dependencies:** React + React DOM (React page only) and two self-hosted
+variable fonts (Space Grotesk, Geist Mono). No UI, chart, state or CSS library.
+
+## Develop
+
+Requires Node 22.12+.
+
+```bash
+npm install
+npm run dev          # http://localhost:4321
+npm test             # unit tests
+npm run build        # type check + static build
+npm run test:e2e     # Playwright (builds must exist: run `npm run build` first)
+npm run verify       # everything CI runs
+```
+
+## Quality bar
+
+- Zero serious/critical axe violations in every scenario, in light and dark themes.
+- Same e2e suite passes for every implementation in Chromium, Firefox and WebKit.
+- JavaScript budgets enforced in CI (`scripts/size-budget.mjs`).
+- Automated checks are a floor, not proof: manual results are published at
+  [/accessibility/](https://lab.suprabhat-dev.com/accessibility/), including known issues.
+
+## Deploy
+
+GitHub Actions builds and deploys to GitHub Pages after CI passes on `main`.
+Custom domain: `public/CNAME` → `lab.suprabhat-dev.com` (DNS: `CNAME lab → suprabhat02.github.io`).
+
+## Feedback
+
+The most useful contribution is disagreement with the spec. If a behaviour in
+[docs/spec.md](docs/spec.md) seems wrong for real users, please open an issue.
+
+## License
+
+MIT
