@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { COPY } from '../../src/spec/copy';
-import { dashboard, lastAnnouncement, waitForView } from './fixtures';
+import { dashboard, expectAnnouncement, waitForView } from './fixtures';
 import { IMPLEMENTATIONS, labPath } from './implementations';
 
 for (const impl of IMPLEMENTATIONS) {
@@ -39,7 +39,7 @@ for (const impl of IMPLEMENTATIONS) {
       await expect(
         page.getByRole('heading', { name: COPY.empty.title('legacy') }),
       ).toBeVisible();
-      expect(await lastAnnouncement(page)).toBe(COPY.empty.announce('legacy'));
+      await expectAnnouncement(page, COPY.empty.announce('legacy'));
     });
 
     test('keyboard: arrow keys move through presets and re-run the request', async ({
@@ -62,7 +62,7 @@ for (const impl of IMPLEMENTATIONS) {
       await expect(page).toHaveURL(/plan=enterprise/);
       await expect(page.locator('select[name="plan"]')).toHaveValue('enterprise');
       await expect(page.getByRole('table', { name: /Enterprise/ })).toBeVisible();
-      expect(await lastAnnouncement(page)).toBe(COPY.loaded.announce('enterprise'));
+      await expectAnnouncement(page, COPY.loaded.announce('enterprise'));
     });
 
     test('sortable table exposes aria-sort on the sorted column only', async ({

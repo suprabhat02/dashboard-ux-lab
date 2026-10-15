@@ -15,6 +15,11 @@ export async function lastAnnouncement(page: Page): Promise<string> {
   return `${polite}${assertive}`.trim();
 }
 
+/** Announcements are debounced (TIMING.announceDebounceMs), so wait for the final text. */
+export async function expectAnnouncement(page: Page, text: string): Promise<void> {
+  await expect.poll(() => lastAnnouncement(page)).toBe(text);
+}
+
 /** Zero serious/critical axe violations. Automated checks are a floor, not proof. */
 export async function expectNoSeriousA11yViolations(page: Page): Promise<void> {
   const results = await new AxeBuilder({ page })

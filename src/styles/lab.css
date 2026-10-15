@@ -506,7 +506,6 @@
 
   @keyframes log-in {
     from {
-      opacity: 0;
       transform: translateY(-3px);
     }
   }
