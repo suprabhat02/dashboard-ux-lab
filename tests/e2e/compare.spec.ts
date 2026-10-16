@@ -18,9 +18,8 @@ const expectFinalAgreement = async (page: Page) => {
   const detail = await page.evaluate(() =>
     [
       document.querySelector('[data-verdict]')?.textContent,
-      ...[...document.querySelectorAll('[data-diff-step]')].map(
-        (node) =>
-          `${(node as HTMLElement).dataset.diffStep ?? ''}: ${node.textContent ?? ''}`,
+      ...[...document.querySelectorAll<HTMLElement>('[data-diff-step]')].map(
+        (node) => `${node.dataset.diffStep ?? ''}: ${node.innerText}`,
       ),
     ].join(' | '),
   );
