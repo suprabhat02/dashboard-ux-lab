@@ -241,6 +241,7 @@ export const en = {
       openInLab: 'Open this state in the lab',
       ruler: {
         label: 'Time since the request was sent',
+        waiting: 'Shows nothing yet',
         skeleton: 'Placeholders',
         slow: 'Says it is slow',
         cancel: 'Offers Cancel',
@@ -350,24 +351,26 @@ export const en = {
           ],
         },
         {
-          stage: 'now',
+          stage: 'done',
           link: { label: 'Run the test script', path: '/accessibility/screen-readers/' },
           title: 'Real assistive technology',
           items: [
-            'Testing with NVDA, VoiceOver and TalkBack, with results published',
-            'Native-speaker review of the Spanish and Arabic text',
+            'A screen reader script computed from the spec, checked against both builds on every commit',
+            'Results table and form, open to anyone testing with NVDA, VoiceOver or TalkBack',
+            'Native-speaker review skipped for now: no reviewer is available yet; suggestions stay open',
+          ],
+        },
+        {
+          stage: 'done',
+          link: { label: 'Scrub a request in the lab', path: '/lab/react/' },
+          title: 'See time, not just state',
+          items: [
+            'A request timeline in the lab you can scrub: what was on screen, what was heard and where focus was at any moment',
+            'Any scenario, or any custom settings, exported as a ready-made Playwright test; CI runs every published one',
           ],
         },
         {
           stage: 'next',
-          title: 'See time, not just state',
-          items: [
-            'A request timeline you can scrub: what was on screen, announced and focused at every moment',
-            'Export any scenario as a ready-made Playwright test',
-          ],
-        },
-        {
-          stage: 'later',
           title: 'Bring your own',
           items: [
             'Paste your own API response and see how each state handles it',
@@ -518,6 +521,57 @@ export const en = {
       ],
       logLink: 'Read the full divergence log',
     },
+  },
+  timeline: {
+    heading: 'Request timeline',
+    hint: 'Drag along the request, or step from change to change, to see what was on screen, what a screen reader had just heard, and where focus was at that moment.',
+    waiting: 'Waiting for the dashboard to start.',
+    live: 'Follow live',
+    lanes: { screen: 'On screen', heard: 'Heard', focus: 'Focus moved' },
+    scrubLabel: 'Moment in the request',
+    previous: 'Previous change',
+    next: 'Next change',
+    at: (time: string) => `At ${time}`,
+    fields: {
+      screen: 'On screen',
+      heard: 'Last heard',
+      focus: 'Focus',
+      request: 'Request',
+    },
+    heardAt: (time: string, politeness: string) => `${politeness}, at ${time}`,
+    nothingHeard: 'Nothing yet',
+    focusAt: (time: string) => `moved here at ${time}`,
+    focusUntouched: 'Not moved by the dashboard',
+    requestIdle: 'None in flight',
+    requestInFlight: (attempt: number) => `Attempt ${attempt} in flight`,
+    valueText: (time: string, screen: string) => `${time}: ${screen}`,
+    screens: {
+      nothing: 'Nothing yet',
+      reserved: 'Space held, nothing drawn yet',
+      previous: 'The previous data, dimmed',
+      placeholders: 'Placeholders',
+      slowNotice: 'Placeholders and a “taking longer” notice',
+      cancelOffered: 'Placeholders and a Cancel button',
+      retrying: 'The error panel, trying again',
+      dashboard: 'The dashboard',
+      empty: 'No results, with “Show all plans”',
+      error: 'The error panel, with Try again',
+      forbidden: 'The no-access message',
+      cancelled: 'Request cancelled, with Load again',
+    },
+  },
+
+  exportTest: {
+    button: 'Export as Playwright test',
+    title: 'A Playwright test for these settings',
+    body: 'It repeats the screen reader script for this scenario and asserts every announcement and focus move at the moment the spec gives. It runs against this site, or any copy of the lab via LAB_URL.',
+    codeLabel: 'Test source',
+    copy: 'Copy',
+    copied: 'Copied to the clipboard.',
+    copyFailed: 'Couldn’t copy. Select the code and copy it instead.',
+    download: 'Download',
+    close: 'Close',
+    custom: 'Custom settings',
   },
   inspector: {
     heading: 'Inspector',
@@ -848,7 +902,7 @@ export const en = {
     known: [
       'Individual chart bars are not keyboard-focusable by design; the data is available as a table.',
       'On narrow screens the chart scales down and its axis labels become small; the “Show data as table” view is the readable alternative until a narrow-screen chart layout lands.',
-      'Spanish and Arabic translations were drafted by the author and have not yet been reviewed by native speakers.',
+      'Spanish and Arabic translations were drafted by the author. Native-speaker review is skipped for now, as no reviewer is available; corrections are welcome through the translation form.',
     ],
     reportTitle: 'Report a problem',
     reportBody:
@@ -878,6 +932,8 @@ export const en = {
     },
     scenariosTitle: 'The script',
     openIn: 'Open in:',
+    testIn: 'Playwright test:',
+    testFile: (build: string) => `${build} (.spec.ts)`,
     stepLabel: (step: number) => `Step ${step}`,
     actions: {
       open: 'Open the link and wait.',
@@ -902,11 +958,11 @@ export const en = {
       untested: 'Not tested yet',
     },
     noRuns:
-      'Nobody has run the script with a real screen reader yet. Those first runs are the current phase of the project.',
+      'Nobody has run the script with a real screen reader yet. Runs are welcome at any time through the form below.',
     submit: 'Submit a result',
     reviewTitle: 'Spanish and Arabic review',
     reviewBody:
-      'The Spanish and Arabic text was drafted by the author and still needs review by native speakers. If something reads wrong, suggest better wording; every accepted suggestion is credited.',
+      'The Spanish and Arabic text was drafted by the author. A native-speaker review is skipped for now because no reviewer is available, so both stay marked as unreviewed. If something reads wrong, suggest better wording; every accepted suggestion is credited.',
     reviewLink: 'Suggest a translation fix',
   },
   notFound: {

@@ -418,7 +418,15 @@
     gap: var(--space-2) var(--space-4);
     font-size: var(--text-sm);
   }
+  .sr-scenario__open {
+    align-items: center;
+    margin-block-end: var(--space-1);
+  }
+  /* Each link is a 28 px target, clear of the row below (WCAG 2.5.8). */
   .sr-scenario__open a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 1.75rem;
     font-weight: 650;
   }
   .sr-steps {

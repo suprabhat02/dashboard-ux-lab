@@ -1,3 +1,5 @@
+import { SITE_ORIGIN } from '../spec/site';
+
 /**
  * Structured data (schema.org JSON-LD) for every page.
  *
@@ -10,7 +12,7 @@
 /** When the guides' content last changed; bump it with substantive edits. */
 export const GUIDES_UPDATED = '2026-10-16';
 
-export const SITE_URL = 'https://lab.suprabhat-dev.com';
+export const SITE_URL = SITE_ORIGIN;
 export const REPO_URL = 'https://github.com/suprabhat02/dashboard-ux-lab';
 
 export const AUTHOR = {

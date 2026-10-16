@@ -11,3 +11,4 @@ New entries are numbered and never rewritten; a reversed decision gets a new ent
 - [0006 — Vanilla implementation, and the rules both builds share](0006-vanilla-architecture-and-shared-rules.md)
 - [0007 — Side-by-side comparison in iframes, over postMessage](0007-side-by-side-comparison.md)
 - [0008 — A screen reader test script computed from the spec](0008-computed-screen-reader-script.md)
+- [0009 — One time axis, a scrubbable request timeline, and exported tests](0009-time-axis-timeline-and-test-export.md)

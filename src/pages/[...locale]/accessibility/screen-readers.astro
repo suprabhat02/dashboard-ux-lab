@@ -97,6 +97,14 @@ const translationForm = `${REPO_URL}/issues/new?template=translation-review.yml`
               </a>
             ))}
           </p>
+          <p class="sr-scenario__open">
+            <span>{s.testIn}</span>
+            {builds.map((build) => (
+              <a href={`/exports/${scenario.id}-${build}-${locale}.spec.ts`} download>
+                {s.testFile(t.compare.builds[build].name)}
+              </a>
+            ))}
+          </p>
           <ol class="sr-steps">
             {steps.map((step, index) => (
               <li class="sr-step">

@@ -212,6 +212,7 @@ export const es: Messages = {
       openInLab: 'Abrir este estado en el laboratorio',
       ruler: {
         label: 'Tiempo desde que se envió la solicitud',
+        waiting: 'Aún no muestra nada',
         skeleton: 'Marcadores',
         slow: 'Avisa de la demora',
         cancel: 'Ofrece cancelar',
@@ -321,27 +322,32 @@ export const es: Messages = {
           ],
         },
         {
-          stage: 'now',
+          stage: 'done',
           link: {
             label: 'Hacer el guion de prueba',
             path: '/accessibility/screen-readers/',
           },
           title: 'Tecnologías de apoyo reales',
           items: [
-            'Pruebas con NVDA, VoiceOver y TalkBack, con resultados publicados',
-            'Revisión de los textos en español y árabe por hablantes nativos',
+            'Un guion para lector de pantalla calculado a partir de la especificación y comprobado en las dos versiones en cada cambio',
+            'Tabla de resultados y formulario, abiertos a quien pruebe con NVDA, VoiceOver o TalkBack',
+            'Revisión por hablantes nativos pospuesta: aún no hay quien revise; las sugerencias siguen abiertas',
+          ],
+        },
+        {
+          stage: 'done',
+          link: {
+            label: 'Recorrer una solicitud en el laboratorio',
+            path: '/lab/react/',
+          },
+          title: 'Ver el tiempo, no solo el estado',
+          items: [
+            'Una línea de tiempo en el laboratorio que puedes recorrer: qué había en pantalla, qué se oyó y dónde estaba el foco en cualquier momento',
+            'Cualquier escenario, o cualquier ajuste personalizado, exportado como prueba de Playwright lista para usar; CI ejecuta cada una de las publicadas',
           ],
         },
         {
           stage: 'next',
-          title: 'Ver el tiempo, no solo el estado',
-          items: [
-            'Una línea de tiempo de la solicitud que puedes recorrer: qué había en pantalla, qué se anunció y dónde estaba el foco en cada momento',
-            'Exportar cualquier escenario como una prueba de Playwright lista para usar',
-          ],
-        },
-        {
-          stage: 'later',
           title: 'Trae lo tuyo',
           items: [
             'Pega la respuesta de tu propia API y mira cómo la maneja cada estado',
@@ -500,6 +506,57 @@ export const es: Messages = {
       ],
       logLink: 'Leer el registro completo de diferencias',
     },
+  },
+  timeline: {
+    heading: 'Línea de tiempo de la solicitud',
+    hint: 'Arrastra a lo largo de la solicitud, o avanza de cambio en cambio, para ver qué había en pantalla, qué acababa de oír un lector de pantalla y dónde estaba el foco en ese momento.',
+    waiting: 'Esperando a que arranque el panel.',
+    live: 'Seguir en directo',
+    lanes: { screen: 'En pantalla', heard: 'Oído', focus: 'Foco movido' },
+    scrubLabel: 'Momento de la solicitud',
+    previous: 'Cambio anterior',
+    next: 'Cambio siguiente',
+    at: (time: string) => `A los ${time}`,
+    fields: {
+      screen: 'En pantalla',
+      heard: 'Último anuncio',
+      focus: 'Foco',
+      request: 'Solicitud',
+    },
+    heardAt: (time: string, politeness: string) => `${politeness}, a los ${time}`,
+    nothingHeard: 'Nada todavía',
+    focusAt: (time: string) => `llegó aquí a los ${time}`,
+    focusUntouched: 'El panel no lo ha movido',
+    requestIdle: 'Ninguna en curso',
+    requestInFlight: (attempt: number) => `Intento ${attempt} en curso`,
+    valueText: (time: string, screen: string) => `${time}: ${screen}`,
+    screens: {
+      nothing: 'Nada todavía',
+      reserved: 'Espacio reservado, aún sin dibujar',
+      previous: 'Los datos anteriores, atenuados',
+      placeholders: 'Marcadores de carga',
+      slowNotice: 'Marcadores y un aviso de demora',
+      cancelOffered: 'Marcadores y un botón Cancelar',
+      retrying: 'El panel de error, reintentando',
+      dashboard: 'El panel',
+      empty: 'Sin resultados, con «Ver todos los planes»',
+      error: 'El panel de error, con Reintentar',
+      forbidden: 'El mensaje de acceso denegado',
+      cancelled: 'Solicitud cancelada, con Volver a cargar',
+    },
+  },
+
+  exportTest: {
+    button: 'Exportar como prueba de Playwright',
+    title: 'Una prueba de Playwright para estos ajustes',
+    body: 'Repite el guion de lector de pantalla de este escenario y comprueba cada anuncio y cada movimiento del foco en el momento que marca la especificación. Funciona contra este sitio o contra cualquier copia del laboratorio con LAB_URL.',
+    codeLabel: 'Código de la prueba',
+    copy: 'Copiar',
+    copied: 'Copiado al portapapeles.',
+    copyFailed: 'No se pudo copiar. Selecciona el código y cópialo.',
+    download: 'Descargar',
+    close: 'Cerrar',
+    custom: 'Ajustes personalizados',
   },
   inspector: {
     heading: 'Inspector',
@@ -820,7 +877,7 @@ export const es: Messages = {
     known: [
       'Las barras del gráfico no reciben el foco del teclado por diseño; los datos están disponibles como tabla.',
       'En pantallas estrechas el gráfico se reduce y las etiquetas de los ejes quedan pequeñas; la vista «Ver datos como tabla» es la alternativa legible hasta que llegue un diseño para pantallas estrechas.',
-      'Las traducciones al español y al árabe las redactó el autor y aún no las ha revisado un hablante nativo.',
+      'Las traducciones al español y al árabe las redactó el autor. La revisión por hablantes nativos queda pospuesta porque no hay quien la haga; las correcciones son bienvenidas con el formulario de traducción.',
     ],
     reportTitle: 'Informar de un problema',
     reportBody:
@@ -850,6 +907,8 @@ export const es: Messages = {
     },
     scenariosTitle: 'El guion',
     openIn: 'Abrir en:',
+    testIn: 'Prueba de Playwright:',
+    testFile: (build: string) => `${build} (.spec.ts)`,
     stepLabel: (step: number) => `Paso ${step}`,
     actions: {
       open: 'Abre el enlace y espera.',
@@ -874,11 +933,11 @@ export const es: Messages = {
       untested: 'Sin probar aún',
     },
     noRuns:
-      'Nadie ha hecho aún el guion con un lector de pantalla real. Esas primeras pruebas son la fase actual del proyecto.',
+      'Nadie ha hecho aún el guion con un lector de pantalla real. Las pruebas son bienvenidas en cualquier momento con el formulario de abajo.',
     submit: 'Enviar un resultado',
     reviewTitle: 'Revisión del español y del árabe',
     reviewBody:
-      'El autor redactó los textos en español y árabe, y aún necesitan la revisión de hablantes nativos. Si algo suena mal, propón una redacción mejor; cada sugerencia aceptada se reconoce.',
+      'El autor redactó los textos en español y árabe. La revisión por hablantes nativos queda pospuesta porque no hay quien la haga, así que ambos siguen marcados como sin revisar. Si algo suena mal, propón una redacción mejor; cada sugerencia aceptada se reconoce.',
     reviewLink: 'Proponer una corrección',
   },
   notFound: {

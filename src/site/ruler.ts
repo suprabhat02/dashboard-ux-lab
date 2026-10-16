@@ -2,23 +2,37 @@
  * The home page's request ruler: shared by the server-rendered markup and the
  * client script, so a mark and the playhead always agree on where a moment sits.
  */
+import { REQUEST_AXIS_MS, sqrtScale } from '../spec/time-axis';
 import { TIMING } from '../spec/timing';
-import type { ScenarioId } from '../spec/types';
+import type { LoadingPhase, ScenarioId } from '../spec/types';
 
 /** The ruler ends at the slow preset: the longest scenario the lab ships. */
-export const RULER_MAX_MS = 12_000;
+export const RULER_MAX_MS = REQUEST_AXIS_MS;
+export const RULER_SCALE = sqrtScale(RULER_MAX_MS);
 
-/**
- * Square-root scale: the first second (where most rules live) gets room, while
- * 12 s still fits. 300 ms → 16 %, 3 s → 50 %, 8 s → 82 %.
- */
+/** 0 → 1 along the ruler, on the shared square-root scale (spec/time-axis.ts). */
 export function rulerPosition(ms: number): number {
-  const clamped = Math.min(Math.max(ms, 0), RULER_MAX_MS);
-  return Math.sqrt(clamped / RULER_MAX_MS);
+  return RULER_SCALE.position(ms);
 }
 
 /** What the dashboard is showing at a moment of the request. */
 export type DemoPhase = 'waiting' | 'skeleton' | 'slow' | 'cancel' | 'done';
+
+/** The ribbon zone a demo frame belongs to; `null` once the response has landed. */
+export function zoneOf(phase: DemoPhase): LoadingPhase | null {
+  switch (phase) {
+    case 'waiting':
+      return 'pending';
+    case 'skeleton':
+      return 'skeleton';
+    case 'slow':
+      return 'slow';
+    case 'cancel':
+      return 'stalled';
+    case 'done':
+      return null;
+  }
+}
 
 export function phaseAt(elapsedMs: number, latencyMs: number): DemoPhase {
   if (elapsedMs >= latencyMs) return 'done';

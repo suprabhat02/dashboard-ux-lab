@@ -1,7 +1,13 @@
 {
   "extends": "astro/tsconfigs/strictest",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "node_modules", "playwright-report", "test-results"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "playwright-report",
+    "test-results",
+    "tests/e2e/exported"
+  ],
   "compilerOptions": {
     "types": ["astro/client"],
     "jsx": "react-jsx",

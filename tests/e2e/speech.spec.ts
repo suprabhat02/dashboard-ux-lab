@@ -5,7 +5,7 @@ import {
   speechScript,
   type TesterAction,
 } from '../../src/spec/speech-script';
-import { dashboard, freezeClock } from './fixtures';
+import { advance, dashboard, freezeClock, settlePage } from './fixtures';
 import { labPath, VARIANTS, type Variant } from './implementations';
 
 /**
@@ -19,37 +19,6 @@ import { labPath, VARIANTS, type Variant } from './implementations';
 const TOLERANCE_MS = 100;
 /** Long enough for any scripted step to fall silent (the slow request is 12 s). */
 const SILENCE_MS = 20_000;
-
-/**
- * Advance the fake clock in slices, and after each one let the page finish the
- * work it queued. React schedules renders through a MessageChannel, which the fake
- * clock does not control: under load that task can still be queued when the next
- * slice starts, and the render (with its telemetry timestamp) lands a slice late.
- * A MessageChannel round trip in the page runs after React's queued task (same task
- * source, first in, first out), and the clock is paused meanwhile, so timings stay
- * exact whatever the slice size.
- */
-const SLICE_MS = 100;
-async function settlePage(page: Page): Promise<void> {
-  for (let round = 0; round < 2; round += 1) {
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          const channel = new MessageChannel();
-          channel.port1.onmessage = () => {
-            resolve();
-          };
-          channel.port2.postMessage(null);
-        }),
-    );
-  }
-}
-async function advance(page: Page, ms: number): Promise<void> {
-  for (let elapsed = 0; elapsed < ms; elapsed += SLICE_MS) {
-    await page.clock.runFor(Math.min(SLICE_MS, ms - elapsed));
-    await settlePage(page);
-  }
-}
 
 interface Observed {
   readonly kind: 'speech' | 'focus';

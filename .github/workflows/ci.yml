@@ -63,6 +63,8 @@ jobs:
           name: dist
           path: dist
       - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Collect the Playwright tests the site publishes
+        run: node scripts/collect-exported-tests.mjs
       - run: npx playwright test --project=${{ matrix.browser }} ${{ matrix.browser == 'chromium' && '--project=mobile-chromium' || '' }}
         env:
           CI: true

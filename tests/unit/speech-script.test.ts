@@ -3,6 +3,8 @@ import '../../src/spec/i18n/all';
 import { getMessages, LOCALES } from '../../src/spec/i18n';
 import { SCENARIO_IDS } from '../../src/spec/scenarios';
 import {
+  scriptFor,
+  simulateSession,
   SPEECH_SCRIPTS,
   speechScript,
   type StepTranscript,
@@ -76,5 +78,45 @@ describe('speech script', () => {
         );
       }
     }
+  });
+});
+
+describe('script for any settings', () => {
+  const base = {
+    latencyMs: 700,
+    failure: 'never',
+    role: 'analyst',
+    plan: 'all',
+  } as const;
+
+  it('derives every preset script from its settings', () => {
+    expect(SPEECH_SCRIPTS.slow).toEqual([
+      { action: 'open' },
+      { action: 'replay' },
+      { action: 'cancel', afterMs: 9_000 },
+    ]);
+    expect(SPEECH_SCRIPTS.error.map((step) => step.action)).toEqual(['open', 'retry']);
+  });
+
+  it('presses Cancel while it is still on screen, however short the stall', () => {
+    const steps = scriptFor({ ...base, latencyMs: 8_400 });
+    expect(steps.at(-1)).toEqual({ action: 'cancel', afterMs: 8_200 });
+    // Too short to reach the button: no Cancel step at all.
+    expect(scriptFor({ ...base, latencyMs: 8_050 }).map((step) => step.action)).toEqual([
+      'open',
+      'replay',
+    ]);
+  });
+
+  it('simulates custom settings with the same rules as the presets', () => {
+    const [, retry] = simulateSession(
+      { ...base, failure: 'always' },
+      scriptFor({ ...base, failure: 'always' }),
+      en,
+    );
+    // A retry that fails again interrupts: the visitor is waiting on it.
+    expect(retry?.heard).toEqual([
+      { kind: 'speech', atMs: 850, message: en.error.announce, politeness: 'assertive' },
+    ]);
   });
 });

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { LOCALES, localizePath } from '../../src/spec/i18n';
 import { SCENARIO_IDS } from '../../src/spec/scenarios';
+import { phaseZones, REQUEST_AXIS_MS, sqrtScale } from '../../src/spec/time-axis';
 
 const demo = (page: Page) => page.locator('[data-demo]');
 const mock = (page: Page) => page.locator('[data-demo-mock]');
@@ -145,9 +146,63 @@ test.describe('home: request console', () => {
     await expect(mock(page)).toHaveAttribute('data-phase', 'done', { timeout: 5000 });
   });
 
-  test('the ruler marks where each response lands', async ({ page }) => {
+  test('the scenario index marks where each response lands', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.ruler__mark')).toHaveCount(5);
     await expect(page.locator('.index__ruler')).toHaveCount(SCENARIO_IDS.length);
+  });
+});
+
+test.describe('home: request ribbon @responsive', () => {
+  const zones = phaseZones(sqrtScale(REQUEST_AXIS_MS)).map((zone) => zone.phase);
+
+  for (const width of [320, 390, 768, 1280]) {
+    test(`fits ${String(width)} px with nothing cut or overlapping`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/');
+      const ribbon = page.locator('.ribbon');
+      await expect(ribbon.locator('.ribbon__zone')).toHaveCount(zones.length);
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      ).toBe(true);
+      // The component answers to its own width: a legend when narrow, labels when wide.
+      const narrow = ((await ribbon.boundingBox())?.width ?? 0) < 34 * 16;
+      await expect(ribbon.locator('.ribbon__legend')).toBeVisible({ visible: narrow });
+      await expect(ribbon.locator('.ribbon__meanings')).toBeVisible({ visible: !narrow });
+      // Time labels never touch each other.
+      const boxes = (
+        await ribbon.locator('.ribbon__time:not(:empty)').evaluateAll((nodes) =>
+          nodes
+            .filter((node) => (node as HTMLElement).offsetParent !== null)
+            .map((node) => {
+              // The text itself, not its grid cell: cells tile the row by design.
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              const box = range.getBoundingClientRect();
+              return { left: box.left, right: box.right };
+            }),
+        )
+      ).sort((a, b) => a.left - b.left);
+      boxes.slice(1).forEach((box, index) => {
+        expect(box.left).toBeGreaterThanOrEqual((boxes[index]?.right ?? 0) - 0.5);
+      });
+    });
+  }
+
+  test('runs right to left in Arabic', async ({ page }) => {
+    await page.goto('/ar/');
+    const first = await page.locator('.ribbon__zone[data-zone="pending"]').boundingBox();
+    const last = await page.locator('.ribbon__zone[data-zone="stalled"]').boundingBox();
+    expect(first?.x ?? 0).toBeGreaterThan(last?.x ?? 0);
+  });
+
+  test('says when the selected scenario’s response arrives', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const slow = demo(page).getByRole('tab').nth(2);
+    await slow.click();
+    await expect(page.locator('[data-ribbon-response]')).toHaveText(
+      (await slow.locator('.demo__tab-time').textContent()) ?? '',
+    );
+    await expect(demo(page)).toHaveAttribute('data-zone', 'stalled');
   });
 });

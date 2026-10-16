@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import type { RoadmapStage } from '../../src/spec/i18n/en';
+import { currentPhaseIndex } from '../../src/spec/roadmap';
 import { MESSAGES } from '../../src/spec/i18n/all';
 import { LOCALES, localizePath, splitLocalePath } from '../../src/spec/i18n';
 
@@ -107,10 +109,13 @@ describe.each(LOCALES)('catalogue: %s', (locale) => {
 });
 
 describe.each(LOCALES)('home copy: %s', (locale) => {
-  it('marks exactly one phase as the current one', () => {
-    expect(
-      MESSAGES[locale].home.roadmap.phases.filter((phase) => phase.stage === 'now'),
-    ).toHaveLength(1);
+  it('has at most one phase in progress, and a place for "You are here"', () => {
+    // Typed as every stage, not just the ones the catalogue uses today.
+    const stages: readonly RoadmapStage[] = MESSAGES[locale].home.roadmap.phases.map(
+      (phase) => phase.stage,
+    );
+    expect(stages.filter((stage) => stage === 'now').length).toBeLessThanOrEqual(1);
+    expect(currentPhaseIndex(stages)).toBeGreaterThanOrEqual(0);
   });
 
   it('reports the same roadmap stages as English, phase by phase', () => {

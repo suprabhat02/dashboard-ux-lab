@@ -17,6 +17,8 @@ import {
   CircleStop,
   Clock,
   Copy,
+  Download,
+  FileCode,
   Ear,
   Focus,
   Globe,
@@ -29,10 +31,13 @@ import {
   Moon,
   Pause,
   Play,
+  Radio,
   RotateCw,
   SearchX,
   ServerCrash,
   ShieldAlert,
+  StepBack,
+  StepForward,
   Sun,
   type IconNode,
 } from 'lucide';
@@ -72,6 +77,12 @@ export const ICONS = {
   // Inspector
   announce: Ear,
   focus: Focus,
+  // Request timeline
+  stepBack: StepBack,
+  stepForward: StepForward,
+  live: Radio,
+  download: Download,
+  exportTest: FileCode,
 } as const satisfies Record<string, IconNode>;
 
 export type IconName = keyof typeof ICONS;
@@ -80,4 +91,6 @@ export type IconName = keyof typeof ICONS;
 export const DIRECTIONAL_ICONS: ReadonlySet<IconName> = new Set<IconName>([
   'retry',
   'arrow',
+  'stepBack',
+  'stepForward',
 ]);

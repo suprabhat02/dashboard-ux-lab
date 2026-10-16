@@ -396,132 +396,204 @@
     font-weight: 650;
   }
 
-  /* The ruler: 0 → 12 s on a square-root scale (ruler.ts). Positions are logical,
-     so in Arabic time runs right to left, like the lab's chart. */
-  .ruler {
+  /* ── The ribbon: a request from 0 to 12 s, one zone per loading phase ──
+   * Geometry comes from spec/time-axis.ts as grid columns (--cols), so every
+   * row lines up and mirrors in Arabic without special cases. The component
+   * answers to its own width (container query), not the viewport's. */
+  .ribbon {
+    --bar: 0.875rem;
+    container: ribbon / inline-size;
     margin-block-start: clamp(1.75rem, 1rem + 2vw, 2.5rem);
   }
-  .ruler__label {
-    margin-block-end: 2.75rem; /* room for the response notch above the track */
+  .ribbon__head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-4);
+    margin-block-end: var(--space-4);
+  }
+  .ribbon__label {
     font-size: var(--text-sm);
     font-weight: 600;
     color: var(--text-2);
   }
-  .ruler__scale {
-    position: relative;
-    block-size: 4.75rem;
-    margin-inline: 0.5rem;
-  }
-  .ruler__track,
-  .ruler__fill {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: 0;
-    block-size: 4px;
-    border-radius: 2px;
-  }
-  .ruler__track {
-    inline-size: 100%;
-    background: color-mix(in srgb, var(--text) 14%, transparent);
-  }
-  .ruler__fill {
-    inline-size: calc(var(--t) * 100%);
-    background: var(--accent-line);
-  }
-  .ruler__head {
-    position: absolute;
-    inset-block-start: -7px;
-    inset-inline-start: calc(var(--t) * 100% - 9px);
-    inline-size: 18px;
-    block-size: 18px;
-    border-radius: 50%;
-    background: var(--lime);
-    box-shadow: 0 0 0 3px var(--bio-black);
-  }
-  /* Where this scenario's response lands: a notch above the track. */
-  .ruler__response {
-    position: absolute;
-    inset-block-end: calc(100% + 0.6rem);
-    inset-inline-start: calc(var(--resp) * 100%);
-    display: flex;
-    flex-direction: column;
+  .ribbon__readout {
+    display: inline-flex;
     align-items: center;
-    font-size: var(--text-xs);
-    font-weight: 700;
-    color: var(--accent-ink);
-    white-space: nowrap;
-    translate: -50% 0;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-2);
   }
-  [dir='rtl'] .ruler__response {
-    translate: 50% 0;
+  .ribbon__readout b {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
   }
-  .ruler__response::after {
-    content: '';
-    inline-size: 2px;
-    block-size: 0.6rem;
-    margin-block-start: 0.15rem;
-    background: var(--accent-line);
-  }
-  .ruler__mark {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: calc(var(--x) * 100%);
+  .ribbon__plot {
     display: grid;
-    justify-items: center;
-    padding-block-start: 0.85rem;
-    translate: -50% 0;
-    text-align: center;
+    gap: var(--space-2);
   }
-  [dir='rtl'] .ruler__mark {
-    translate: 50% 0;
+  .ribbon__times,
+  .ribbon__bar,
+  .ribbon__meanings {
+    display: grid;
+    grid-template-columns: var(--cols);
   }
-  .ruler__mark::before {
-    content: '';
-    position: absolute;
-    inset-block-start: -3px;
-    inline-size: 2px;
-    block-size: 10px;
-    background: var(--text-3);
-  }
-  .ruler__mark--start {
-    justify-items: start;
-    translate: 0 0;
-    text-align: start;
-  }
-  .ruler__mark--end {
-    justify-items: end;
-    translate: -100% 0;
-    text-align: end;
-  }
-  [dir='rtl'] .ruler__mark--start {
-    translate: 0 0;
-  }
-  [dir='rtl'] .ruler__mark--end {
-    translate: 100% 0;
-  }
-  .ruler__mark--start::before,
-  .ruler__mark--end::before {
-    display: none;
-  }
-  .ruler__time {
+  .ribbon__times {
+    position: relative;
     font-size: var(--text-sm);
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
-  .ruler__meaning {
-    max-inline-size: 11ch;
+  .ribbon__time {
+    min-inline-size: 0;
+  }
+  .ribbon__time--end {
+    position: absolute;
+    inset-inline-end: 0;
+  }
+
+  /* The bar: zones darken as the wait escalates; lime fills what has passed. */
+  .ribbon__bar {
+    position: relative;
+    gap: 3px;
+    block-size: var(--bar);
+  }
+  .ribbon__zone {
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--text) var(--ink, 10%), transparent);
+  }
+  .ribbon__zone[data-zone='skeleton'] {
+    --ink: 16%;
+  }
+  .ribbon__zone[data-zone='slow'] {
+    --ink: 24%;
+  }
+  .ribbon__zone[data-zone='stalled'] {
+    --ink: 34%;
+  }
+  /* Each zone fills itself from --t, so the cuts between zones stay visible. */
+  .ribbon__zone {
+    position: relative;
+    overflow: hidden;
+  }
+  .ribbon__zone::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: calc(clamp(0, (var(--t) - var(--zs)) / var(--zz), 1) * 100%);
+    background: var(--lime);
+  }
+  /* A moment on the axis: zero wide, so whatever it holds is centred on it. */
+  .ribbon__anchor {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--x) * 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 0;
+  }
+  .ribbon__anchor--head {
+    --x: var(--t);
+  }
+  .ribbon__anchor--response {
+    --x: var(--resp);
+  }
+  .ribbon__head {
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow:
+      0 0 0 3px var(--bio-black),
+      0 0 0 5px color-mix(in srgb, var(--lime) 40%, transparent);
+  }
+  .ribbon__notch,
+  .ribbon__notch-key {
+    flex: none;
+    inline-size: 3px;
+    block-size: calc(var(--bar) + 0.75rem);
+    border-radius: 2px;
+    background: var(--text);
+  }
+  .ribbon__notch-key {
+    block-size: 0.9rem;
+  }
+
+  /* Meanings sit under their zones; the current one is spoken up. */
+  .ribbon__meanings {
+    gap: 3px;
     font-size: var(--text-xs);
     line-height: 1.3;
-    color: var(--text-2);
+    color: var(--text-3);
   }
-  @media (max-width: 40rem) {
-    .ruler__meaning {
-      max-inline-size: 8ch;
-    }
-    /* 0 and 300 ms sit too close on a phone; the track's start says 0 by itself. */
-    .ruler__mark--start {
+  .ribbon__meaning {
+    min-inline-size: 0;
+    padding-inline-end: var(--space-2);
+    overflow-wrap: anywhere;
+  }
+  :is(
+    [data-zone='pending'] [data-zone='pending'],
+    [data-zone='skeleton'] [data-zone='skeleton'],
+    [data-zone='slow'] [data-zone='slow'],
+    [data-zone='stalled'] [data-zone='stalled']
+  ):is(.ribbon__meaning, .ribbon__key, .ribbon__time) {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* Narrow: times stay on the ribbon, meanings move to a legend below it. */
+  .ribbon__legend {
+    display: none;
+  }
+  @container ribbon (max-width: 34rem) {
+    .ribbon__meanings,
+    .ribbon__time--end {
       display: none;
+    }
+    .ribbon__legend {
+      display: grid;
+      gap: var(--space-2);
+      margin: var(--space-4) 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: var(--text-xs);
+      color: var(--text-3);
+    }
+    .ribbon__key {
+      display: grid;
+      grid-template-columns: 0.75rem minmax(5.5rem, auto) minmax(0, 1fr);
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .ribbon__range {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .ribbon__swatch {
+      block-size: 0.75rem;
+      border-radius: 3px;
+      background: color-mix(in srgb, var(--text) var(--ink, 10%), transparent);
+    }
+    .ribbon__key[data-zone='skeleton'] .ribbon__swatch {
+      --ink: 16%;
+    }
+    .ribbon__key[data-zone='slow'] .ribbon__swatch {
+      --ink: 24%;
+    }
+    .ribbon__key[data-zone='stalled'] .ribbon__swatch {
+      --ink: 34%;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ribbon__meaning,
+    .ribbon__key,
+    .ribbon__time {
+      transition: color 200ms var(--ease-out);
     }
   }
 
@@ -1201,6 +1273,10 @@
     font-size: var(--text-sm);
     font-weight: 600;
     color: var(--text-3);
+  }
+  /* "You are here" between phases: the latest finished one keeps the ring. */
+  .phase[data-current] .phase__dot {
+    box-shadow: 0 0 0 5px var(--accent-soft);
   }
   [data-stage='now'] .phase__stage {
     color: var(--accent-ink);

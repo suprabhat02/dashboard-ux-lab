@@ -15,6 +15,7 @@ import { DEFAULT_SETTINGS, SCENARIOS } from '../spec/scenarios';
 import { TIMING } from '../spec/timing';
 import type { FailureMode, ImplementationId, Role } from '../spec/types';
 import { pageI18n } from '../site/i18n';
+import EarlyTelemetry from './EarlyTelemetry.astro';
 import Icon from './Icon.astro';
 import LabAr from './lab-scripts/LabAr.astro';
 import LabEn from './lab-scripts/LabEn.astro';
@@ -37,7 +38,7 @@ const implementations: readonly ImplementationId[] = ['react', 'vanilla'];
 const seconds = (ms: number) => fmt.integer(ms / 1000);
 ---
 
-<div class="lab container">
+<div class="lab container" data-lab-implementation={implementation}>
   <div class="lab__intro">
     <div>
       <h1 class="lab__title">{t.lab.title}</h1>
@@ -225,8 +226,158 @@ const seconds = (ms: number) => fmt.integer(ms / 1000);
 
     <div class="lab__stage">
       <div class="stage">
+        {/* Listens before the build's own script can speak (vanilla runs first). */}
+        <EarlyTelemetry />
         <slot />
       </div>
+
+      {/*
+        The request timeline (src/lab/timeline.ts). The lanes are a picture of
+        the run (aria-hidden); the scrubber and the readout under it say the same
+        in words, so nothing here depends on seeing the lanes.
+      */}
+      <section class="panel tl" aria-labelledby="tl-heading" data-timeline>
+        <div class="tl__head">
+          <div class="tl__intro">
+            <h2 class="panel__title" id="tl-heading">
+              {t.timeline.heading}
+            </h2>
+            <p class="tl__hint" id="tl-hint">
+              {t.timeline.hint}
+            </p>
+          </div>
+          <div class="tl__actions">
+            <button
+              class="btn btn--sm tl__live"
+              type="button"
+              aria-pressed="true"
+              data-tl-live
+            >
+              <Icon name="live" size={16} />
+              {t.timeline.live}
+            </button>
+            <button class="btn btn--sm" type="button" data-export-open>
+              <Icon name="exportTest" size={16} />
+              {t.exportTest.button}
+            </button>
+          </div>
+        </div>
+
+        <div class="tl__plot" aria-hidden="true" data-tl-plot>
+          <div class="tl__axis" data-tl-axis></div>
+          <span class="tl__label" data-lane="screen">
+            {t.timeline.lanes.screen}
+          </span>
+          <div class="tl__track" data-tl-track="screen"></div>
+          <span class="tl__label" data-lane="heard">
+            {t.timeline.lanes.heard}
+          </span>
+          <div class="tl__track" data-tl-track="heard"></div>
+          <span class="tl__label" data-lane="focus">
+            {t.timeline.lanes.focus}
+          </span>
+          <div class="tl__track" data-tl-track="focus"></div>
+          <div class="tl__playhead">
+            <span class="tl__anchor">
+              <span class="tl__line"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="tl__scrub">
+          <label class="tl__scrub-label" for="tl-range">
+            {t.timeline.scrubLabel}
+          </label>
+          <div class="tl__scrub-row">
+            <div class="tl__steps">
+              <button
+                class="btn btn--sm btn--icon"
+                type="button"
+                aria-label={t.timeline.previous}
+                title={t.timeline.previous}
+                data-tl-step="-1"
+              >
+                <Icon name="stepBack" size={16} />
+              </button>
+              <button
+                class="btn btn--sm btn--icon"
+                type="button"
+                aria-label={t.timeline.next}
+                title={t.timeline.next}
+                data-tl-step="1"
+              >
+                <Icon name="stepForward" size={16} />
+              </button>
+            </div>
+            <input
+              class="tl__range"
+              id="tl-range"
+              type="range"
+              min="0"
+              max="1000"
+              step="5"
+              value="0"
+              aria-describedby="tl-hint"
+              data-tl-range
+            />
+          </div>
+        </div>
+
+        <div class="tl__moment">
+          <p class="tl__now" data-tl-now>
+            {t.timeline.waiting}
+          </p>
+          <dl class="tl__facts">
+            <div>
+              <dt>{t.timeline.fields.screen}</dt>
+              <dd data-tl-fact="screen">—</dd>
+            </div>
+            <div>
+              <dt>{t.timeline.fields.heard}</dt>
+              <dd data-tl-fact="heard">—</dd>
+            </div>
+            <div>
+              <dt>{t.timeline.fields.focus}</dt>
+              <dd data-tl-fact="focus">—</dd>
+            </div>
+            <div>
+              <dt>{t.timeline.fields.request}</dt>
+              <dd data-tl-fact="request">—</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <dialog class="export" aria-labelledby="export-title" data-export>
+        <div class="export__inner">
+          <h2 class="export__title" id="export-title">
+            {t.exportTest.title}
+          </h2>
+          <p class="export__body">{t.exportTest.body}</p>
+          <div
+            class="export__code"
+            role="region"
+            aria-label={t.exportTest.codeLabel}
+            tabindex="0"
+          >
+            <pre><code dir="ltr" data-export-code></code></pre>
+          </div>
+          <p class="sr-only" role="status" data-export-status></p>
+          <div class="export__actions">
+            <button class="btn btn--primary" type="button" data-export-copy>
+              <Icon name="copy" size={16} />
+              {t.exportTest.copy}
+            </button>
+            <a class="btn" href="#" download data-export-download>
+              <Icon name="download" size={16} />
+              {t.exportTest.download}
+            </a>
+            <button class="btn btn--ghost" type="button" data-export-close>
+              {t.exportTest.close}
+            </button>
+          </div>
+        </div>
+      </dialog>
 
       <section class="panel inspector" aria-labelledby="inspector-heading" data-inspector>
         <div class="inspector__head">

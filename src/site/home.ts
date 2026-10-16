@@ -11,7 +11,7 @@
  * Framework-free and small: it ships on the landing page, where every byte
  * competes with first paint.
  */
-import { phaseAt, rulerPosition, type DemoPhase } from './ruler';
+import { phaseAt, rulerPosition, zoneOf, type DemoPhase } from './ruler';
 
 /** How long a finished state stays on screen before the next one plays. */
 const HOLD_MS = 2600;
@@ -56,6 +56,7 @@ export function initStateDemo(root: HTMLElement): () => void {
 
   const show = (phase: DemoPhase, atMs: number): void => {
     mock.dataset.phase = phase;
+    root.dataset.zone = zoneOf(phase) ?? 'done';
     root.style.setProperty('--t', rulerPosition(atMs).toFixed(4));
   };
 
@@ -66,6 +67,9 @@ export function initStateDemo(root: HTMLElement): () => void {
     if (!tab) return;
     const latency = Number(tab.dataset.latency ?? 0);
     root.style.setProperty('--resp', rulerPosition(latency).toFixed(4));
+    const readout = root.querySelector('[data-ribbon-response]');
+    const label = tab.querySelector('.demo__tab-time')?.textContent;
+    if (readout && label) readout.textContent = label;
     settled = false;
     if (reducedMotion()) {
       show(

@@ -503,3 +503,450 @@
     }
   }
 }
+
+@layer lab {
+  /* ── Request timeline ────────────────────────────────────────
+   * Lanes share one inline axis (spec/time-axis.ts via spec/recording.ts):
+   * positions are percentages along the inline direction, so Arabic runs
+   * right to left with no special case. The panel answers to its own width. */
+  .tl {
+    --label-w: 7.5rem;
+    container: timeline / inline-size;
+    display: grid;
+    gap: var(--space-4);
+    margin-block-start: var(--space-4);
+  }
+  @container timeline (max-width: 34rem) {
+    .tl__plot,
+    .tl__scrub-row {
+      --label-w: 4.75rem;
+    }
+    .tl__label {
+      font-size: 0.6875rem;
+    }
+  }
+  .tl__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-4);
+  }
+  .tl__intro {
+    flex: 1 1 22rem;
+  }
+  .tl__intro .panel__title {
+    margin-block-end: var(--space-1);
+  }
+  .tl__hint {
+    max-inline-size: 62ch;
+    font-size: var(--text-sm);
+    color: var(--text-2);
+  }
+  .tl__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .tl__live[aria-pressed='true'] {
+    --btn-bg: var(--accent-subtle);
+    --btn-border: var(--accent-line);
+  }
+  .tl__live[aria-pressed='true'] svg {
+    color: var(--accent-ink);
+  }
+
+  /* The plot: a label column and a time column; lanes, axis and playhead all
+     live in the time column, layered by grid placement. */
+  .tl__plot {
+    display: grid;
+    grid-template-columns: var(--label-w) minmax(0, 1fr);
+    grid-template-rows: 1.5rem 2.5rem 1.5rem 1.5rem;
+    row-gap: var(--space-2);
+    align-items: center;
+  }
+  .tl__label {
+    grid-column: 1;
+    padding-inline-end: var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text-2);
+  }
+  .tl__label[data-lane='screen'] {
+    grid-row: 2;
+  }
+  .tl__label[data-lane='heard'] {
+    grid-row: 3;
+  }
+  .tl__label[data-lane='focus'] {
+    grid-row: 4;
+  }
+  .tl__track {
+    position: relative;
+    grid-column: 2;
+    block-size: 100%;
+    border-radius: 4px;
+  }
+  [data-tl-track='screen'] {
+    grid-row: 2;
+    background: color-mix(in srgb, var(--text) 5%, transparent);
+  }
+  [data-tl-track='heard'] {
+    grid-row: 3;
+  }
+  [data-tl-track='focus'] {
+    grid-row: 4;
+  }
+  [data-tl-track='heard'],
+  [data-tl-track='focus'] {
+    border-block-end: 1px dashed color-mix(in srgb, var(--text) 18%, transparent);
+    border-radius: 0;
+    block-size: 50%;
+    align-self: start;
+  }
+
+  /* Axis: tick labels at the top, hairlines through every lane. */
+  .tl__axis {
+    position: relative;
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: stretch;
+    pointer-events: none;
+  }
+  .tl__tick {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--x);
+    display: flex;
+    justify-content: center;
+    inline-size: 0;
+  }
+  .tl__tick:first-child {
+    justify-content: flex-start;
+  }
+  .tl__tick--end {
+    justify-content: flex-end;
+  }
+  .tl__tick > span {
+    block-size: 1.5rem;
+    padding-inline: 0.125rem;
+    font-size: var(--text-xs);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--text-2);
+  }
+  .tl__tick::after {
+    content: '';
+    position: absolute;
+    inset-block: 1.5rem 0;
+    inline-size: 1px;
+    background: color-mix(in srgb, var(--text) 12%, transparent);
+  }
+
+  /* On screen: one span per screen, on the hero ribbon's escalation ladder. */
+  .tl__span {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--a);
+    inline-size: max(2px, calc(var(--b) - var(--a)));
+    display: flex;
+    align-items: center;
+    padding-inline: var(--space-2);
+    overflow: hidden;
+    border-inline-start: 2px solid var(--bg-card);
+    background: color-mix(in srgb, var(--text) var(--ink, 10%), transparent);
+    color: var(--text);
+  }
+  .tl__span:first-child {
+    border-inline-start: 0;
+    border-start-start-radius: 4px;
+    border-end-start-radius: 4px;
+  }
+  .tl__span[data-screen='nothing'] {
+    --ink: 0%;
+  }
+  .tl__span[data-screen='placeholders'] {
+    --ink: 16%;
+  }
+  .tl__span[data-screen='slowNotice'] {
+    --ink: 24%;
+  }
+  .tl__span[data-screen='cancelOffered'] {
+    --ink: 34%;
+  }
+  .tl__span[data-screen='retrying'] {
+    --ink: 55%;
+    color: var(--bg);
+  }
+  .tl__span:is([data-screen='dashboard'], [data-screen='empty']) {
+    background: var(--lime);
+    color: var(--bio-black);
+  }
+  .tl__span[data-screen='empty'] {
+    background: color-mix(in srgb, var(--lime) 45%, var(--bg-card));
+    color: var(--text);
+  }
+  .tl__span:is([data-screen='error'], [data-screen='forbidden']) {
+    background: var(--text);
+    color: var(--bg);
+  }
+  .tl__span[data-screen='cancelled'] {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--text-3);
+    color: var(--text-2);
+  }
+  .tl__span-label {
+    font-size: var(--text-xs);
+    font-weight: 650;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+  /* A label that does not fit is left out rather than cut (timeline.ts measures
+     it); the readout under the scrubber always says it in full. */
+  .tl__span-label[hidden],
+  .tl__tick > span[hidden] {
+    display: block;
+    visibility: hidden;
+  }
+
+  /* Heard and focus marks: zero-wide anchors that centre their glyph. */
+  .tl__anchor {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--x);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 0;
+  }
+  .tl__dot {
+    flex: none;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--bg-card);
+  }
+  .tl__dot--heard[data-politeness='polite'] {
+    border: 2px solid var(--text);
+    background: var(--bg-card);
+  }
+  .tl__dot--heard[data-politeness='assertive'] {
+    background: var(--text);
+  }
+  .tl__dot--focus {
+    inline-size: 0.7rem;
+    block-size: 0.7rem;
+    border-radius: 2px;
+    background: var(--lime);
+    box-shadow:
+      0 0 0 1.5px var(--bio-black),
+      0 0 0 3px var(--bg-card);
+    rotate: 45deg;
+  }
+
+  /* The playhead: across every lane, at --p. */
+  .tl__playhead {
+    position: relative;
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: stretch;
+    pointer-events: none;
+  }
+  .tl__playhead > .tl__anchor {
+    --x: var(--p, 0%);
+    align-items: stretch;
+  }
+  .tl__line {
+    flex: none;
+    inline-size: 2px;
+    margin-block-start: 1.25rem;
+    background: var(--text);
+    box-shadow: 0 0 0 1px var(--bg-card);
+  }
+  .tl__line::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0.875rem;
+    inset-inline-start: -0.3rem;
+    inline-size: 0.6rem;
+    block-size: 0.6rem;
+    border-radius: 50%;
+    background: var(--text);
+  }
+  [data-state='recording'] .tl__line {
+    position: relative;
+  }
+  .tl:not([data-state='recording']) .tl__playhead {
+    display: none;
+  }
+
+  /* Scrubber: same columns as the plot, so the thumb sits over the lanes. */
+  .tl__scrub-label {
+    display: block;
+    margin-block-end: var(--space-1);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  .tl__scrub-row {
+    display: grid;
+    grid-template-columns: var(--label-w) minmax(0, 1fr);
+    align-items: center;
+  }
+  .tl__steps {
+    display: flex;
+    gap: var(--space-1);
+  }
+  .tl__range {
+    --thumb: 1.25rem;
+    grid-column: 2;
+    grid-row: 1;
+    /* Half a thumb past each end, so the thumb's centre spans the lanes exactly. */
+    inline-size: calc(100% + var(--thumb));
+    margin-inline: calc(var(--thumb) / -2);
+    block-size: 2rem;
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+  }
+  .tl__range::-webkit-slider-runnable-track {
+    block-size: 6px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--text) 16%, transparent);
+  }
+  .tl__range::-moz-range-track {
+    block-size: 6px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--text) 16%, transparent);
+  }
+  .tl__range::-webkit-slider-thumb {
+    inline-size: var(--thumb);
+    block-size: var(--thumb);
+    margin-block-start: calc((6px - var(--thumb)) / 2);
+    border: 3px solid var(--bio-black);
+    border-radius: 50%;
+    background: var(--lime);
+    appearance: none;
+  }
+  .tl__range::-moz-range-thumb {
+    inline-size: calc(var(--thumb) - 6px);
+    block-size: calc(var(--thumb) - 6px);
+    border: 3px solid var(--bio-black);
+    border-radius: 50%;
+    background: var(--lime);
+  }
+  .tl__range:focus-visible {
+    outline: none;
+  }
+  .tl__range:focus-visible::-webkit-slider-thumb {
+    outline: 3px solid var(--focus-ring, var(--accent-line));
+    outline-offset: 2px;
+  }
+  .tl__range:focus-visible::-moz-range-thumb {
+    outline: 3px solid var(--focus-ring, var(--accent-line));
+    outline-offset: 2px;
+  }
+
+  /* The moment under the playhead, in words. */
+  .tl__moment {
+    display: grid;
+    gap: var(--space-3);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--border);
+  }
+  .tl__now {
+    font-size: var(--text-lg);
+    font-weight: 740;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .tl__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    gap: var(--space-3) var(--space-5);
+    margin: 0;
+  }
+  .tl__facts dt {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-3);
+  }
+  .tl__facts dd {
+    margin: var(--space-1) 0 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+  .tl__facts small {
+    display: block;
+    font-weight: 500;
+    color: var(--text-3);
+  }
+  .tl__facts q:lang(es),
+  .tl__facts q:lang(ar) {
+    quotes: '«' '»';
+  }
+
+  .btn--icon {
+    inline-size: 32px;
+    min-block-size: 32px;
+    padding: 0;
+  }
+
+  /* ── Export dialog ─────────────────────────────────────────── */
+  .export {
+    /* The reset zeroes margins; a modal dialog is centred by auto margins. */
+    margin: auto;
+    inline-size: min(56rem, 100% - 2rem);
+    max-block-size: min(90dvh, 52rem);
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--bg-card);
+    color: var(--text);
+    box-shadow: var(--shadow-glass-raised);
+  }
+  .export::backdrop {
+    background: color-mix(in srgb, var(--bio-black) 62%, transparent);
+  }
+  .export__inner {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+  }
+  .export__title {
+    font-size: var(--text-xl);
+    font-weight: 740;
+    letter-spacing: -0.015em;
+  }
+  .export__body {
+    max-inline-size: 68ch;
+    font-size: var(--text-sm);
+    color: var(--text-2);
+  }
+  .export__code {
+    max-block-size: min(48dvh, 28rem);
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--bg);
+  }
+  .export__code pre {
+    margin: 0;
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    text-align: left;
+    white-space: pre;
+  }
+  .export__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .export__actions .btn--ghost {
+    margin-inline-start: auto;
+  }
+}

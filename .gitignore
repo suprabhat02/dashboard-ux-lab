@@ -6,3 +6,5 @@ test-results/
 coverage/
 .DS_Store
 *.log
+# Copied from dist/exports by scripts/collect-exported-tests.mjs
+tests/e2e/exported/

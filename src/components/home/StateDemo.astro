@@ -19,9 +19,16 @@ import { getFormatter } from '../../spec/format';
 import { LOCALE_META, type Locale } from '../../spec/i18n';
 import { pageI18n } from '../../site/i18n';
 import { SCENARIOS } from '../../spec/scenarios';
-import { TIMING } from '../../spec/timing';
 import type { ScenarioId } from '../../spec/types';
-import { REPRESENTATIVE, RULER_MAX_MS, rulerPosition } from '../../site/ruler';
+import {
+  REPRESENTATIVE,
+  RULER_MAX_MS,
+  RULER_SCALE,
+  rulerPosition,
+  zoneOf,
+} from '../../site/ruler';
+import { phaseZones, zoneColumns } from '../../spec/time-axis';
+import type { LoadingPhase } from '../../spec/types';
 
 interface Props {
   locale: Locale;
@@ -52,11 +59,13 @@ const s = new Intl.NumberFormat(intl, {
 const duration = (value: number): string =>
   value < 1000 ? ms.format(value) : s.format(value / 1000);
 
-const marks = [
-  { at: TIMING.skeletonDelayMs, label: demo.ruler.skeleton },
-  { at: TIMING.slowAfterMs, label: demo.ruler.slow },
-  { at: TIMING.stalledAfterMs, label: demo.ruler.cancel },
-] as const;
+const zones = phaseZones(RULER_SCALE);
+const zoneLabel: Record<LoadingPhase, string> = {
+  pending: demo.ruler.waiting,
+  skeleton: demo.ruler.skeleton,
+  slow: demo.ruler.slow,
+  stalled: demo.ruler.cancel,
+};
 const pos = (value: number): string => rulerPosition(value).toFixed(4);
 ---
 
@@ -65,6 +74,7 @@ const pos = (value: number): string => rulerPosition(value).toFixed(4);
   data-demo
   data-label-play={demo.play}
   data-label-pause={demo.pause}
+  data-zone={zoneOf(firstRep.phase) ?? 'done'}
   style={`--t: ${pos(firstRep.atMs)}; --resp: ${pos(SCENARIOS[0]?.settings.latencyMs ?? 0)}`}
 >
   <div class="demo__layout">
@@ -181,28 +191,65 @@ const pos = (value: number): string => rulerPosition(value).toFixed(4);
     </div>
   </div>
 
-  <div class="ruler" aria-hidden="true">
-    <p class="ruler__label">{demo.ruler.label}</p>
-    <div class="ruler__scale">
-      <span class="ruler__track"></span>
-      <span class="ruler__fill"></span>
-      <span class="ruler__response">
-        <span>{demo.ruler.response}</span>
-      </span>
-      <span class="ruler__head"></span>
-      {marks.map((mark) => (
-        <span class="ruler__mark" style={`--x: ${pos(mark.at)}`}>
-          <span class="ruler__time">{duration(mark.at)}</span>
-          <span class="ruler__meaning">{mark.label}</span>
-        </span>
-      ))}
-      <span class="ruler__mark ruler__mark--end" style="--x: 1">
-        <span class="ruler__time">{duration(RULER_MAX_MS)}</span>
-      </span>
-      <span class="ruler__mark ruler__mark--start" style="--x: 0">
-        <span class="ruler__time">{duration(0)}</span>
-      </span>
+  {/*
+    The request as a ribbon of zones, one per loading phase, sized on the shared
+    square-root scale (spec/time-axis.ts). Grid columns mirror in Arabic by
+    themselves; moments (playhead, response) are zero-width anchors that centre
+    their contents, so no direction needs special casing. Decorative: the tab
+    panels say the same in words.
+  */}
+  <div class="ribbon" aria-hidden="true" style={`--cols: ${zoneColumns(zones)}`}>
+    <div class="ribbon__head-row">
+      <p class="ribbon__label">{demo.ruler.label}</p>
+      <p class="ribbon__readout">
+        <span class="ribbon__notch-key" />
+        {demo.ruler.response}
+        <b data-ribbon-response>{duration(SCENARIOS[0]?.settings.latencyMs ?? 0)}</b>
+      </p>
     </div>
+    <div class="ribbon__plot">
+      <div class="ribbon__times">
+        {zones.map((zone, index) => (
+          <span class="ribbon__time" data-zone={zone.phase}>
+            {index > 0 && duration(zone.startMs)}
+          </span>
+        ))}
+        <span class="ribbon__time ribbon__time--end">{duration(RULER_MAX_MS)}</span>
+      </div>
+      <div class="ribbon__bar">
+        {zones.map((zone) => (
+          <span
+            class="ribbon__zone"
+            data-zone={zone.phase}
+            style={`--zs: ${zone.start.toFixed(5)}; --zz: ${zone.size.toFixed(5)}`}
+          />
+        ))}
+        <span class="ribbon__anchor ribbon__anchor--response">
+          <span class="ribbon__notch" />
+        </span>
+        <span class="ribbon__anchor ribbon__anchor--head">
+          <span class="ribbon__head" />
+        </span>
+      </div>
+      <div class="ribbon__meanings">
+        {zones.map((zone) => (
+          <span class="ribbon__meaning" data-zone={zone.phase}>
+            {zoneLabel[zone.phase]}
+          </span>
+        ))}
+      </div>
+    </div>
+    <ol class="ribbon__legend" role="list">
+      {zones.map((zone) => (
+        <li class="ribbon__key" data-zone={zone.phase}>
+          <span class="ribbon__swatch" />
+          <span class="ribbon__range">
+            {duration(zone.startMs)}–{duration(zone.endMs)}
+          </span>
+          <span>{zoneLabel[zone.phase]}</span>
+        </li>
+      ))}
+    </ol>
   </div>
 
   <noscript>

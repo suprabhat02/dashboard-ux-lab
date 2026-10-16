@@ -33,6 +33,8 @@ export interface Formatter {
   date(isoDate: string): string;
   decimal(value: number): string;
   integer(value: number): string;
+  /** A span of time: "450 ms" under a second, "3.2 s" from there (narrow units). */
+  duration(ms: number): string;
   delta(kpi: Kpi, previousMonth: string): Delta | null;
 }
 
@@ -102,6 +104,19 @@ function createFormatter(locale: Locale): Formatter {
     }
   };
 
+  const milliseconds = new Intl.NumberFormat(tag, {
+    style: 'unit',
+    unit: 'millisecond',
+    unitDisplay: 'narrow',
+    maximumFractionDigits: 0,
+  });
+  const seconds = new Intl.NumberFormat(tag, {
+    style: 'unit',
+    unit: 'second',
+    unitDisplay: 'narrow',
+    maximumFractionDigits: 1,
+  });
+
   return {
     locale,
     value,
@@ -113,6 +128,8 @@ function createFormatter(locale: Locale): Formatter {
     date: (d) => day.format(dayDate(d)),
     decimal: (n) => oneDecimal.format(n),
     integer: (n) => integer.format(n),
+    duration: (ms) =>
+      Math.abs(ms) < 1000 ? milliseconds.format(ms) : seconds.format(ms / 1000),
 
     /**
      * Percentage change for currency and counts; percentage-point change for rates,

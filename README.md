@@ -18,19 +18,21 @@ feature shipped in all three — enforced by the build ([ADR 0004](docs/decision
 
 ## Status
 
-| Part                                         | Status                                                                                    |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Shared spec, mock API, copy, CSS             | ✅ Done                                                                                   |
-| React implementation                         | ✅ Done                                                                                   |
-| Playground: controls + inspector             | ✅ Done                                                                                   |
-| English, Spanish, Arabic (RTL)               | ✅ Done (Spanish/Arabic await native review)                                              |
-| Scenario guides                              | ✅ Done                                                                                   |
-| Vanilla implementation                       | ✅ Done (16 KB gz; pixel-identical to React)                                              |
-| Unit + e2e + axe tests                       | ✅ One suite, both builds, three engines, in CI                                           |
-| Side-by-side comparison page                 | ✅ Done ([ADR 0007](docs/decisions/0007-side-by-side-comparison.md))                      |
-| Screen reader script, checked in CI          | ✅ Done ([ADR 0008](docs/decisions/0008-computed-screen-reader-script.md))                |
-| Real screen reader runs and native review    | 🚧 Now: [script and results](https://lab.suprabhat-dev.com/accessibility/screen-readers/) |
-| Request timeline you can scrub; tests export | ⏳ Next                                                                                   |
+| Part                                          | Status                                                                                                                             |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Shared spec, mock API, copy, CSS              | ✅ Done                                                                                                                            |
+| React implementation                          | ✅ Done                                                                                                                            |
+| Playground: controls + inspector              | ✅ Done                                                                                                                            |
+| English, Spanish, Arabic (RTL)                | ✅ Done (Spanish/Arabic await native review)                                                                                       |
+| Scenario guides                               | ✅ Done                                                                                                                            |
+| Vanilla implementation                        | ✅ Done (16 KB gz; pixel-identical to React)                                                                                       |
+| Unit + e2e + axe tests                        | ✅ One suite, both builds, three engines, in CI                                                                                    |
+| Side-by-side comparison page                  | ✅ Done ([ADR 0007](docs/decisions/0007-side-by-side-comparison.md))                                                               |
+| Screen reader script, checked in CI           | ✅ Done ([ADR 0008](docs/decisions/0008-computed-screen-reader-script.md))                                                         |
+| Screen reader runs and native review          | Open: [results form](https://lab.suprabhat-dev.com/accessibility/screen-readers/); native review skipped for now (no reviewer yet) |
+| Request timeline you can scrub                | ✅ Done ([ADR 0009](docs/decisions/0009-time-axis-timeline-and-test-export.md))                                                    |
+| Export any scenario as a Playwright test      | ✅ Done: 36 published tests, run in CI against both builds                                                                         |
+| Bring your own API responses, more components | ⏳ Next                                                                                                                            |
 
 ## What you can do in the lab
 
@@ -38,6 +40,9 @@ feature shipped in all three — enforced by the build ([ADR 0004](docs/decision
 - Watch the **inspector**: every state transition, every live-region announcement and
   every programmatic focus move.
 - Share any combination: settings live in the URL.
+- Scrub the **request timeline**: what was on screen, what a screen reader had just
+  heard and where focus was, at any moment of the run.
+- **Export** any scenario, or your own settings, as a ready-made Playwright test.
 - Open **Compare** to run both builds at once: one set of controls, live start-up
   time and download size, and a step-by-step check that both behave the same.
 

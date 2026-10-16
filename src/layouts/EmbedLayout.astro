@@ -12,8 +12,8 @@ import '../styles/base.css';
 import '../styles/tokens.css';
 import '../styles/dashboard.css';
 import '../styles/embed.css';
+import EarlyTelemetry from '../components/EarlyTelemetry.astro';
 import ThemeScript from '../components/ThemeScript.astro';
-import { TELEMETRY_EVENT } from '../spec/protocol';
 import { pageI18n } from '../site/i18n';
 import type { Locale } from '../spec/i18n';
 
@@ -31,22 +31,8 @@ const { t, dir, htmlLang } = pageI18n(locale);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {/* Before anything else: holds early telemetry until the bridge module runs. */}
-    <script is:inline define:vars={{ type: TELEMETRY_EVENT }}>
-      (function () {
-        var events = [];
-        var keep = function (event) {
-          events.push(event.detail);
-        };
-        window.addEventListener(type, keep);
-        window.__duxEarly = {
-          events: events,
-          stop: function () {
-            window.removeEventListener(type, keep);
-          },
-        };
-      })();
-    </script>
+    {/* Before anything else: holds telemetry until the bridge module runs. */}
+    <EarlyTelemetry />
     <ThemeScript />
     <title>{`${title} · ${t.meta.siteName}`}</title>
     <meta name="robots" content="noindex" />

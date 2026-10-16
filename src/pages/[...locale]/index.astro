@@ -1,4 +1,5 @@
 ---
+import { currentPhaseIndex } from '../../spec/roadmap';
 import Icon from '../../components/Icon.astro';
 import Illustration from '../../components/Illustration.astro';
 import SectionHead from '../../components/home/SectionHead.astro';
@@ -19,6 +20,7 @@ export const getStaticPaths = localePaths;
 const { locale } = Astro.props as LocaleProps;
 const { t, href } = pageI18n(locale);
 const h = t.home;
+const currentPhase = currentPhaseIndex(h.roadmap.phases.map((phase) => phase.stage));
 const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
 const lastRow = h.comparison.rows.length - 1;
 const app = webApplication({
@@ -366,18 +368,21 @@ const STACK = [
       </header>
       {/* Phases are a real sequence, so this is an ordered list. */}
       <ol class="phases" role="list">
-        {h.roadmap.phases.map((phase) => (
+        {h.roadmap.phases.map((phase, index) => (
           <li
             class="phase"
             data-stage={phase.stage}
-            aria-current={phase.stage === 'now' ? 'step' : undefined}
+            aria-current={index === currentPhase ? 'step' : undefined}
+            data-current={index === currentPhase || undefined}
           >
             <span class="phase__dot" aria-hidden="true">
               {phase.stage === 'done' && <Icon name="check" size={14} />}
             </span>
             <p class="phase__stage">
               {h.roadmap.stages[phase.stage]}
-              {phase.stage === 'now' && <span class="phase__here">{h.roadmap.here}</span>}
+              {index === currentPhase && (
+                <span class="phase__here">{h.roadmap.here}</span>
+              )}
             </p>
             <h3 class="phase__title">{phase.title}</h3>
             <ul class="bullets phase__items">

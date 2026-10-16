@@ -6,6 +6,9 @@ import { defineConfig, devices } from '@playwright/test';
  * Chromium binary when Playwright's own download is not available.
  */
 const isCI = Boolean(process.env.CI);
+const BASE_URL = 'http://localhost:4321';
+// Tests the site exports (tests/e2e/exported/) open LAB_URL; run them against this build.
+process.env.LAB_URL ??= BASE_URL;
 const chromiumPath = process.env.CHROMIUM_PATH;
 const chromiumArgs = process.env.CHROMIUM_ARGS?.split(' ').filter(Boolean);
 
@@ -18,7 +21,7 @@ export default defineConfig({
   reporter: isCI ? [['github'], ['html', { open: 'never' }]] : 'list',
   expect: { timeout: 10_000 },
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: BASE_URL,
     // Tracing records screenshots per action; worth it in CI, too slow on software-rendered local runs.
     trace: isCI ? 'retain-on-failure' : 'off',
   },

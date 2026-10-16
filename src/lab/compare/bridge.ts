@@ -6,6 +6,7 @@ import {
   type FrameMetrics,
   type LabTelemetry,
 } from '../../spec/protocol';
+import { takeEarlyTelemetry } from '../early-telemetry';
 
 /**
  * Runs inside an embedded build (/embed/<build>/) and connects its lab channel to
@@ -19,20 +20,8 @@ import {
  *   build downloaded, measured here with Resource Timing.
  *
  * Events the build emitted before this module ran are replayed from the inline
- * buffer (see `__duxEarly` below), so none is missed whatever loads first.
+ * buffer (components/EarlyTelemetry.astro), so none is missed whatever loads first.
  */
-
-declare global {
-  interface Window {
-    /**
-     * Telemetry captured before this module ran, by the inline buffer in
-     * EmbedLayout's <head>. A React island is fetched with import() as soon as the
-     * parser reaches it, while module scripts run only after parsing: on a warm
-     * cache the build could otherwise say `ready` before anyone is listening.
-     */
-    __duxEarly?: { events: unknown[]; stop: () => void };
-  }
-}
 
 /** The bridge's own file is measurement overhead, not part of either build. */
 const OWN_SCRIPT = new URL(import.meta.url).pathname;
@@ -56,7 +45,7 @@ export function initBridge(): void {
   const parent = window.parent;
   // Opened on its own, an embed is just a bare dashboard: nothing to connect to.
   if (parent === window) {
-    window.__duxEarly?.stop();
+    takeEarlyTelemetry();
     return;
   }
 
@@ -81,9 +70,7 @@ export function initBridge(): void {
     if (document.readyState === 'complete') report();
     else window.addEventListener('load', report, { once: true });
   };
-  const early = window.__duxEarly;
-  early?.stop();
-  for (const event of early?.events ?? []) forward(event as LabTelemetry);
+  for (const event of takeEarlyTelemetry()) forward(event);
   channel.onTelemetry(forward);
 
   window.addEventListener('message', (event) => {

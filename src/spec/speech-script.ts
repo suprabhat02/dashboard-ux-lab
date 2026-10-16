@@ -15,7 +15,8 @@ import { outcomeFor } from './mock-api';
 import type { Politeness } from './protocol';
 import { getScenario } from './scenarios';
 import { loadingPhase, PHASE_BOUNDARIES_MS, TIMING } from './timing';
-import type { LoadingPhase, RequestStatus, ScenarioId } from './types';
+import { buildDashboard, isEmptyDashboard } from './data';
+import type { LabSettings, LoadingPhase, RequestStatus, ScenarioId } from './types';
 
 /**
  * The screen reader test script, computed rather than written by hand.
@@ -61,30 +62,68 @@ export interface StepTranscript {
 }
 
 /**
- * One session per scenario: the first step shows what loading the link does on
- * its own (initial loads are quiet by design), the second what happens when the
- * visitor acts, which is where most announcements and focus moves live.
+ * The session a tester runs for any lab settings. The first step shows what
+ * loading the link does on its own (initial loads are quiet by design); the next
+ * is the action the settings make meaningful, where most announcements and focus
+ * moves live:
+ *
+ * - no access: nothing to fix, so replay and hear the result explained;
+ * - a failing server: press Try again;
+ * - a wait long enough to offer Cancel: replay, then press Cancel once it shows;
+ * - an empty filter: press Show all plans;
+ * - otherwise: replay, and hear the reload.
  */
+export function scriptFor(settings: LabSettings): readonly ScriptStep[] {
+  const open: ScriptStep = { action: 'open' };
+  if (settings.role === 'none') return [open, { action: 'replay' }];
+  if (settings.failure !== 'never') return [open, { action: 'retry' }];
+  // Cancel must still be on screen when pressed: a second after it appears, or
+  // halfway to the response when that comes sooner. 100 ms is the least room a
+  // person needs to reach it at all.
+  const cancelRoom = settings.latencyMs - TIMING.stalledAfterMs;
+  if (cancelRoom > 100) {
+    const afterMs = TIMING.stalledAfterMs + Math.min(1_000, Math.floor(cancelRoom / 2));
+    return [open, { action: 'replay' }, { action: 'cancel', afterMs }];
+  }
+  if (isEmptyDashboard(buildDashboard(settings.plan, settings.role))) {
+    return [open, { action: 'showAllPlans' }];
+  }
+  return [open, { action: 'replay' }];
+}
+
+const scenarioScript = (id: ScenarioId): readonly ScriptStep[] =>
+  scriptFor(getScenario(id).settings);
+
+/** The published script for each preset, derived from its settings. */
 export const SPEECH_SCRIPTS: Readonly<Record<ScenarioId, readonly ScriptStep[]>> = {
-  loaded: [{ action: 'open' }, { action: 'replay' }],
-  loading: [{ action: 'open' }, { action: 'replay' }],
-  // Cancel appears at 8 s; the tester presses it a second later.
-  slow: [{ action: 'open' }, { action: 'replay' }, { action: 'cancel', afterMs: 9_000 }],
-  empty: [{ action: 'open' }, { action: 'showAllPlans' }],
-  error: [{ action: 'open' }, { action: 'retry' }],
-  restricted: [{ action: 'open' }, { action: 'replay' }],
+  loaded: scenarioScript('loaded'),
+  loading: scenarioScript('loading'),
+  slow: scenarioScript('slow'),
+  empty: scenarioScript('empty'),
+  error: scenarioScript('error'),
+  restricted: scenarioScript('restricted'),
 };
 
 /** Upper bound for one step; only reached if something never settles. */
 const STEP_LIMIT_MS = 60_000;
 
+/** The transcript of a preset's published script. */
 export function speechScript(
   scenario: ScenarioId,
   copy: DashboardCopy,
 ): readonly StepTranscript[] {
-  const settings = getScenario(scenario).settings;
-  const steps = SPEECH_SCRIPTS[scenario];
+  return simulateSession(getScenario(scenario).settings, SPEECH_SCRIPTS[scenario], copy);
+}
 
+/**
+ * Runs `steps` against `settings` on a simulated clock and returns, per step,
+ * what is heard and where focus goes.
+ */
+export function simulateSession(
+  settings: LabSettings,
+  steps: readonly ScriptStep[],
+  copy: DashboardCopy,
+): readonly StepTranscript[] {
   let now = 0;
   let state: DashboardState | null = null;
   let intent: FocusIntent = null;

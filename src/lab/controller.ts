@@ -12,7 +12,9 @@ import { getScenario, isScenarioId, matchScenario } from '../spec/scenarios';
 import { clampLatency } from '../spec/timing';
 import type { FailureMode, LabSettings, PlanFilter, Role } from '../spec/types';
 import { hrefFor, parseSettings, serializeSettings } from '../spec/url';
+import { initExportDialog } from './export-dialog';
 import { initInspector } from './inspector';
+import { initTimeline } from './timeline';
 
 /**
  * Lab chrome controller (framework-free, shared by both lab pages).
@@ -202,6 +204,23 @@ export function initLab(target: EventTarget = window): LabChannel {
   });
 
   initInspector(channel, t);
+
+  const timeline = document.querySelector<HTMLElement>('[data-timeline]');
+  if (timeline) initTimeline(timeline, { channel, t, fmt, initialSettings: settings });
+
+  const lab = document.querySelector<HTMLElement>('[data-lab-implementation]');
+  const opener = document.querySelector<HTMLButtonElement>('[data-export-open]');
+  const dialog = document.querySelector<HTMLDialogElement>('[data-export]');
+  const implementation = lab?.dataset.labImplementation;
+  if (opener && dialog && (implementation === 'react' || implementation === 'vanilla')) {
+    initExportDialog(opener, dialog, {
+      t,
+      locale,
+      implementation,
+      settings: () => settings,
+    });
+  }
+
   render();
   return channel;
 }
