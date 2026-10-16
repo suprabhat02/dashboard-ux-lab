@@ -284,27 +284,61 @@ export const es: Messages = {
         body: 'Solo cuando desaparece el control que tenía el foco.',
       },
     ],
-    statusTitle: 'Estado del proyecto',
-    statusBody:
-      'Las dos implementaciones (React y TypeScript sin framework), la especificación compartida y las pruebas automáticas ya están listas. Las pruebas manuales con lectores de pantalla y en dispositivos reales están en curso; los resultados y los problemas conocidos se publican en la página de accesibilidad.',
-    statusA11yLink: 'Ver el estado de accesibilidad',
-    statusFeedback:
-      'Lo más útil que puedes aportar son comentarios sobre la especificación:',
-    statusIssueLink: 'abre una incidencia en GitHub',
-    statusStates: { done: 'Hecho', progress: 'En curso', planned: 'Previsto' },
-    statusItems: [
-      { label: 'Especificación compartida y reglas de tiempos', state: 'done' },
-      { label: 'Implementación en React', state: 'done' },
-      { label: 'Inglés, español y árabe de derecha a izquierda', state: 'done' },
-      { label: 'Pruebas automáticas en Chromium, Firefox y WebKit', state: 'done' },
-      { label: 'Implementación en TypeScript sin framework', state: 'done' },
-      {
-        label: 'Pruebas manuales con lectores de pantalla y dispositivos reales',
-        state: 'progress',
-      },
-      { label: 'Comparación lado a lado de ambas implementaciones', state: 'planned' },
-      { label: 'Revisión de las traducciones por hablantes nativos', state: 'planned' },
-    ],
+    roadmap: {
+      title: 'En qué punto está el proyecto',
+      goal: 'El objetivo: que el comportamiento de un panel sea más fácil de ver, oír y probar que con cualquier herramienta de desarrollo del navegador actual.',
+      goalBody:
+        'Las herramientas de desarrollo muestran las solicitudes y el DOM. No muestran lo que una persona espera, lo que dice un lector de pantalla ni dónde cae el foco del teclado. Este laboratorio se construye en abierto para mostrar exactamente eso, fase a fase.',
+      here: 'Estás aquí',
+      stages: { done: 'Hecho', now: 'Ahora', next: 'Después', later: 'Explorando' },
+      phases: [
+        {
+          stage: 'done',
+          title: 'Cimientos',
+          items: [
+            'Una especificación escrita de seis estados de un panel, con sus tiempos',
+            'Dos versiones, en React y en TypeScript sin framework, idénticas píxel a píxel',
+            'Inglés, español y árabe de derecha a izquierda',
+            'Pruebas automáticas en Chromium, Firefox y WebKit',
+          ],
+        },
+        {
+          stage: 'done',
+          title: 'Comparación lado a lado',
+          items: [
+            'Las dos versiones en una sola vista, con los mismos controles',
+            'Tiempo de arranque y tamaño de descarga, medidos en tu propio navegador',
+          ],
+        },
+        {
+          stage: 'now',
+          title: 'Tecnologías de apoyo reales',
+          items: [
+            'Pruebas con NVDA, VoiceOver y TalkBack, con resultados publicados',
+            'Revisión de los textos en español y árabe por hablantes nativos',
+          ],
+        },
+        {
+          stage: 'next',
+          title: 'Ver el tiempo, no solo el estado',
+          items: [
+            'Una línea de tiempo de la solicitud que puedes recorrer: qué había en pantalla, qué se anunció y dónde estaba el foco en cada momento',
+            'Exportar cualquier escenario como una prueba de Playwright lista para usar',
+          ],
+        },
+        {
+          stage: 'later',
+          title: 'Trae lo tuyo',
+          items: [
+            'Pega la respuesta de tu propia API y mira cómo la maneja cada estado',
+            'Más componentes: formularios, listas y desplazamiento infinito',
+          ],
+        },
+      ],
+      a11yLink: 'Ver el estado de accesibilidad',
+      feedback: 'La aportación más útil son los comentarios sobre la especificación:',
+      issueLink: 'abre una incidencia en GitHub',
+    },
   },
 
   lab: {

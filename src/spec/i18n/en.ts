@@ -1,10 +1,11 @@
 import type { AccountStatus, KpiId, PlanFilter, Role, ScenarioId } from '../types';
 
-/** Roadmap state of one line in the home page's project status list. */
-export type ProjectState = 'done' | 'progress' | 'planned';
-interface StatusItem {
-  readonly label: string;
-  readonly state: ProjectState;
+/** Where a phase of the home page's roadmap stands. */
+export type RoadmapStage = 'done' | 'now' | 'next' | 'later';
+interface RoadmapPhase {
+  readonly stage: RoadmapStage;
+  readonly title: string;
+  readonly items: readonly string[];
 }
 
 /**
@@ -305,27 +306,66 @@ export const en = {
         body: 'Only when the focused control disappears.',
       },
     ],
-    statusTitle: 'Where the project stands',
-    statusBody:
-      'Both implementations (React and framework-free TypeScript), the shared specification and the automated tests are in place. Manual testing with screen readers and on real devices is in progress; results and known issues are published on the accessibility page.',
-    statusA11yLink: 'Read the accessibility status',
-    statusFeedback: 'The most useful contribution is feedback on the specification:',
-    statusIssueLink: 'open an issue on GitHub',
-    statusStates: {
-      done: 'Done',
-      progress: 'In progress',
-      planned: 'Planned',
-    } satisfies Record<ProjectState, string>,
-    statusItems: [
-      { label: 'Shared specification and timing rules', state: 'done' },
-      { label: 'React implementation', state: 'done' },
-      { label: 'English, Spanish and right-to-left Arabic', state: 'done' },
-      { label: 'Automated tests in Chromium, Firefox and WebKit', state: 'done' },
-      { label: 'Framework-free TypeScript implementation', state: 'done' },
-      { label: 'Manual testing with screen readers and real devices', state: 'progress' },
-      { label: 'Side-by-side comparison of both implementations', state: 'planned' },
-      { label: 'Native-speaker review of the translations', state: 'planned' },
-    ] satisfies readonly StatusItem[],
+    roadmap: {
+      title: 'Where the project stands',
+      goal: 'The goal: make a dashboard’s behaviour easier to see, hear and test than any browser developer tool does today.',
+      goalBody:
+        'Developer tools show requests and the DOM. They do not show what a person waits through, what a screen reader says, or where keyboard focus lands. This lab is built in the open to show exactly that, one phase at a time.',
+      here: 'You are here',
+      stages: {
+        done: 'Done',
+        now: 'Now',
+        next: 'Next',
+        later: 'Exploring',
+      } satisfies Record<RoadmapStage, string>,
+      phases: [
+        {
+          stage: 'done',
+          title: 'Foundations',
+          items: [
+            'A written specification of six dashboard states, with timings',
+            'React and framework-free TypeScript builds of it, pixel-identical',
+            'English, Spanish and right-to-left Arabic',
+            'Automated tests in Chromium, Firefox and WebKit',
+          ],
+        },
+        {
+          stage: 'done',
+          title: 'Side-by-side comparison',
+          items: [
+            'Both builds in one view, driven by one set of controls',
+            'Start-up time and download size, measured in your own browser',
+          ],
+        },
+        {
+          stage: 'now',
+          title: 'Real assistive technology',
+          items: [
+            'Testing with NVDA, VoiceOver and TalkBack, with results published',
+            'Native-speaker review of the Spanish and Arabic text',
+          ],
+        },
+        {
+          stage: 'next',
+          title: 'See time, not just state',
+          items: [
+            'A request timeline you can scrub: what was on screen, announced and focused at every moment',
+            'Export any scenario as a ready-made Playwright test',
+          ],
+        },
+        {
+          stage: 'later',
+          title: 'Bring your own',
+          items: [
+            'Paste your own API response and see how each state handles it',
+            'More components: forms, lists and infinite scroll',
+          ],
+        },
+      ] satisfies readonly RoadmapPhase[],
+      a11yLink: 'Read the accessibility status',
+      feedback: 'The most useful contribution is feedback on the specification:',
+      issueLink: 'open an issue on GitHub',
+    },
   },
 
   lab: {

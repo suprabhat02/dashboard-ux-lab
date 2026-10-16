@@ -61,7 +61,14 @@
     --shadow: 0 24px 70px rgb(0 0 0 / 0.45);
     --shadow-sm: 0 2px 12px rgb(0 0 0 / 0.4);
     --shadow-card: 0 1px 1px rgb(0 0 0 / 0.25), 0 6px 28px rgb(0 0 0 / 0.35);
-    --header-fill: color-mix(in srgb, var(--bg) 66%, transparent);
+    --header-fill: color-mix(in srgb, var(--bg-card) 84%, transparent);
+    /* Glass: depth shadow + lit top edge + faint inner rim. */
+    --shadow-glass:
+      0 12px 40px rgb(0 0 0 / 0.38), inset 0 1px 0 rgb(255 255 255 / 0.07),
+      inset 0 0 0 1px rgb(255 255 255 / 0.02);
+    --shadow-glass-raised:
+      0 18px 54px rgb(0 0 0 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.09),
+      inset 0 0 0 1px rgb(200 255 0 / 0.04);
     color-scheme: dark;
   }
 
@@ -93,7 +100,13 @@
     --shadow: 0 24px 70px rgb(6 17 13 / 0.12);
     --shadow-sm: 0 2px 12px rgb(6 17 13 / 0.08);
     --shadow-card: 0 1px 1px rgb(6 17 13 / 0.05), 0 6px 26px rgb(6 17 13 / 0.08);
-    --header-fill: color-mix(in srgb, var(--bg-card) 66%, transparent);
+    --header-fill: color-mix(in srgb, var(--bg-card) 80%, transparent);
+    --shadow-glass:
+      0 10px 34px rgb(6 17 13 / 0.1), inset 0 1px 0 rgb(255 255 255 / 0.9),
+      inset 0 0 0 1px rgb(255 255 255 / 0.4);
+    --shadow-glass-raised:
+      0 16px 46px rgb(6 17 13 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.95),
+      inset 0 0 0 1px rgb(255 255 255 / 0.5);
     color-scheme: light;
   }
 
@@ -126,7 +139,13 @@
       --shadow: 0 24px 70px rgb(6 17 13 / 0.12);
       --shadow-sm: 0 2px 12px rgb(6 17 13 / 0.08);
       --shadow-card: 0 1px 1px rgb(6 17 13 / 0.05), 0 6px 26px rgb(6 17 13 / 0.08);
-      --header-fill: color-mix(in srgb, var(--bg-card) 66%, transparent);
+      --header-fill: color-mix(in srgb, var(--bg-card) 80%, transparent);
+      --shadow-glass:
+        0 10px 34px rgb(6 17 13 / 0.1), inset 0 1px 0 rgb(255 255 255 / 0.9),
+        inset 0 0 0 1px rgb(255 255 255 / 0.4);
+      --shadow-glass-raised:
+        0 16px 46px rgb(6 17 13 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.95),
+        inset 0 0 0 1px rgb(255 255 255 / 0.5);
       color-scheme: light;
     }
   }

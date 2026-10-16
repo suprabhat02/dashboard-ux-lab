@@ -43,7 +43,7 @@ const SAME_IN_ALL_LOCALES = new Set([
   'accessibilityPage.rows[4].check',
   'accessibilityPage.rows[5].check',
   // Roadmap states are identifiers ('done' | 'progress' | 'planned'), not prose
-  ...MESSAGES.en.home.statusItems.map((_, index) => `home.statusItems[${index}].state`),
+  ...MESSAGES.en.home.roadmap.phases.map((_, index) => `home.roadmap.phases[${index}].stage`),
 ]);
 const SAME_IN_SPANISH = new Set([
   'lab.impl.vanilla.label',
@@ -102,9 +102,15 @@ describe.each(LOCALES)('catalogue: %s', (locale) => {
 });
 
 describe.each(LOCALES)('home copy: %s', (locale) => {
-  it('reports the same roadmap state as English, line by line', () => {
-    expect(MESSAGES[locale].home.statusItems.map((item) => item.state)).toEqual(
-      MESSAGES.en.home.statusItems.map((item) => item.state),
+  it('marks exactly one phase as the current one', () => {
+    expect(
+      MESSAGES[locale].home.roadmap.phases.filter((phase) => phase.stage === 'now'),
+    ).toHaveLength(1);
+  });
+
+  it('reports the same roadmap stages as English, phase by phase', () => {
+    expect(MESSAGES[locale].home.roadmap.phases.map((phase) => phase.stage)).toEqual(
+      MESSAGES.en.home.roadmap.phases.map((phase) => phase.stage),
     );
   });
 });

@@ -228,7 +228,7 @@
     }
     .guide__aside {
       position: sticky;
-      inset-block-start: calc(60px + 1.5rem);
+      inset-block-start: calc(var(--header-offset) + 1rem);
     }
   }
   .guide__body {

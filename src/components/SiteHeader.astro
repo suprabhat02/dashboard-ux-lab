@@ -40,7 +40,8 @@ const themes: readonly { id: 'light' | 'dark' | 'system'; icon: IconName }[] = [
       </span>
     </a>
 
-    <nav class="site-nav" aria-label={t.nav.main}>
+    <nav class="site-nav" aria-label={t.nav.main} data-site-nav>
+      <span class="site-nav__pill" aria-hidden="true"></span>
       <ul role="list">
         {links.map((link) => (
           <li>
@@ -142,4 +143,9 @@ const themes: readonly { id: 'light' | 'dark' | 'system'; icon: IconName }[] = [
 
 <script>
   import '../site/menus';
+</script>
+
+<script>
+  import { initHeader } from '../site/header';
+  initHeader();
 </script>

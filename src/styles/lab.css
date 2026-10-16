@@ -82,8 +82,8 @@
     }
     .lab__rail {
       position: sticky;
-      inset-block-start: calc(64px + var(--space-4));
-      max-block-size: calc(100dvh - 64px - var(--space-6));
+      inset-block-start: calc(var(--header-offset) + var(--space-2));
+      max-block-size: calc(100dvh - var(--header-offset) - var(--space-5));
       overflow-y: auto;
       overscroll-behavior: contain;
       scrollbar-width: thin;

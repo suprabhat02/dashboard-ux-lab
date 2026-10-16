@@ -355,34 +355,45 @@ const STACK = [
     </div>
   </section>
 
-  <section class="status" aria-labelledby="status-title">
-    <div class="container status__inner">
-      <div class="status__intro">
-        <h2 class="status__title" id="status-title">
-          {h.statusTitle}
+  <section class="plan" aria-labelledby="plan-title">
+    <div class="container">
+      <header class="plan__head">
+        <h2 class="plan__title" id="plan-title">
+          {h.roadmap.title}
         </h2>
-        <p class="status__body">{h.statusBody}</p>
-        <p class="status__links">
-          <a href={href('/accessibility/')}>{h.statusA11yLink}</a>
-          <span class="status__feedback">
-            {h.statusFeedback} <a href={`${repoUrl}/issues`}>{h.statusIssueLink}</a>.
-          </span>
-        </p>
-      </div>
-      <ol class="roadmap" role="list">
-        {h.statusItems.map((item) => (
-          <li class="roadmap__item" data-state={item.state}>
-            <span class="roadmap__mark" aria-hidden="true">
-              <Icon
-                name={item.state === 'done' ? 'check' : item.state}
-                size={item.state === 'done' ? 14 : 22}
-              />
+        <p class="plan__goal">{h.roadmap.goal}</p>
+        <p class="plan__body">{h.roadmap.goalBody}</p>
+      </header>
+      {/* Phases are a real sequence, so this is an ordered list. */}
+      <ol class="phases" role="list">
+        {h.roadmap.phases.map((phase) => (
+          <li
+            class="phase"
+            data-stage={phase.stage}
+            aria-current={phase.stage === 'now' ? 'step' : undefined}
+          >
+            <span class="phase__dot" aria-hidden="true">
+              {phase.stage === 'done' && <Icon name="check" size={14} />}
             </span>
-            <span class="roadmap__label">{item.label}</span>
-            <span class="roadmap__state">{h.statusStates[item.state]}</span>
+            <p class="phase__stage">
+              {h.roadmap.stages[phase.stage]}
+              {phase.stage === 'now' && <span class="phase__here">{h.roadmap.here}</span>}
+            </p>
+            <h3 class="phase__title">{phase.title}</h3>
+            <ul class="bullets phase__items">
+              {phase.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
           </li>
         ))}
       </ol>
+      <p class="plan__links">
+        <a href={href('/accessibility/')}>{h.roadmap.a11yLink}</a>
+        <span>
+          {h.roadmap.feedback} <a href={`${repoUrl}/issues`}>{h.roadmap.issueLink}</a>.
+        </span>
+      </p>
     </div>
   </section>
 </BaseLayout>
