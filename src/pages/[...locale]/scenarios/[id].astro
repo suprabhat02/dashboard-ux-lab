@@ -2,7 +2,9 @@
 import Icon from '../../../components/Icon.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { localePaths, pageI18n, type LocaleProps } from '../../../site/i18n';
+import { GUIDES_UPDATED, SITE_URL, techArticle } from '../../../site/seo';
 import { getFormatter } from '../../../spec/format';
+import { LOCALE_META } from '../../../spec/i18n';
 import { SCENARIOS } from '../../../spec/scenarios';
 import type { ScenarioId } from '../../../spec/types';
 import '../../../styles/pages.css';
@@ -35,13 +37,31 @@ const copy = t.scenarios[id];
 const position = SCENARIOS.findIndex((scenario) => scenario.id === id) + 1;
 const settings = SCENARIOS.find((scenario) => scenario.id === id)?.settings;
 const labHref = `${href('/lab/react/')}?scenario=${id}`;
+const pageUrl = `${SITE_URL}${href(`/scenarios/${id}/`)}`;
+const description = t.meta.guideDescription(copy.summary);
+const breadcrumbs = [
+  { name: t.meta.siteName, url: `${SITE_URL}${href('/')}` },
+  { name: t.guides.title, url: `${SITE_URL}${href('/scenarios/')}` },
+  { name: copy.title, url: pageUrl },
+];
+const article = techArticle({
+  url: pageUrl,
+  headline: copy.title,
+  description,
+  inLanguage: LOCALE_META[locale].htmlLang,
+  image: `${SITE_URL}/og/${locale}.png`,
+  dateModified: GUIDES_UPDATED,
+});
 ---
 
 <BaseLayout
   locale={locale}
   title={t.meta.guideTitle(copy.title)}
-  description={`${copy.summary} ${copy.why}`}
+  description={description}
   section="scenarios"
+  ogType="article"
+  breadcrumbs={breadcrumbs}
+  schema={[article]}
 >
   <article class="container guide" data-scenario={id}>
     <header class="guide__head">

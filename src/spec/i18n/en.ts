@@ -34,9 +34,9 @@ const plural = new Intl.PluralRules('en-US');
 export const en = {
   meta: {
     siteName: 'Dashboard UX Lab',
-    homeTitle: 'Dashboard UX Lab — how dashboards should behave when data isn’t perfect',
+    homeTitle: 'Dashboard UX Lab: loading, empty and error states done right',
     homeDescription:
-      'An interactive lab for dashboard states: loading, slow responses, empty results, failures with retry and restricted access. Built in React and framework-free TypeScript from one shared spec.',
+      'Trigger loading, slow, empty, error and restricted states on a live dashboard and see how each should look, sound to a screen reader and handle focus.',
     labReactTitle: 'React implementation',
     labReactDescription:
       'Play with a React dashboard under real-world conditions: loading, slow responses, empty results, failures with retry and restricted access.',
@@ -47,6 +47,10 @@ export const en = {
     scenariosDescription:
       'How a dashboard should behave in six real-world scenarios: loaded, loading, slow, empty, error with retry, and restricted access.',
     guideTitle: (scenario: string) => `${scenario}: dashboard scenario guide`,
+    guideDescription: (summary: string) =>
+      `${summary} Expected behaviour, accessibility and the mistakes it exposes.`,
+    ogImageAlt:
+      'Dashboard UX Lab: a dashboard request drawn as a timeline from 0 to 12 seconds, with placeholders at 300 ms, a slow notice at 3 s and Cancel at 8 s.',
     accessibilityTitle: 'Accessibility',
     accessibilityDescription:
       'What has and hasn’t been tested in the Dashboard UX Lab, how, and the known issues.',
@@ -68,9 +72,18 @@ export const en = {
     themes: { light: 'Light', dark: 'Dark', system: 'System' },
   },
 
+  author: {
+    title: 'About the author',
+    name: 'Suprabhat Kumar',
+    role: 'Senior front-end engineer',
+    bio: 'I believe the web belongs to everyone. I build interfaces that still work on a slow connection, with a screen reader, from the keyboard and in any language, because the person on the other side might be using any of them.',
+    bio2: 'This lab is free and open source, my small contribution to an open internet that works for all.',
+    portraitAlt: 'Portrait of Suprabhat Kumar',
+    links: 'Find me on',
+    portfolio: 'Portfolio',
+  },
   footer: {
     illustrations: 'Illustrations by Storyset',
-    builtBy: 'Built by',
     note: 'Mock data only; no tracking.',
     source: 'Source on GitHub',
     report: 'Report an issue',
@@ -236,6 +249,8 @@ export const en = {
     },
     stack: {
       title: 'Built and tested with',
+      pause: 'Pause the moving list',
+      play: 'Play the moving list',
     },
     statement:
       'A dashboard is judged less by how it looks with perfect data than by how it behaves while that data is late, missing, failing or off-limits.',
@@ -659,7 +674,7 @@ export const en = {
     title: 'Accessibility',
     lede: 'This page says what has been tested and how. Automated checks catch only part of what matters, so nothing here is called “accessible” until it has been tested with real assistive technology.',
     matrixTitle: 'Testing matrix',
-    caption: (date: string) => `Last updated ${date}`,
+    updated: (date: string) => `Last updated ${date}`,
     check: 'Check',
     status: 'Status',
     rows: [

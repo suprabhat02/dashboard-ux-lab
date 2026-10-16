@@ -97,6 +97,28 @@ test('home: section headings form one outline', async ({ page }) => {
   expect(unlabelled).toBe(0);
 });
 
+test('logo strip: static under reduced motion, pausable otherwise (WCAG 2.2.2)', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const strip = page.locator('[data-marquee]');
+  await expect(strip).not.toHaveAttribute('data-moving');
+  await expect(strip.locator('[data-marquee-toggle]')).toBeHidden();
+  // One readable list; the duplicate exists only for the visual loop.
+  await expect(strip.getByRole('listitem')).toHaveCount(12);
+
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.reload();
+  const toggle = strip.locator('[data-marquee-toggle]');
+  await expect(strip).toHaveAttribute('data-moving', '');
+  await expect(strip.getByRole('listitem')).toHaveCount(12);
+  await expect(toggle).toHaveAccessibleName('Pause the moving list');
+  await toggle.click();
+  await expect(strip).toHaveAttribute('data-paused', '');
+  await expect(toggle).toHaveAccessibleName('Play the moving list');
+});
+
 test.describe('home: request console', () => {
   test('reduced motion: each scenario shows its key frame, nothing plays', async ({
     page,

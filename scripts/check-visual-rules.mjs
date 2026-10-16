@@ -27,6 +27,8 @@ const problems = [];
 for (const file of SCAN.flatMap((dir) => files(join(ROOT, dir)))) {
   // Storyset illustrations are recoloured at build time; their internals are not ours.
   if (file.includes('/assets/illustrations/')) continue;
+  // Third-party brand logos (devicon, MIT) are shown as their owners draw them.
+  if (file.includes('/assets/logos/')) continue;
   const lines = readFileSync(file, 'utf8').split('\n');
   lines.forEach((line, index) => {
     for (const rule of RULES) {

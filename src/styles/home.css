@@ -862,59 +862,141 @@
     border-block-start: 2px solid var(--text);
   }
 
-  /* ── Built and tested with: a bone band, so every logo keeps its colours ─ */
+  /* ── Built and tested with: an infinite strip of logos ──── */
+  /*
+   * Every logo sits in the same white tile (logos keep their brand colours on
+   * either theme), at the same size, with the same gap. The strip moves only
+   * when home.ts allows it (no reduced motion) and stops on hover, on focus,
+   * off screen and with the Pause button (WCAG 2.2.2). Otherwise it is a
+   * static, wrapped list.
+   */
   .stack {
-    --text: var(--bio-black);
-    --text-2: #33433a;
-    --focus: var(--bio-black);
-    padding-block: clamp(2.5rem, 2rem + 2vw, 3.5rem);
-    background: #f6f8f0;
-    color: var(--bio-black);
+    --tile: 3.5rem;
+    --gap: clamp(1.75rem, 1.25rem + 2vw, 3rem);
+    padding-block: clamp(3rem, 2rem + 3vw, 4.5rem);
+    background: var(--bg-2);
     border-block: 1px solid var(--border);
+    overflow: hidden;
   }
-  [data-theme='light'] .stack {
-    background: #ffffff;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme]) .stack {
-      background: #ffffff;
-    }
-  }
-  .stack__inner {
-    display: grid;
-    gap: var(--space-5);
-  }
-  @media (min-width: 62rem) {
-    .stack__inner {
-      grid-template-columns: 12rem minmax(0, 1fr);
-      align-items: center;
-    }
+  .stack__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-block-end: var(--space-6);
   }
   .stack__title {
-    font-size: var(--text-md);
-    font-weight: 700;
-    color: var(--text-2);
+    font-size: clamp(1.35rem, 1.1rem + 1vw, 1.85rem);
+    font-weight: 750;
+    letter-spacing: -0.02em;
+  }
+  .stack__toggle {
+    display: none;
+    place-items: center;
+    flex: none;
+    inline-size: 44px;
+    block-size: 44px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .stack__toggle:hover {
+    background: var(--surface-strong);
+  }
+  .stack__toggle svg {
+    grid-area: 1 / 1;
+  }
+  [data-marquee][data-paused] .stack__icon-pause,
+  [data-marquee]:not([data-paused]) .stack__icon-play {
+    display: none;
+  }
+  .stack__viewport {
+    inline-size: min(var(--page-width), 100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+  .stack__track {
+    display: flex;
   }
   .stack__list {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-4) clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    gap: var(--space-5) var(--gap);
+    margin: 0;
     padding: 0;
     list-style: none;
   }
-  .stack__list li {
+  .stack__list[aria-hidden='true'] {
+    display: none;
+  }
+  .stack__item {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-md);
-    font-weight: 700;
+    gap: var(--space-3);
     white-space: nowrap;
   }
-  .stack__list img {
-    inline-size: auto;
-    block-size: 28px;
-    max-inline-size: 3.5rem;
-    object-fit: contain;
+  .stack__logo {
+    display: grid;
+    place-items: center;
+    flex: none;
+    inline-size: var(--tile);
+    block-size: var(--tile);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow:
+      inset 0 0 0 1px rgb(6 17 13 / 0.08),
+      0 1px 2px rgb(6 17 13 / 0.12);
+  }
+  .stack__logo img {
+    inline-size: 2rem;
+    block-size: 2rem;
+  }
+  .stack__name {
+    font-size: var(--text-lg);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  /* Moving: full-bleed, one line, two identical lists side by side. */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-marquee][data-moving] .stack__toggle {
+      display: grid;
+    }
+    [data-marquee][data-moving] .stack__viewport {
+      inline-size: 100%;
+    }
+    [data-marquee][data-moving] .stack__track {
+      inline-size: max-content;
+      animation: stack-scroll 50s linear infinite;
+    }
+    [data-marquee][data-moving] .stack__list {
+      flex-wrap: nowrap;
+      /* Trailing gap equals the inner gap, so the seam between copies is invisible. */
+      padding-inline-end: var(--gap);
+    }
+    [data-marquee][data-moving] .stack__list[aria-hidden='true'] {
+      display: flex;
+    }
+    [dir='rtl'] [data-marquee][data-moving] .stack__track {
+      animation-name: stack-scroll-rtl;
+    }
+    [data-marquee][data-paused] .stack__track,
+    [data-marquee][data-offscreen] .stack__track,
+    [data-marquee] .stack__viewport:hover .stack__track,
+    [data-marquee]:focus-within .stack__track {
+      animation-play-state: paused;
+    }
+  }
+  @keyframes stack-scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes stack-scroll-rtl {
+    to {
+      transform: translateX(50%);
+    }
   }
 
   /* ── Closing call to action: the one full-lime surface ───── */

@@ -1,6 +1,6 @@
 /**
- * Home page behaviour: the request console in the hero. This is the page's one
- * piece of motion. Everything else is static.
+ * Home page behaviour: the request console in the hero (the page's one
+ * orchestrated moment) and the pausable logo strip.
  *
  * Each scenario is replayed in real time: the playhead runs along the ruler and
  * the miniature dashboard passes through the phases the spec defines (nothing for
@@ -220,7 +220,35 @@ export function initStateDemo(root: HTMLElement): () => void {
   };
 }
 
+/**
+ * The logo strip: moves only without reduced motion, pauses off screen, and the
+ * Pause button stops it for good (WCAG 2.2.2). The movement itself is CSS.
+ */
+export function initMarquee(root: HTMLElement): void {
+  if (reducedMotion()) return;
+  const toggle = root.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
+  if (!toggle) return;
+  const labels = {
+    play: toggle.dataset.labelPlay ?? '',
+    pause: toggle.dataset.labelPause ?? '',
+  };
+  root.dataset.moving = '';
+  toggle.addEventListener('click', () => {
+    const pausing = root.dataset.paused === undefined;
+    if (pausing) root.dataset.paused = '';
+    else delete root.dataset.paused;
+    toggle.setAttribute('aria-label', pausing ? labels.play : labels.pause);
+  });
+  new IntersectionObserver(([entry]) => {
+    if (!entry) return;
+    if (entry.isIntersecting) delete root.dataset.offscreen;
+    else root.dataset.offscreen = '';
+  }).observe(root);
+}
+
 export function initHome(): void {
+  const marquee = document.querySelector<HTMLElement>('[data-marquee]');
+  if (marquee) initMarquee(marquee);
   const demo = document.querySelector<HTMLElement>('[data-demo]');
   if (demo) initStateDemo(demo);
 }

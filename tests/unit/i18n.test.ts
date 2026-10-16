@@ -27,6 +27,7 @@ function leaves(value: unknown, path = ''): Leaf[] {
 /** Product names, technical identifiers and proper nouns that stay as-is. */
 const SAME_IN_ALL_LOCALES = new Set([
   'meta.siteName',
+  'author.name',
   'nav.github',
   'dashboard.company',
   'notFound.eyebrow',
@@ -105,6 +106,33 @@ describe.each(LOCALES)('home copy: %s', (locale) => {
     expect(MESSAGES[locale].home.statusItems.map((item) => item.state)).toEqual(
       MESSAGES.en.home.statusItems.map((item) => item.state),
     );
+  });
+});
+
+/* Search results show about 60 characters of a title and 160 of a description. */
+describe.each(LOCALES)('search snippets: %s', (locale) => {
+  const { meta, scenarios } = MESSAGES[locale];
+  const titles = [
+    meta.homeTitle,
+    ...Object.values(scenarios).map(
+      (s) => `${meta.guideTitle(s.title)} · ${meta.siteName}`,
+    ),
+  ];
+  const descriptions = [
+    meta.homeDescription,
+    meta.labReactDescription,
+    meta.labVanillaDescription,
+    meta.scenariosDescription,
+    meta.accessibilityDescription,
+    ...Object.values(scenarios).map((s) => meta.guideDescription(s.summary)),
+  ];
+
+  it('keeps titles within 65 characters', () => {
+    expect(titles.filter((title) => title.length > 65)).toEqual([]);
+  });
+
+  it('keeps descriptions within 160 characters', () => {
+    expect(descriptions.filter((text) => text.length > 160)).toEqual([]);
   });
 });
 

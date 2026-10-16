@@ -67,4 +67,5 @@ distract from a project whose credibility depends on restraint and precision.
 - New UI must pass the same review: if an effect is decorative and not
   informative, it does not ship.
 - `scripts/check-visual-rules.mjs` fails CI on any gradient or clipped text in
-  `src/` or `public/` (Storyset files are exempt; they are recoloured at build time).
+  `src/` or `public/` (Storyset files are exempt, being recoloured at build time,
+  and so are the devicon brand logos, which are shown as their owners draw them).

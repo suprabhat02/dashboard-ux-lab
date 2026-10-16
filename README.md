@@ -85,6 +85,18 @@ npm run verify       # everything CI runs
 GitHub Actions builds and deploys to GitHub Pages after CI passes on `main`.
 Custom domain: `public/CNAME` → `lab.suprabhat-dev.com` (DNS: `CNAME lab → suprabhat02.github.io`).
 
+## Search and sharing
+
+- Every page carries a canonical URL, `hreflang` alternates for all three
+  languages, a description of at most 160 characters (enforced by a unit test),
+  and schema.org JSON-LD: the site, its author and the page, plus a
+  `WebApplication` for the lab and a `TechArticle` with breadcrumbs for each
+  scenario guide (`src/site/seo.ts`).
+- Social cards (`public/og/<locale>.png`) and app icons are generated once and
+  committed: `CHROMIUM_PATH=… npm run og`.
+- The sitemap (with `hreflang`) is built by `@astrojs/sitemap`; `robots.txt`
+  points to it.
+
 ## Feedback
 
 The most useful contribution is disagreement with the spec. If a behaviour in
@@ -92,4 +104,6 @@ The most useful contribution is disagreement with the spec. If a behaviour in
 
 ## License
 
-MIT
+MIT. Tool logos are from [devicon](https://devicon.dev/) (MIT,
+`src/assets/logos/LICENSE-devicon.txt`); the marks belong to their owners.
+Illustrations by [Storyset](https://storyset.com/).

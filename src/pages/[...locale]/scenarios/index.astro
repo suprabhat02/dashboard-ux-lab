@@ -2,6 +2,7 @@
 import Icon from '../../../components/Icon.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { localePaths, pageI18n, type LocaleProps } from '../../../site/i18n';
+import { SITE_URL } from '../../../site/seo';
 import { getFormatter } from '../../../spec/format';
 import { SCENARIOS } from '../../../spec/scenarios';
 import '../../../styles/pages.css';
@@ -18,6 +19,11 @@ const fmt = getFormatter(locale);
   title={t.meta.scenariosTitle}
   description={t.meta.scenariosDescription}
   section="scenarios"
+  pageType="CollectionPage"
+  breadcrumbs={[
+    { name: t.meta.siteName, url: `${SITE_URL}${href('/')}` },
+    { name: t.guides.title, url: `${SITE_URL}${href('/scenarios/')}` },
+  ]}
 >
   <div class="container guides">
     <header class="page-head">

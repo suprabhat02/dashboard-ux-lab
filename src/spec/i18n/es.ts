@@ -6,10 +6,9 @@ const plural = new Intl.PluralRules('es-ES');
 export const es: Messages = {
   meta: {
     siteName: 'Dashboard UX Lab',
-    homeTitle:
-      'Dashboard UX Lab — cómo debe comportarse un panel cuando los datos no son perfectos',
+    homeTitle: 'Dashboard UX Lab: estados de carga, vacío y error bien hechos',
     homeDescription:
-      'Un laboratorio interactivo de estados de paneles: carga, respuestas lentas, resultados vacíos, fallos con reintento y acceso restringido. Hecho en React y en TypeScript sin framework a partir de una misma especificación.',
+      'Provoca estados de carga, lentitud, vacío, error y acceso restringido en un panel real y mira cómo debe verse, anunciarse y gestionar el foco.',
     labReactTitle: 'Implementación en React',
     labReactDescription:
       'Prueba un panel en React en condiciones reales: carga, respuestas lentas, resultados vacíos, fallos con reintento y acceso restringido.',
@@ -20,6 +19,10 @@ export const es: Messages = {
     scenariosDescription:
       'Cómo debe comportarse un panel en seis escenarios reales: cargado, cargando, lento, vacío, error con reintento y acceso restringido.',
     guideTitle: (scenario) => `${scenario}: guía del escenario`,
+    guideDescription: (summary) =>
+      `${summary} Comportamiento esperado, accesibilidad y errores que revela.`,
+    ogImageAlt:
+      'Dashboard UX Lab: una solicitud de un panel dibujada como una línea de tiempo de 0 a 12 segundos, con marcadores a los 300 ms, aviso de demora a los 3 s y Cancelar a los 8 s.',
     accessibilityTitle: 'Accesibilidad',
     accessibilityDescription:
       'Qué se ha probado y qué no en el Dashboard UX Lab, cómo se ha probado y los problemas conocidos.',
@@ -41,9 +44,18 @@ export const es: Messages = {
     themes: { light: 'Claro', dark: 'Oscuro', system: 'Sistema' },
   },
 
+  author: {
+    title: 'Sobre el autor',
+    name: 'Suprabhat Kumar',
+    role: 'Ingeniero front-end sénior',
+    bio: 'Creo que la web es de todas las personas. Construyo interfaces que siguen funcionando con una conexión lenta, con un lector de pantalla, con el teclado y en cualquier idioma, porque quien está al otro lado puede usar cualquiera de ellos.',
+    bio2: 'Este laboratorio es gratuito y de código abierto: mi pequeña aportación a un internet abierto que funcione para todo el mundo.',
+    portraitAlt: 'Retrato de Suprabhat Kumar',
+    links: 'Encuéntrame en',
+    portfolio: 'Portafolio',
+  },
   footer: {
     illustrations: 'Ilustraciones de Storyset',
-    builtBy: 'Creado por',
     note: 'Solo datos de prueba; sin rastreo.',
     source: 'Código en GitHub',
     report: 'Informar de un problema',
@@ -213,6 +225,8 @@ export const es: Messages = {
     },
     stack: {
       title: 'Construido y probado con',
+      pause: 'Pausar la lista en movimiento',
+      play: 'Reanudar la lista en movimiento',
     },
     statement:
       'Un panel se juzga menos por cómo se ve con datos perfectos que por cómo se comporta cuando esos datos llegan tarde, faltan, fallan o no se pueden ver.',
@@ -630,7 +644,7 @@ export const es: Messages = {
     title: 'Accesibilidad',
     lede: 'Esta página dice qué se ha probado y cómo. Las comprobaciones automáticas solo detectan una parte de lo que importa, así que aquí nada se califica de «accesible» hasta haberlo probado con tecnologías de apoyo reales.',
     matrixTitle: 'Matriz de pruebas',
-    caption: (date) => `Última actualización: ${date}`,
+    updated: (date) => `Última actualización: ${date}`,
     check: 'Comprobación',
     status: 'Estado',
     rows: [

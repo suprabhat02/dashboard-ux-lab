@@ -1,6 +1,7 @@
 ---
 import bricolageLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
 import notoKufiArabic from '@fontsource-variable/noto-kufi-arabic/files/noto-kufi-arabic-arabic-wght-normal.woff2?url';
+import { getImage } from 'astro:assets';
 /* opsz build: weight + optical size, which gives display sizes their character. */
 import '@fontsource-variable/bricolage-grotesque/opsz.css';
 import '@fontsource-variable/geist-mono/wght.css';
@@ -9,10 +10,13 @@ import '@fontsource-variable/geist-mono/wght.css';
 import '@fontsource-variable/noto-kufi-arabic/wght.css';
 import '../styles/base.css';
 import '../styles/tokens.css';
+import portrait from '../assets/author/portrait.avif';
+import AuthorCard from '../components/AuthorCard.astro';
 import ThemeScript from '../components/ThemeScript.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import { hasIllustrations } from '../site/illustrations';
-import { DEFAULT_LOCALE, LOCALE_META, type Locale } from '../spec/i18n';
+import { AUTHOR, REPO_URL, pageGraph, serializeJsonLd, type Crumb } from '../site/seo';
+import { DEFAULT_LOCALE, LOCALES, LOCALE_META, type Locale } from '../spec/i18n';
 import { alternatesFor, pageI18n } from '../site/i18n';
 
 interface Props {
@@ -23,16 +27,55 @@ interface Props {
   /** Section for aria-current in the nav. */
   section?: 'home' | 'lab' | 'scenarios' | 'accessibility';
   noindex?: boolean;
+  /** schema.org type of the page itself. */
+  pageType?: 'WebPage' | 'CollectionPage' | 'AboutPage';
+  /** Trail from the home page to this one, for BreadcrumbList. */
+  breadcrumbs?: readonly Crumb[];
+  /** Extra JSON-LD nodes for this page. */
+  schema?: readonly Record<string, unknown>[];
+  /** og:type; guides are articles. */
+  ogType?: 'website' | 'article';
 }
 
-const { locale, title, description, section, noindex = false } = Astro.props;
+const {
+  locale,
+  title,
+  description,
+  section,
+  noindex = false,
+  pageType,
+  breadcrumbs,
+  schema,
+  ogType = 'website',
+} = Astro.props;
 const { t, dir, htmlLang } = pageI18n(locale);
 const fullTitle = section === 'home' ? title : `${title} · ${t.meta.siteName}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const alternates = alternatesFor(Astro.url.pathname);
 const defaultAlternate = alternates.find((alt) => alt.locale === DEFAULT_LOCALE);
-const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
-const ogLocale = { en: 'en_US', es: 'es_ES', ar: 'ar_AR' }[locale];
+const OG_LOCALE = { en: 'en_US', es: 'es_ES', ar: 'ar_AR' } as const satisfies Record<
+  Locale,
+  string
+>;
+/* Social card per language (scripts/generate-og.mjs), 1200 × 630. */
+const ogImage = new URL(`/og/${locale}.png`, Astro.site).href;
+const authorImage = await getImage({ src: portrait, width: 480, format: 'webp' });
+const jsonLd = noindex
+  ? undefined
+  : pageGraph({
+      url: canonical.href,
+      name: fullTitle,
+      description,
+      inLanguage: htmlLang,
+      siteLanguages: LOCALES.map((code) => LOCALE_META[code].htmlLang),
+      siteName: t.meta.siteName,
+      image: ogImage,
+      authorImage: new URL(authorImage.src, Astro.site).href,
+      authorJobTitle: t.author.role,
+      ...(pageType ? { pageType } : {}),
+      ...(breadcrumbs ? { breadcrumbs } : {}),
+      ...(schema ? { extra: schema } : {}),
+    });
 ---
 
 <!doctype html>
@@ -45,6 +88,12 @@ const ogLocale = { en: 'en_US', es: 'es_ES', ar: 'ar_AR' }[locale];
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && (
+      <meta
+        name="robots"
+        content="index, follow, max-image-preview:large, max-snippet:-1"
+      />
+    )}
     {!noindex &&
       alternates.map((alt) => (
         <link
@@ -63,21 +112,37 @@ const ogLocale = { en: 'en_US', es: 'es_ES', ar: 'ar_AR' }[locale];
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#06110d" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f6f8f0" media="(prefers-color-scheme: light)" />
-    <meta name="author" content="Suprabhat Kumar" />
+    <meta name="author" content={AUTHOR.name} />
+    <link rel="author" href={AUTHOR.url} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="preload" href={bricolageLatin} as="font" type="font/woff2" crossorigin />
     {dir === 'rtl' && (
       <link rel="preload" href={notoKufiArabic} as="font" type="font/woff2" crossorigin />
     )}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={t.meta.siteName} />
-    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale" content={OG_LOCALE[locale]} />
+    {LOCALES.filter((code) => code !== locale).map((code) => (
+      <meta property="og:locale:alternate" content={OG_LOCALE[code]} />
+    ))}
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:creator" content="@SuprabhatKarn97" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.meta.ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content={AUTHOR.twitter} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={t.meta.ogImageAlt} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {jsonLd && <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />}
   </head>
   <body>
     <a class="skip-link" href="#main">
@@ -90,21 +155,21 @@ const ogLocale = { en: 'en_US', es: 'es_ES', ar: 'ar_AR' }[locale];
     </main>
 
     <footer class="site-footer">
-      <div class="container site-footer__inner">
-        <p>
-          {t.footer.builtBy} <a href="https://suprabhat-dev.com/">Suprabhat Kumar</a>.{' '}
-          {t.footer.note}
-        </p>
-        <p>
-          <a href={repoUrl}>{t.footer.source}</a> ·{' '}
-          <a href={`${repoUrl}/issues`}>{t.footer.report}</a>
-          {hasIllustrations && (
-            <>
-              {' · '}
-              <a href="https://storyset.com/">{t.footer.illustrations}</a>
-            </>
-          )}
-        </p>
+      <div class="container">
+        <AuthorCard locale={locale} />
+        <div class="site-footer__inner">
+          <p>{t.footer.note}</p>
+          <p>
+            <a href={REPO_URL}>{t.footer.source}</a> ·{' '}
+            <a href={`${REPO_URL}/issues`}>{t.footer.report}</a>
+            {hasIllustrations && (
+              <>
+                {' · '}
+                <a href="https://storyset.com/">{t.footer.illustrations}</a>
+              </>
+            )}
+          </p>
+        </div>
       </div>
     </footer>
   </body>

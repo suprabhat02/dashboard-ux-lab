@@ -2,7 +2,7 @@
   "name": "dashboard-ux-lab",
   "version": "0.1.0",
   "private": true,
-  "description": "An interactive lab for how dashboards should behave when data isn't perfect — loading, slow, empty, error and restricted states — built twice, in React and framework-free TypeScript.",
+  "description": "An interactive lab for how dashboards should behave when data isn't perfect \u2014 loading, slow, empty, error and restricted states \u2014 built twice, in React and framework-free TypeScript.",
   "type": "module",
   "license": "MIT",
   "author": "Suprabhat Kumar (https://suprabhat-dev.com)",
@@ -21,7 +21,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "verify": "npm run lint && npm run format:check && npm run test && npm run build && npm run test:e2e"
+    "verify": "npm run lint && npm run format:check && npm run test && npm run build && npm run test:e2e",
+    "og": "node scripts/generate-og.mjs"
   },
   "dependencies": {
     "@astrojs/react": "7.0.1",

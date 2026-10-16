@@ -6,6 +6,7 @@ import StateDemo from '../../components/home/StateDemo.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { localePaths, pageI18n, type LocaleProps } from '../../site/i18n';
 import { rulerPosition } from '../../site/ruler';
+import { SITE_URL, webApplication } from '../../site/seo';
 import { LOCALE_META } from '../../spec/i18n';
 import { SCENARIOS } from '../../spec/scenarios';
 import type { ScenarioId } from '../../spec/types';
@@ -20,6 +21,12 @@ const { t, href } = pageI18n(locale);
 const h = t.home;
 const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
 const lastRow = h.comparison.rows.length - 1;
+const app = webApplication({
+  url: `${SITE_URL}${href('/')}`,
+  name: t.meta.siteName,
+  description: t.meta.homeDescription,
+  inLanguage: LOCALE_META[locale].htmlLang,
+});
 
 /** Scenario each closing action opens, in the order of h.cta.actions. */
 const BREAKS = ['slow', 'error', 'restricted'] as const satisfies readonly ScenarioId[];
@@ -38,8 +45,8 @@ const sec = new Intl.NumberFormat(intl, {
 const duration = (value: number): string =>
   value < 1000 ? ms.format(value) : sec.format(value / 1000);
 
-/* Tools behind the lab, with their original logos (svg-logos, CC0; marks belong
-   to their owners). Names are proper nouns, identical in every language. */
+/* Tools behind the lab, drawn with devicon (MIT; marks belong to their owners) so
+   every logo shares one 128-unit grid. Proper nouns, identical in every language. */
 const logos = import.meta.glob<string>('/src/assets/logos/*.svg', {
   query: '?url',
   import: 'default',
@@ -48,15 +55,17 @@ const logos = import.meta.glob<string>('/src/assets/logos/*.svg', {
 const logo = (file: string): string => logos[`/src/assets/logos/${file}.svg`] ?? '';
 const STACK = [
   { name: 'Astro', logo: logo('astro') },
-  { name: 'React 19', logo: logo('react') },
+  { name: 'React', logo: logo('react') },
   { name: 'TypeScript', logo: logo('typescript') },
-  { name: 'Playwright', logo: logo('playwright') },
+  { name: 'HTML', logo: logo('html5') },
+  { name: 'CSS', logo: logo('css3') },
+  { name: 'Node.js', logo: logo('nodejs') },
+  { name: 'npm', logo: logo('npm') },
   { name: 'Vitest', logo: logo('vitest') },
+  { name: 'Playwright', logo: logo('playwright') },
   { name: 'ESLint', logo: logo('eslint') },
-  { name: 'Prettier', logo: logo('prettier') },
-  { name: 'Lucide', logo: logo('lucide') },
+  { name: 'GitHub', logo: logo('github') },
   { name: 'GitHub Actions', logo: logo('github-actions') },
-  { name: 'WCAG 2.2 AA', logo: logo('w3c') },
 ] as const;
 ---
 
@@ -65,6 +74,7 @@ const STACK = [
   title={t.meta.homeTitle}
   description={t.meta.homeDescription}
   section="home"
+  schema={[app]}
 >
   <section class="hero" aria-labelledby="hero-title">
     <div class="container hero__intro">
@@ -167,11 +177,13 @@ const STACK = [
       <div
         class="table-scroll comparison"
         role="region"
-        aria-labelledby="comparison-caption"
+        aria-labelledby="comparison-title"
         tabindex="0"
       >
+        {/* The heading and introduction above name the table visually; the caption
+            gives it a fuller name for assistive technology. */}
         <table class="table">
-          <caption id="comparison-caption">{h.comparison.caption}</caption>
+          <caption class="sr-only">{h.comparison.caption}</caption>
           <thead>
             <tr>
               <th scope="col" class="table__plain-th">
@@ -261,26 +273,47 @@ const STACK = [
     </div>
   </section>
 
-  <section class="stack" aria-labelledby="stack-title">
-    <div class="container stack__inner">
+  <section class="stack" aria-labelledby="stack-title" data-marquee>
+    <div class="container stack__head">
       <h2 class="stack__title" id="stack-title">
         {h.stack.title}
       </h2>
-      <ul class="stack__list" role="list">
-        {STACK.map((item) => (
-          <li>
-            <img
-              src={item.logo}
-              alt=""
-              width="32"
-              height="32"
-              loading="lazy"
-              decoding="async"
-            />
-            <span>{item.name}</span>
-          </li>
-        ))}
-      </ul>
+      <button
+        class="stack__toggle"
+        type="button"
+        data-marquee-toggle
+        data-label-play={h.stack.play}
+        data-label-pause={h.stack.pause}
+        aria-label={h.stack.pause}
+      >
+        <Icon name="pause" size={16} class="stack__icon-pause" />
+        <Icon name="play" size={16} class="stack__icon-play" />
+      </button>
+    </div>
+    <div class="stack__viewport">
+      <div class="stack__track">
+        <ul class="stack__list" role="list">
+          {STACK.map((item) => (
+            <li class="stack__item">
+              <span class="stack__logo">
+                <img src={item.logo} alt="" width="32" height="32" decoding="async" />
+              </span>
+              <span class="stack__name">{item.name}</span>
+            </li>
+          ))}
+        </ul>
+        {/* A second copy makes the loop seamless; assistive tech reads the first only. */}
+        <ul class="stack__list" role="list" aria-hidden="true">
+          {STACK.map((item) => (
+            <li class="stack__item">
+              <span class="stack__logo">
+                <img src={item.logo} alt="" width="32" height="32" decoding="async" />
+              </span>
+              <span class="stack__name">{item.name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </section>
 

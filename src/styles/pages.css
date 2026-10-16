@@ -30,6 +30,11 @@
     color: var(--text-2);
     margin-block-end: var(--space-5);
   }
+  .doc__meta {
+    margin-block: calc(-1 * var(--space-1)) var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--text-3);
+  }
   .doc h2 {
     font-size: var(--text-xl);
     margin-block: var(--space-7) var(--space-3);

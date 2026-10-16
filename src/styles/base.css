@@ -520,8 +520,9 @@
   /* ── Site footer ─────────────────────────────────────────── */
   .site-footer {
     margin-block-start: var(--space-8);
-    padding-block: var(--space-6);
+    padding-block: var(--space-7) var(--space-6);
     border-block-start: 1px solid var(--border);
+    background: var(--bg-2);
     color: var(--text-3);
     font-size: var(--text-sm);
   }
@@ -530,9 +531,90 @@
     flex-wrap: wrap;
     gap: var(--space-3) var(--space-5);
     justify-content: space-between;
+    padding-block-start: var(--space-5);
+    border-block-start: 1px solid var(--border);
   }
   .site-footer a {
     color: var(--text-2);
+  }
+
+  /* About the author */
+  .author {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    grid-template-areas:
+      'photo id'
+      'bio bio'
+      'links links';
+    gap: var(--space-4) var(--space-5);
+    align-items: center;
+    padding-block-end: var(--space-6);
+  }
+  @media (min-width: 48rem) {
+    .author {
+      grid-template-columns: 6rem minmax(0, 1fr) auto;
+      grid-template-areas:
+        'photo id links'
+        'photo bio links';
+      align-items: start;
+      gap: var(--space-3) clamp(1.5rem, 1rem + 2vw, 3rem);
+    }
+  }
+  .author picture {
+    grid-area: photo;
+  }
+  .author__photo {
+    display: block;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    block-size: auto;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow:
+      0 0 0 3px var(--bg-2),
+      0 0 0 5px var(--accent-line);
+  }
+  .author__id {
+    grid-area: id;
+  }
+  .author__name {
+    font-size: var(--text-xl);
+    font-weight: 750;
+    letter-spacing: -0.015em;
+    color: var(--text);
+  }
+  .author__role {
+    margin-block-start: var(--space-1);
+    color: var(--text-2);
+  }
+  .author__bio {
+    grid-area: bio;
+    display: grid;
+    gap: var(--space-2);
+    max-inline-size: 66ch;
+    font-size: var(--text-md);
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .author__links {
+    grid-area: links;
+  }
+  .author__links ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+  }
+  @media (min-width: 48rem) {
+    .author__links ul {
+      flex-direction: column;
+    }
+  }
+  .author__links a {
+    display: inline-block;
+    padding-block: var(--space-1);
+    font-size: var(--text-md);
+    font-weight: 650;
+    color: var(--text);
   }
 }
 
