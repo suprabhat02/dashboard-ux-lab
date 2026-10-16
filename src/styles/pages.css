@@ -41,32 +41,6 @@
   .doc .bullets {
     margin-block-start: var(--space-3);
   }
-  .doc .guide-list {
-    padding: 0;
-  }
-  .guide-list {
-    display: grid;
-    list-style: none;
-  }
-  .guide-card {
-    display: grid;
-    gap: var(--space-1);
-    padding-block: var(--space-4);
-    border-block-end: 1px solid var(--border);
-    color: var(--text);
-    text-decoration: none;
-  }
-  .guide-card:hover .guide-card__title {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-  .guide-card__title {
-    font-weight: 650;
-  }
-  .guide-card__summary {
-    color: var(--text-2);
-    font-size: var(--text-sm);
-  }
   .breadcrumb ol {
     display: flex;
     flex-wrap: wrap;
@@ -79,47 +53,325 @@
     margin-inline-end: var(--space-2);
     color: var(--text-3);
   }
-  .settings-table {
+  /* ── Shared page head ────────────────────────────────────── */
+  .page-head {
+    padding-block: clamp(3rem, 2rem + 4vw, 6rem) clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  }
+  .page-head__title,
+  .guide__title {
+    font-size: clamp(2.6rem, 1.5rem + 4.4vw, 5rem);
+    font-weight: 780;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    max-inline-size: 16ch;
+    text-wrap: balance;
+  }
+  .page-head__lede,
+  .guide__lede {
+    margin-block-start: var(--space-5);
+    max-inline-size: 60ch;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    line-height: 1.6;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+  :lang(ar) :is(.page-head__title, .guide__title) {
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+
+  /* State colours for scenario icons, wherever they appear. */
+  [data-scenario] {
+    --state: var(--accent-ink);
+  }
+  [data-scenario='loaded'] {
+    --state: var(--success);
+  }
+  :is([data-scenario='slow'], [data-scenario='restricted']) {
+    --state: var(--warning);
+  }
+  [data-scenario='error'] {
+    --state: var(--danger);
+  }
+
+  /* ── Scenario index ──────────────────────────────────────── */
+  .guides {
+    padding-block-end: clamp(4rem, 3rem + 4vw, 7rem);
+  }
+  .guide-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
-    gap: var(--space-3) var(--space-5);
-    margin-block-start: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
   }
-  .settings-table div {
-    padding-block-start: var(--space-2);
-    border-block-start: 1px solid var(--border);
+  @media (min-width: 62rem) {
+    .guide-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
-  .settings-table dt {
+  .guide-grid > li {
+    display: grid;
+  }
+  .guide-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-shell);
+    background: var(--bg-card);
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      transform var(--duration) var(--ease-out),
+      border-color var(--duration) var(--ease-out),
+      box-shadow var(--duration) var(--ease-out);
+  }
+  .guide-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-line);
+    box-shadow: var(--shadow-card);
+  }
+  .guide-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: var(--space-3);
+  }
+  .guide-card__icon {
+    color: var(--state);
+  }
+  .guide-card__num {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-3);
+  }
+  .guide-card__title {
+    font-size: var(--text-xl);
+    font-weight: 720;
+    letter-spacing: -0.015em;
+  }
+  .guide-card__summary {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .guide-card__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin-block-start: var(--space-2);
+    font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--text-3);
   }
-  .settings-table dd {
-    margin: 0;
+  .guide-card__facts span + span::before {
+    content: '·';
+    margin-inline-end: var(--space-3);
+  }
+  .guide-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: auto;
+    padding-block-start: var(--space-5);
+    font-weight: 650;
+    color: var(--accent-ink);
+  }
+  .guide-card__more svg {
+    transition: transform var(--duration) var(--ease-out);
+  }
+  .guide-card:hover .guide-card__more svg {
+    transform: translateX(4px);
+  }
+  [dir='rtl'] .guide-card:hover .guide-card__more svg {
+    transform: scaleX(-1) translateX(4px);
+  }
+
+  /* ── Scenario guide ──────────────────────────────────────── */
+  .guide {
+    padding-block-end: clamp(4rem, 3rem + 4vw, 7rem);
+  }
+  .guide__head {
+    padding-block: clamp(2.5rem, 1.5rem + 3vw, 4.5rem) clamp(2.5rem, 2rem + 2vw, 4rem);
+    border-block-end: 1px solid var(--border);
+  }
+  .guide__position {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block: var(--space-6) var(--space-3);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
-    color: var(--text);
+    color: var(--text-2);
   }
-  .pager {
+  .guide__icon {
+    color: var(--state);
+  }
+  .guide__actions {
+    margin-block-start: var(--space-6);
+  }
+  .guide__layout {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+    padding-block-start: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+  @media (min-width: 62rem) {
+    .guide__layout {
+      grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
+      align-items: start;
+    }
+    .guide__aside {
+      position: sticky;
+      inset-block-start: calc(60px + 1.5rem);
+    }
+  }
+  .guide__body {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    max-inline-size: 70ch;
+  }
+  .guide__section h2 {
+    margin-block-end: var(--space-3);
+    font-size: clamp(1.4rem, 1.15rem + 1vw, 1.9rem);
+    font-weight: 720;
+    letter-spacing: -0.02em;
+  }
+  .guide__section p,
+  .guide__section li {
+    font-size: var(--text-lg);
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+  .guide__section .bullets {
+    --bullets-gap: var(--space-3);
+    margin-block-start: var(--space-4);
+  }
+  .guide__aside {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .guide-panel {
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-shell);
+    background: var(--bg-card);
+  }
+  .guide-panel__title {
+    margin-block-end: var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--text-2);
+  }
+  .settings-list {
+    display: grid;
+    margin: 0;
+  }
+  .settings-list div {
     display: flex;
     justify-content: space-between;
     gap: var(--space-4);
-    margin-block-start: var(--space-7);
-    padding-block-start: var(--space-4);
-    border-block-start: 1px solid var(--border);
-    font-weight: 600;
+    padding-block: var(--space-2);
+    border-block-end: 1px solid var(--border);
   }
-  /* The arrow always points the way you read. */
-  .pager__prev::before {
-    content: '← ';
+  .settings-list dt {
+    font-size: var(--text-sm);
+    color: var(--text-2);
   }
-  .pager__next::after {
-    content: ' →';
+  .settings-list dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    text-align: end;
   }
-  [dir='rtl'] .pager__prev::before {
-    content: '→ ';
+  .guide-panel__cta {
+    inline-size: 100%;
+    margin-block-start: var(--space-4);
   }
-  [dir='rtl'] .pager__next::after {
-    content: ' ←';
+  .guide-nav ol {
+    display: grid;
+    padding: 0;
+    list-style: none;
+  }
+  .guide-nav a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-block-size: 44px;
+    padding-inline: var(--space-3);
+    border-inline-start: 2px solid var(--border);
+    color: var(--text-2);
+    text-decoration: none;
+    font-weight: 550;
+  }
+  .guide-nav a svg {
+    color: var(--state);
+    flex: none;
+  }
+  .guide-nav a:hover {
+    color: var(--text);
+    background: var(--surface);
+  }
+  .guide-nav a[aria-current='page'] {
+    border-inline-start-color: var(--accent-line);
+    background: var(--accent-subtle);
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin-block-start: clamp(3rem, 2rem + 3vw, 5rem);
+  }
+  .pager__link {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-shell);
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      border-color var(--duration) var(--ease-out),
+      background-color var(--duration) var(--ease-out);
+  }
+  .pager__link:hover {
+    border-color: var(--accent-line);
+    background: var(--bg-card);
+  }
+  .pager__link--next {
+    grid-column: 2;
+    text-align: end;
+  }
+  .pager__dir {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-2);
+  }
+  .pager__link--next .pager__dir {
+    justify-content: flex-end;
+  }
+  .pager__title {
+    font-size: var(--text-xl);
+    font-weight: 700;
+  }
+  /* "Previous" points against the reading direction: the wrapper mirrors the
+     arrow, which itself already mirrors in right-to-left. */
+  .pager__back {
+    display: inline-flex;
+    transform: scaleX(-1);
+  }
+  @media (max-width: 30rem) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+    .pager__link--next {
+      grid-column: 1;
+    }
   }
 
   .upcoming {

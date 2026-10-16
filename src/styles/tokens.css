@@ -1,216 +1,167 @@
 /*
- * Colour tokens — adopted from suprabhat-dev.com so the lab reads as part of the
- * same body of work. Every role is derived from a few OKLCH seeds; lightness is
- * fixed per role, so any hue keeps the same contrast. Use roles in components,
- * never raw colours.
+ * Colour tokens. Two brand colours only:
+ *
+ *   Synthetic lime  #c8ff00  — energy: primary actions, highlights, markers, data
+ *   Bio black       #06110d  — ground: the dark theme's background, all ink on lime
+ *
+ * Every other value is a tint or shade of these two (green-black neutrals that
+ * share bio black's hue), plus the three state colours the dashboard needs to
+ * say success, warning and failure. No blue, no orange.
+ *
+ * Lime is a fill colour. It is never used as text on light surfaces (1.2:1); text
+ * that needs the brand colour there uses --accent-ink, a deep lime-olive (7.2:1).
  *
  * Theme selection (see ThemeScript.astro):
  *   - no data-theme attribute   → follows prefers-color-scheme
  *   - data-theme="dark|light"   → the visitor's explicit choice
- *
- * Additions for the lab live at the bottom of this file (chart and state roles).
  */
 
 @layer tokens {
   :root {
-    /* ── Seeds ───────────────────────────────────────────────────────── */
-    --seed-primary-h: 225; /* ocean blue */
-    --seed-secondary-h: 185; /* teal */
-    --seed-neutral-h: 235; /* hue bias of the neutrals (deep sea) */
-    --seed-chroma: 0.2; /* brand saturation, 0–0.3 */
-    --seed-success-h: 155;
-    --seed-warning-h: 75;
-    --seed-danger-h: 25;
-    /* Complement of the primary (225 + 180 ≈ 45): a bold tangerine. */
-    --seed-spark-h: 48;
+    --lime: #c8ff00;
+    --bio-black: #06110d;
 
-    /* ── Roles: dark (default) ───────────────────────────────────────── */
-    --bg: oklch(0.15 0.035 var(--seed-neutral-h));
-    --bg-2: oklch(0.18 0.04 var(--seed-neutral-h));
-    --bg-3: oklch(0.23 0.045 var(--seed-neutral-h));
-    --bg-deep: oklch(0.12 0.03 var(--seed-neutral-h));
-    --bg-card: oklch(0.2 0.04 var(--seed-neutral-h));
-    --bg-card-hover: oklch(0.23 0.045 var(--seed-neutral-h));
-    --surface: oklch(0.18 0.037 var(--seed-neutral-h));
-    --surface-strong: oklch(0.22 0.042 var(--seed-neutral-h));
-    --text: oklch(0.97 0.012 var(--seed-neutral-h));
-    --text-2: oklch(0.82 0.035 var(--seed-neutral-h));
-    --text-3: oklch(0.71 0.04 var(--seed-neutral-h));
-    --accent: oklch(0.72 var(--seed-chroma) var(--seed-primary-h));
-    --accent-strong: oklch(0.81 calc(var(--seed-chroma) * 0.7) var(--seed-primary-h));
-    --accent-vivid: oklch(0.78 var(--seed-chroma) var(--seed-primary-h));
-    --accent-dim: oklch(0.62 var(--seed-chroma) var(--seed-primary-h));
-    --accent-2: oklch(0.82 calc(var(--seed-chroma) * 0.65) var(--seed-secondary-h));
-    --on-accent: oklch(0.14 0.03 var(--seed-neutral-h));
-    --success: oklch(0.78 0.16 var(--seed-success-h));
-    --warning: oklch(0.82 0.15 var(--seed-warning-h));
-    --danger: oklch(0.7 0.18 var(--seed-danger-h));
+    /* ── Dark (default): bio black ground, surfaces lifted in steps of the same hue */
+    --bg: #06110d;
+    --bg-2: #0a1813; /* tinted sections */
+    --bg-3: #12241c;
+    --bg-deep: #030a07;
+    --bg-card: #0e1d17;
+    --bg-card-hover: #12241c;
+    --surface: #0c1a14;
+    --surface-strong: #14271f;
+    --text: #ecf3ec; /* 17.0:1 on bg */
+    --text-2: #b3c2b8; /* 10.4:1 */
+    --text-3: #8a9b90; /* 6.6:1 */
+    --accent: var(--lime);
+    --accent-strong: #d9ff4d;
+    --accent-ink: var(--lime); /* 16.2:1 on bg */
+    --on-accent: var(--bio-black); /* 16.2:1 on lime */
+    /* Primary button: lime on dark, bio black on light. */
+    --btn-primary-bg: var(--lime);
+    --btn-primary-fg: var(--bio-black);
+    --btn-primary-hover: #d9ff4d;
+    --focus: var(--lime);
+    /* Thin marks (rules, rails, progress, selection edges): lime on dark; bio
+       black on light, where a 2px lime line would disappear. */
+    --accent-line: var(--lime);
+    /* Bullet dots are lime; on light grounds they get a bio-black ring to stay visible. */
+    --bullet-ring: 0 0 0 0.22em color-mix(in srgb, var(--lime) 18%, transparent);
+    --success: #4ed589;
+    --warning: #fcb442;
+    --danger: #fa6863;
 
-    /* Spark: the bold complementary colour. Blue does the work (links, actions,
-       focus, data); spark adds energy (emphasis, numerals, markers, the closing
-       band). Never used for dashboard states, so it never reads as a warning. */
-    --spark: oklch(0.72 0.18 var(--seed-spark-h));
-    --spark-ink: var(--spark);
-    --on-spark: oklch(0.14 0.03 var(--seed-neutral-h));
-    --spark-soft: color-mix(in oklch, var(--spark) 16%, transparent);
-
-    /* Alpha tints and structural colors, derived from the roles above. */
-    --accent-glow: color-mix(in oklch, var(--accent) 24%, transparent);
-    --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
-    --accent-subtle: color-mix(in oklch, var(--accent) 9%, transparent);
-    --accent-border: color-mix(in oklch, var(--accent) 30%, transparent);
-    --accent-ink: var(--accent-strong);
+    --accent-soft: color-mix(in srgb, var(--lime) 14%, transparent);
+    --accent-subtle: color-mix(in srgb, var(--lime) 8%, transparent);
+    --accent-border: color-mix(in srgb, var(--lime) 34%, transparent);
     --muted: var(--text-2);
-    --divider: color-mix(in oklch, var(--text) 8%, transparent);
-    --border: color-mix(in oklch, var(--text) 7%, transparent);
+    --divider: color-mix(in srgb, var(--text) 9%, transparent);
+    --border: color-mix(in srgb, var(--text) 9%, transparent);
     --line: var(--divider);
-    --shadow: 0 24px 70px oklch(0 0 0 / 0.4);
-    --shadow-sm: 0 2px 12px oklch(0 0 0 / 0.35);
-    --shadow-card: 0 1px 1px oklch(0 0 0 / 0.2), 0 4px 24px oklch(0 0 0 / 0.3);
-    --header-fill: color-mix(in oklch, var(--bg) 62%, transparent);
+    --shadow: 0 24px 70px rgb(0 0 0 / 0.45);
+    --shadow-sm: 0 2px 12px rgb(0 0 0 / 0.4);
+    --shadow-card: 0 1px 1px rgb(0 0 0 / 0.25), 0 6px 28px rgb(0 0 0 / 0.35);
+    --header-fill: color-mix(in srgb, var(--bg) 66%, transparent);
     color-scheme: dark;
   }
 
   [data-theme='light'] {
-    --bg: oklch(0.985 0.006 var(--seed-neutral-h));
-    --bg-2: oklch(0.965 0.012 var(--seed-neutral-h));
-    --bg-3: oklch(0.93 0.018 var(--seed-neutral-h));
-    --bg-deep: oklch(0.93 0.02 var(--seed-neutral-h));
-    --bg-card: oklch(1 0 var(--seed-neutral-h));
-    --bg-card-hover: oklch(0.975 0.01 var(--seed-neutral-h));
-    --surface: oklch(1 0 var(--seed-neutral-h));
-    --surface-strong: oklch(0.965 0.012 var(--seed-neutral-h));
-    --text: oklch(0.22 0.04 var(--seed-neutral-h));
-    --text-2: oklch(0.4 0.045 var(--seed-neutral-h));
-    --text-3: oklch(0.5 0.045 var(--seed-neutral-h));
-    --accent: oklch(0.5 var(--seed-chroma) var(--seed-primary-h));
-    --accent-strong: oklch(0.45 var(--seed-chroma) var(--seed-primary-h));
-    --accent-vivid: oklch(0.44 var(--seed-chroma) var(--seed-primary-h));
-    --accent-dim: oklch(0.42 var(--seed-chroma) var(--seed-primary-h));
-    --accent-2: oklch(0.48 calc(var(--seed-chroma) * 0.6) var(--seed-secondary-h));
-    --on-accent: oklch(1 0 var(--seed-neutral-h));
-    --success: oklch(0.48 0.13 var(--seed-success-h));
-    --warning: oklch(0.5 0.12 var(--seed-warning-h));
-    --danger: oklch(0.52 0.19 var(--seed-danger-h));
-    /* Spark text on light surfaces is darkened to 4.9:1; fills keep the vivid tone. */
-    --spark-ink: oklch(0.55 0.15 var(--seed-spark-h));
-
-    --shadow: 0 24px 70px oklch(0.3 0.05 var(--seed-neutral-h) / 0.12);
-    --shadow-sm: 0 2px 12px oklch(0.3 0.05 var(--seed-neutral-h) / 0.08);
-    --shadow-card:
-      0 1px 1px oklch(0.3 0.05 var(--seed-neutral-h) / 0.05),
-      0 4px 24px oklch(0.3 0.05 var(--seed-neutral-h) / 0.09);
-    --header-fill: color-mix(in oklch, var(--bg-card) 66%, transparent);
+    --bg: #f6f8f0; /* bone, warmed toward lime */
+    --bg-2: #edf1e4;
+    --bg-3: #e2e8d6;
+    --bg-deep: #e8ede0;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f8faf3;
+    --surface: #ffffff;
+    --surface-strong: #edf1e4;
+    --text: #06110d; /* 17.9:1 on bg */
+    --text-2: #33433a; /* 9.8:1 */
+    --text-3: #56665c; /* 5.7:1 */
+    --accent-ink: #3f5c00; /* lime-olive, 7.2:1 on bg */
+    --btn-primary-bg: var(--bio-black);
+    --btn-primary-fg: var(--lime);
+    --btn-primary-hover: #15281f;
+    --focus: var(--bio-black);
+    --accent-line: var(--bio-black);
+    --bullet-ring: 0 0 0 1.5px var(--bio-black);
+    --success: #00723b;
+    --warning: #9d6400;
+    --danger: #be222a;
+    --accent-soft: color-mix(in srgb, var(--lime) 34%, transparent);
+    --accent-subtle: color-mix(in srgb, var(--lime) 20%, transparent);
+    --accent-border: color-mix(in srgb, #3f5c00 40%, transparent);
+    --shadow: 0 24px 70px rgb(6 17 13 / 0.12);
+    --shadow-sm: 0 2px 12px rgb(6 17 13 / 0.08);
+    --shadow-card: 0 1px 1px rgb(6 17 13 / 0.05), 0 6px 26px rgb(6 17 13 / 0.08);
+    --header-fill: color-mix(in srgb, var(--bg-card) 66%, transparent);
     color-scheme: light;
   }
 
-  /* Browsers without OKLCH get the default palette as static values. */
   @media (prefers-color-scheme: light) {
     :root:not([data-theme]) {
-      --bg: oklch(0.985 0.006 var(--seed-neutral-h));
-      --bg-2: oklch(0.965 0.012 var(--seed-neutral-h));
-      --bg-3: oklch(0.93 0.018 var(--seed-neutral-h));
-      --bg-deep: oklch(0.93 0.02 var(--seed-neutral-h));
-      --bg-card: oklch(1 0 var(--seed-neutral-h));
-      --bg-card-hover: oklch(0.975 0.01 var(--seed-neutral-h));
-      --surface: oklch(1 0 var(--seed-neutral-h));
-      --surface-strong: oklch(0.965 0.012 var(--seed-neutral-h));
-      --text: oklch(0.22 0.04 var(--seed-neutral-h));
-      --text-2: oklch(0.4 0.045 var(--seed-neutral-h));
-      --text-3: oklch(0.5 0.045 var(--seed-neutral-h));
-      --accent: oklch(0.5 var(--seed-chroma) var(--seed-primary-h));
-      --accent-strong: oklch(0.45 var(--seed-chroma) var(--seed-primary-h));
-      --accent-vivid: oklch(0.44 var(--seed-chroma) var(--seed-primary-h));
-      --accent-dim: oklch(0.42 var(--seed-chroma) var(--seed-primary-h));
-      --accent-2: oklch(0.48 calc(var(--seed-chroma) * 0.6) var(--seed-secondary-h));
-      --on-accent: oklch(1 0 var(--seed-neutral-h));
-      --success: oklch(0.48 0.13 var(--seed-success-h));
-      --warning: oklch(0.5 0.12 var(--seed-warning-h));
-      --danger: oklch(0.52 0.19 var(--seed-danger-h));
-      /* Spark text on light surfaces is darkened to 4.9:1; fills keep the vivid tone. */
-      --spark-ink: oklch(0.55 0.15 var(--seed-spark-h));
-
-      --shadow: 0 24px 70px oklch(0.3 0.05 var(--seed-neutral-h) / 0.12);
-      --shadow-sm: 0 2px 12px oklch(0.3 0.05 var(--seed-neutral-h) / 0.08);
-      --shadow-card:
-        0 1px 1px oklch(0.3 0.05 var(--seed-neutral-h) / 0.05),
-        0 4px 24px oklch(0.3 0.05 var(--seed-neutral-h) / 0.09);
-      --header-fill: color-mix(in oklch, var(--bg-card) 66%, transparent);
-      color-scheme: light;
-    }
-  }
-
-  @supports not (color: oklch(0 0 0)) {
-    :root {
-      --bg: #000d18;
-      --bg-2: #001421;
-      --bg-3: #03202f;
-      --bg-deep: #00070f;
-      --bg-card: #011925;
-      --bg-card-hover: #03202f;
-      --surface: #01141f;
-      --surface-strong: #031d2b;
-      --text: #eef7fc;
-      --text-2: #afc8d8;
-      --text-3: #8aa6b7;
-      --accent: #00baff;
-      --accent-strong: #3ad3ff;
-      --accent-vivid: #00ceff;
-      --accent-dim: #0099df;
-      --accent-2: #41dfcf;
-      --on-accent: #000b14;
-      --success: #4ed589;
-      --warning: #fcb442;
-      --danger: #fa6863;
-      --spark: #fb7b28;
-      --spark-ink: #fb7b28;
-      --on-spark: #000b14;
-      --spark-soft: rgb(251 123 40 / 0.16);
-    }
-
-    [data-theme='light'] {
-      --bg: #f6fbfe;
-      --bg-2: #ecf5fb;
-      --bg-3: #ddeaf2;
-      --bg-deep: #dceaf4;
+      --bg: #f6f8f0;
+      --bg-2: #edf1e4;
+      --bg-3: #e2e8d6;
+      --bg-deep: #e8ede0;
       --bg-card: #ffffff;
-      --bg-card-hover: #f1f8fd;
+      --bg-card-hover: #f8faf3;
       --surface: #ffffff;
-      --surface-strong: #ecf5fb;
-      --text: #041d2a;
-      --text-2: #2f4c5d;
-      --text-3: #4a6879;
-      --accent: #0073b7;
-      --accent-strong: #0063a6;
-      --accent-vivid: #0060a3;
-      --accent-dim: #005a9d;
-      --accent-2: #007266;
-      --on-accent: #ffffff;
+      --surface-strong: #edf1e4;
+      --text: #06110d;
+      --text-2: #33433a;
+      --text-3: #56665c;
+      --accent-ink: #3f5c00;
+      --btn-primary-bg: var(--bio-black);
+      --btn-primary-fg: var(--lime);
+      --btn-primary-hover: #15281f;
+      --focus: var(--bio-black);
+      --accent-line: var(--bio-black);
+      --bullet-ring: 0 0 0 1.5px var(--bio-black);
       --success: #00723b;
       --warning: #9d6400;
       --danger: #be222a;
-      --spark-ink: #b44f00;
+      --accent-soft: color-mix(in srgb, var(--lime) 34%, transparent);
+      --accent-subtle: color-mix(in srgb, var(--lime) 20%, transparent);
+      --accent-border: color-mix(in srgb, #3f5c00 40%, transparent);
+      --shadow: 0 24px 70px rgb(6 17 13 / 0.12);
+      --shadow-sm: 0 2px 12px rgb(6 17 13 / 0.08);
+      --shadow-card: 0 1px 1px rgb(6 17 13 / 0.05), 0 6px 26px rgb(6 17 13 / 0.08);
+      --header-fill: color-mix(in srgb, var(--bg-card) 66%, transparent);
+      color-scheme: light;
     }
   }
 
   /* ── Lab additions ─────────────────────────────────────────────────────── */
   :root {
     /* Chart */
-    --chart-bar: color-mix(in oklch, var(--accent) 55%, var(--bg-card));
-    --chart-bar-latest: var(--accent);
-    --chart-grid: color-mix(in oklch, var(--text) 9%, transparent);
+    /* Bars: lime on dark; on light, lime fails 3:1 against white, so bars are
+       lime-olive and the latest month is bio black. */
+    --chart-bar: color-mix(in srgb, var(--lime) 55%, var(--bg-card));
+    --chart-bar-latest: var(--lime);
+    --chart-grid: color-mix(in srgb, var(--text) 9%, transparent);
     --chart-axis: var(--text-3);
 
     /* State tints, derived so they track both themes */
-    --success-soft: color-mix(in oklch, var(--success) 14%, transparent);
-    --warning-soft: color-mix(in oklch, var(--warning) 14%, transparent);
-    --danger-soft: color-mix(in oklch, var(--danger) 14%, transparent);
-    --success-border: color-mix(in oklch, var(--success) 35%, transparent);
-    --warning-border: color-mix(in oklch, var(--warning) 38%, transparent);
-    --danger-border: color-mix(in oklch, var(--danger) 38%, transparent);
+    --success-soft: color-mix(in srgb, var(--success) 14%, transparent);
+    --warning-soft: color-mix(in srgb, var(--warning) 14%, transparent);
+    --danger-soft: color-mix(in srgb, var(--danger) 14%, transparent);
+    --success-border: color-mix(in srgb, var(--success) 35%, transparent);
+    --warning-border: color-mix(in srgb, var(--warning) 38%, transparent);
+    --danger-border: color-mix(in srgb, var(--danger) 38%, transparent);
 
     /* Skeleton */
-    --skeleton: color-mix(in oklch, var(--text) 8%, transparent);
-    --skeleton-shine: color-mix(in oklch, var(--text) 14%, transparent);
+    --skeleton: color-mix(in srgb, var(--text) 8%, transparent);
+    --skeleton-shine: color-mix(in srgb, var(--text) 14%, transparent);
+  }
+
+  [data-theme='light'] {
+    --chart-bar: color-mix(in srgb, #3f5c00 62%, var(--bg-card));
+    --chart-bar-latest: var(--bio-black);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+      --chart-bar: color-mix(in srgb, #3f5c00 62%, var(--bg-card));
+      --chart-bar-latest: var(--bio-black);
+    }
   }
 }

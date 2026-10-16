@@ -225,6 +225,25 @@ export const es: Messages = {
       body: 'Ralentízalo, haz que falle, quítale el acceso y observa qué hace una interfaz bien construida al respecto.',
       primary: 'Abrir el laboratorio',
       secondary: 'Leer la especificación en GitHub',
+      highlight: 'a propósito',
+      actionsTitle: 'Tres formas de romperlo',
+      actions: [
+        {
+          label: 'Ralentízalo',
+          detail:
+            'Una respuesta de 12 segundos. La interfaz lo dice y luego ofrece Cancelar.',
+        },
+        {
+          label: 'Haz que falle',
+          detail:
+            'Un 503 en el primer intento. Un mensaje claro, un Reintentar y nada perdido.',
+        },
+        {
+          label: 'Quítale el acceso',
+          detail:
+            'Una persona sin permiso. Sin Reintentar: solo quién puede darle acceso.',
+        },
+      ],
     },
     scenariosTitle: 'Seis escenarios para explorar',
     scenariosIntro:
@@ -263,6 +282,20 @@ export const es: Messages = {
     statusFeedback:
       'Lo más útil que puedes aportar son comentarios sobre la especificación:',
     statusIssueLink: 'abre una incidencia en GitHub',
+    statusStates: { done: 'Hecho', progress: 'En curso', planned: 'Previsto' },
+    statusItems: [
+      { label: 'Especificación compartida y reglas de tiempos', state: 'done' },
+      { label: 'Implementación en React', state: 'done' },
+      { label: 'Inglés, español y árabe de derecha a izquierda', state: 'done' },
+      { label: 'Pruebas automáticas en Chromium, Firefox y WebKit', state: 'done' },
+      { label: 'Implementación en TypeScript sin framework', state: 'progress' },
+      {
+        label: 'Pruebas manuales con lectores de pantalla y dispositivos reales',
+        state: 'progress',
+      },
+      { label: 'Comparación lado a lado de ambas implementaciones', state: 'planned' },
+      { label: 'Revisión de las traducciones por hablantes nativos', state: 'planned' },
+    ],
   },
 
   lab: {
@@ -589,6 +622,12 @@ export const es: Messages = {
       once: 'Solo el primer intento',
       always: 'Todos los intentos',
     },
+    readGuide: 'Leer la guía',
+    position: (index: number, total: number) => `Escenario ${index} de ${total}`,
+    settingsTitle: 'Ajustes del laboratorio',
+    allScenarios: 'Todos los escenarios',
+    previous: 'Anterior',
+    next: 'Siguiente',
     more: 'Más escenarios',
   },
 

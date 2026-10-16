@@ -55,7 +55,7 @@
     position: absolute;
     z-index: -1;
     inset: 0 0 40%;
-    background-color: color-mix(in oklch, var(--text) 16%, transparent);
+    background-color: color-mix(in srgb, var(--text) 16%, transparent);
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E")
       0 0 / 22px 22px;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E")
@@ -83,16 +83,17 @@
   .hero__word {
     display: inline-block;
   }
-  /* Aceternity "Hero Highlight": the key phrase in spark with a solid marker
-     stroke under it. Inline (not inline-block) so the phrase can wrap; the stroke
-     is an inset shadow, cloned on every line. */
+  /* Aceternity "Hero Highlight": the key phrase sits on a lime highlighter band
+     with bio-black ink (16:1) in both themes. Inline (not inline-block) so the
+     phrase can wrap; the band is an inset shadow, cloned on every line, so it can
+     sweep up from the baseline without a gradient. */
   .hero__highlight {
-    --mark: 0.09em;
-    color: var(--spark-ink);
-    box-shadow: inset 0 calc(-1 * var(--mark)) 0 var(--spark);
+    color: var(--bio-black);
+    box-shadow: inset 0 -1.2em 0 var(--lime);
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
-    padding-inline: 0.04em;
+    padding-inline: 0.08em;
+    border-radius: 0.08em;
   }
   .hero__lede {
     margin-block-start: clamp(1.25rem, 1rem + 1vw, 2rem);
@@ -155,7 +156,7 @@
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.04em;
-    color: var(--spark-ink);
+    color: var(--accent-ink);
     font-variant-numeric: tabular-nums;
   }
   .stats__label {
@@ -173,7 +174,7 @@
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     font-weight: 600;
-    color: var(--spark-ink);
+    color: var(--accent-ink);
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -493,7 +494,7 @@
   }
   .demo__tab[aria-selected='true'] {
     color: var(--text);
-    border-inline-start-color: var(--accent);
+    border-inline-start-color: var(--accent-line);
     background: var(--accent-subtle);
   }
   .demo__tab[aria-selected='true'] svg {
@@ -528,7 +529,7 @@
     position: absolute;
     inset: auto 0 0;
     block-size: 3px;
-    background: var(--accent);
+    background: var(--accent-line);
     transform: scaleX(0);
     transform-origin: left;
   }
@@ -645,10 +646,10 @@
     background: var(--border);
   }
   .tl::before {
-    background: color-mix(in oklch, var(--text) 12%, transparent);
+    background: color-mix(in srgb, var(--text) 12%, transparent);
   }
   .tl::after {
-    background: var(--spark);
+    background: var(--accent-line);
     transform-origin: top;
   }
   .tl__item {
@@ -668,8 +669,8 @@
     inline-size: var(--dot);
     block-size: var(--dot);
     border-radius: 50%;
-    border: 3px solid var(--spark);
-    background: var(--spark);
+    border: 3px solid var(--accent-line);
+    background: var(--accent);
     box-shadow: 0 0 0 6px var(--bg-2);
   }
   .tl__head {
@@ -682,7 +683,7 @@
     font-weight: 800;
     line-height: 0.9;
     letter-spacing: -0.04em;
-    color: var(--spark-ink);
+    color: var(--accent-ink);
     font-variant-numeric: tabular-nums;
   }
   .tl__title {
@@ -722,7 +723,7 @@
     max-inline-size: 52rem;
     margin-block-start: clamp(3rem, 2rem + 3vw, 5rem);
     padding-inline-start: var(--space-5);
-    border-inline-start: 4px solid var(--spark);
+    border-inline-start: 4px solid var(--accent-line);
     font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
     font-weight: 650;
     line-height: 1.4;
@@ -760,10 +761,10 @@
   }
   .comparison__ours {
     background: var(--accent-subtle);
-    box-shadow: inset 4px 0 0 var(--spark);
+    box-shadow: inset 4px 0 0 var(--accent-line);
   }
   [dir='rtl'] .comparison__ours {
-    box-shadow: inset -4px 0 0 var(--spark);
+    box-shadow: inset -4px 0 0 var(--accent-line);
   }
   .comparison__ours th {
     color: var(--accent-ink);
@@ -785,7 +786,7 @@
     border-radius: var(--radius-shell);
     background: var(--bg-card);
     box-shadow:
-      inset 0 0 0 1px color-mix(in oklch, var(--spark) 55%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--accent-line) 55%, transparent),
       var(--shadow-card);
     transform: translate(var(--glow-x, 0), var(--glow-y, 0));
     opacity: 0;
@@ -860,7 +861,7 @@
     margin-block-start: auto;
     padding-block-start: var(--space-4);
     box-sizing: content-box;
-    color: var(--spark-ink);
+    color: var(--accent-ink);
     transition: transform var(--duration) var(--ease-out);
   }
   .tile:hover .tile__arrow {
@@ -871,11 +872,25 @@
   }
 
   /* ── Moving stack strip (Aceternity "Infinite Moving Cards") ─ */
+  /* A bone-white band in both themes, so every logo shows in its own colours. */
   .marquee {
+    --text: var(--bio-black);
+    --text-2: #33433a;
+    --focus: var(--bio-black);
     padding-block: clamp(2rem, 1.5rem + 2vw, 3rem);
-    border-block: 1px solid var(--border);
-    background: var(--bg-2);
+    background: #f6f8f0;
+    color: var(--bio-black);
     overflow: hidden;
+  }
+  [data-theme='light'] .marquee {
+    background: #ffffff;
+    border-block: 1px solid var(--border);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) .marquee {
+      background: #ffffff;
+      border-block: 1px solid var(--border);
+    }
   }
   .marquee__head {
     display: flex;
@@ -894,14 +909,14 @@
     place-items: center;
     inline-size: 36px;
     block-size: 36px;
-    border: 1px solid var(--border);
+    border: 1px solid rgb(6 17 13 / 0.2);
     border-radius: 50%;
-    background: var(--surface);
-    color: var(--text);
+    background: transparent;
+    color: var(--bio-black);
     cursor: pointer;
   }
   .marquee__toggle:hover {
-    background: var(--surface-strong);
+    background: rgb(6 17 13 / 0.06);
   }
   .marquee__toggle svg {
     grid-area: 1 / 1;
@@ -920,30 +935,26 @@
   .marquee__list {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3) 0;
+    gap: var(--space-5) 0;
     margin: 0;
     padding: 0;
-    padding-inline: var(--gutter);
     list-style: none;
   }
   .marquee__list li {
     display: inline-flex;
     align-items: center;
-    font-size: clamp(1.35rem, 1rem + 1.6vw, 2.25rem);
+    gap: var(--space-3);
+    margin-inline-end: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+    font-size: clamp(1.15rem, 0.95rem + 0.9vw, 1.6rem);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
     white-space: nowrap;
-    color: var(--text);
   }
-  /* Separator: a small spark square between names. */
-  .marquee__list li::after {
-    content: '';
-    inline-size: 0.32em;
-    block-size: 0.32em;
-    margin-inline: 0.9em;
-    border-radius: 2px;
-    background: var(--spark);
-    transform: rotate(45deg);
+  .marquee__list img {
+    inline-size: auto;
+    block-size: clamp(2rem, 1.6rem + 1.2vw, 2.6rem);
+    max-inline-size: 4.5rem;
+    object-fit: contain;
   }
   /* Static by default: one wrapped list, aligned with the page, no duplicate. */
   [data-marquee]:not([data-moving]) .marquee__viewport {
@@ -953,11 +964,11 @@
   [data-marquee]:not([data-moving]) .marquee__list {
     padding-inline: 0;
   }
+  [data-marquee][data-moving] .marquee__list {
+    padding-inline: 0;
+  }
   [data-marquee]:not([data-moving]) .marquee__track {
     inline-size: auto;
-  }
-  [data-marquee]:not([data-moving]) .marquee__list li:last-child::after {
-    display: none;
   }
   .marquee__list[aria-hidden='true'] {
     display: none;
@@ -1003,89 +1014,244 @@
     list-style: none;
   }
 
-  /* ── Closing call to action: the one full-spark surface ──── */
+  /* ── Closing call to action: the one full-lime surface ───── */
+  /*
+   * Lime ground, bio-black ink in both themes (16:1). Left: the invitation.
+   * Right: three concrete ways to break the dashboard, each a link straight into
+   * the lab in that scenario.
+   */
   .cta {
-    padding-block: clamp(5rem, 3rem + 8vw, 10rem);
-    background: var(--spark);
-    color: var(--on-spark);
+    --text: var(--bio-black);
+    --text-2: #24361a; /* 11:1 on lime */
+    --focus: var(--bio-black);
+    padding-block: clamp(5rem, 3rem + 7vw, 9rem);
+    background: var(--lime);
+    color: var(--bio-black);
   }
-  .cta__mark {
+  .cta__inner {
     display: grid;
-    place-items: center;
-    inline-size: 4rem;
-    block-size: 4rem;
-    margin-block-end: var(--space-5);
-    border-radius: 50%;
-    background: var(--on-spark);
-    color: var(--spark);
+    gap: clamp(3rem, 2rem + 4vw, 5rem);
+    align-items: center;
+  }
+  @media (min-width: 62rem) {
+    .cta__inner {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    }
+  }
+  .cta__title {
+    font-size: clamp(2.75rem, 1.4rem + 5.2vw, 5.75rem);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    max-inline-size: 12ch;
+    text-wrap: balance;
+  }
+  /* The highlight inverts: lime type on a bio-black band. */
+  .cta__highlight {
+    color: var(--lime);
+    box-shadow: inset 0 -1.2em 0 var(--bio-black);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding-inline: 0.1em;
+    border-radius: 0.08em;
+  }
+  .cta__body {
+    margin-block-start: var(--space-5);
+    max-inline-size: 44ch;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+    line-height: 1.55;
+    color: var(--text-2);
   }
   .btn--ink {
-    --btn-bg: var(--on-spark);
-    --btn-fg: oklch(0.98 0.01 var(--seed-neutral-h));
+    --btn-bg: var(--bio-black);
+    --btn-fg: var(--lime);
     --btn-border: transparent;
   }
   .btn--ink:hover {
-    --btn-bg: oklch(0.26 0.04 var(--seed-neutral-h));
+    --btn-bg: #15281f;
     --btn-border: transparent;
   }
   .btn--outline-ink {
     --btn-bg: transparent;
-    --btn-fg: var(--on-spark);
-    --btn-border: var(--on-spark);
+    --btn-fg: var(--bio-black);
+    --btn-border: var(--bio-black);
     border-width: 2px;
   }
   .btn--outline-ink:hover {
-    --btn-bg: color-mix(in oklch, var(--on-spark) 10%, transparent);
-    --btn-border: var(--on-spark);
+    --btn-bg: color-mix(in srgb, var(--bio-black) 8%, transparent);
+    --btn-border: var(--bio-black);
   }
-  .cta :focus-visible {
-    outline-color: var(--on-spark);
+
+  .cta__breaks-title {
+    margin-block-end: var(--space-4);
+    font-size: var(--text-md);
+    font-weight: 700;
   }
-  .cta__inner {
+  .breaks {
     display: grid;
-    justify-items: center;
-    text-align: center;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
   }
-  .cta__title {
-    font-size: clamp(2.4rem, 1.4rem + 4.6vw, 5rem);
-    font-weight: 720;
-    line-height: 1.02;
-    letter-spacing: -0.045em;
-    max-inline-size: 16ch;
-    text-wrap: balance;
+  .break {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'num label arrow'
+      'num detail arrow';
+    align-items: center;
+    gap: var(--space-1) var(--space-5);
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem) clamp(1.25rem, 1rem + 1.2vw, 2rem);
+    border-radius: var(--radius-shell);
+    background: var(--bio-black);
+    color: #ecf3ec;
+    text-decoration: none;
+    transition:
+      transform var(--duration) var(--ease-out),
+      box-shadow var(--duration) var(--ease-out);
   }
-  .cta__body {
-    margin-block-start: var(--space-5);
-    max-inline-size: 52ch;
-    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
-    line-height: 1.6;
-    color: var(--on-spark);
+  .break:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgb(6 17 13 / 0.28);
   }
-  .cta .hero__actions {
-    justify-content: center;
+  .break:focus-visible {
+    outline-offset: 4px;
   }
+  .break__num {
+    grid-area: num;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--lime);
+  }
+  .break__label {
+    grid-area: label;
+    font-size: clamp(1.35rem, 1.1rem + 1vw, 1.85rem);
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .break__detail {
+    grid-area: detail;
+    color: #b3c2b8;
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+  .break__arrow {
+    grid-area: arrow;
+    color: var(--lime);
+    transition: transform var(--duration) var(--ease-out);
+  }
+  .break:hover .break__arrow {
+    transform: translateX(6px);
+  }
+  [dir='rtl'] .break:hover .break__arrow {
+    transform: scaleX(-1) translateX(6px);
+  }
+
+  /* ── Project status: a roadmap with words, not just colour ─ */
   .status {
-    padding-block: clamp(3rem, 2rem + 3vw, 4.5rem);
+    padding-block: clamp(4.5rem, 3rem + 6vw, 8rem);
   }
   .status__inner {
-    max-inline-size: 72ch;
-    color: var(--text-2);
-    line-height: 1.65;
+    display: grid;
+    gap: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    align-items: start;
+  }
+  @media (min-width: 62rem) {
+    .status__inner {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    }
+    .status__intro {
+      position: sticky;
+      inset-block-start: calc(60px + 2rem);
+    }
   }
   .status__title {
-    margin-block-end: var(--space-2);
+    font-size: clamp(2rem, 1.3rem + 2.6vw, 3.25rem);
+    font-weight: 760;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .status__body {
+    margin-block-start: var(--space-4);
+    max-inline-size: 52ch;
     font-size: var(--text-lg);
-    color: var(--text);
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .status__links {
+    display: grid;
+    gap: var(--space-3);
+    margin-block-start: var(--space-5);
+    font-size: var(--text-md);
+    color: var(--text-2);
+  }
+  .status__links .link-arrow {
+    margin: 0;
+  }
+  .roadmap {
+    padding: 0;
+    list-style: none;
+    border-block-start: 1px solid var(--border);
+  }
+  .roadmap__item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-block-end: 1px solid var(--border);
+  }
+  .roadmap__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    color: var(--text-3);
+  }
+  [data-state='done'] .roadmap__mark {
+    border-radius: 50%;
+    background: var(--lime);
+    color: var(--bio-black);
+  }
+  [data-state='progress'] .roadmap__mark {
+    color: var(--accent-ink);
+  }
+  .roadmap__label {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  [data-state='planned'] .roadmap__label {
+    color: var(--text-2);
+    font-weight: 500;
+  }
+  .roadmap__state {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  [data-state='done'] .roadmap__state {
+    color: var(--text-2);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-state='progress'] .roadmap__mark svg {
+      animation: home-spin 8s linear infinite;
+    }
   }
 
   /* ── Illustrations (Storyset, inlined and theme-aware) ───── */
   .illustration {
-    --illustration-accent: var(--accent);
-    /* Storyset neutrals, remapped per theme (light-dark follows color-scheme). */
-    --ill-ink: light-dark(#263238, oklch(0.9 0.02 235));
-    --ill-ink-2: light-dark(#455a64, oklch(0.74 0.035 235));
-    --ill-paper: light-dark(#ffffff, var(--bg-3));
-    --ill-mist: light-dark(#e6edf2, var(--surface-strong));
+    /* Storyset's key colour becomes lime; its neutrals become bio-black inks on
+       light and green-tinted lights on dark, so the figures belong to the palette. */
+    --illustration-accent: var(--lime);
+    --ill-ink: light-dark(#06110d, #dfe9e1);
+    --ill-ink-2: light-dark(#33433a, #9fb1a6);
+    --ill-paper: light-dark(#ffffff, #14271f);
+    --ill-mist: light-dark(#e2e8d6, #1b3328);
     margin: 0;
   }
   .illustration__svg {
@@ -1155,7 +1321,7 @@
         inset-block-start: 0;
         inset-inline: 0;
         block-size: 3px;
-        background: var(--spark);
+        background: var(--accent-line);
         transform-origin: left;
         animation: home-grow linear both;
         animation-timeline: scroll(root block);
@@ -1214,7 +1380,8 @@
   }
   @keyframes home-mark {
     from {
-      box-shadow: inset 0 0 0 var(--spark);
+      box-shadow: inset 0 0 0 var(--lime);
+      color: var(--text);
     }
   }
   @keyframes home-dot {
@@ -1230,6 +1397,11 @@
   @keyframes home-marquee-rtl {
     to {
       transform: translateX(50%);
+    }
+  }
+  @keyframes home-spin {
+    to {
+      transform: rotate(1turn);
     }
   }
   @keyframes home-pop {

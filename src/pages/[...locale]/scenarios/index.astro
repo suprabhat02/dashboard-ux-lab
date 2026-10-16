@@ -1,6 +1,8 @@
 ---
+import Icon from '../../../components/Icon.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { localePaths, pageI18n, type LocaleProps } from '../../../site/i18n';
+import { getFormatter } from '../../../spec/format';
 import { SCENARIOS } from '../../../spec/scenarios';
 import '../../../styles/pages.css';
 
@@ -8,6 +10,7 @@ export const getStaticPaths = localePaths;
 
 const { locale } = Astro.props as LocaleProps;
 const { t, href } = pageI18n(locale);
+const fmt = getFormatter(locale);
 ---
 
 <BaseLayout
@@ -16,18 +19,40 @@ const { t, href } = pageI18n(locale);
   description={t.meta.scenariosDescription}
   section="scenarios"
 >
-  <div class="container doc">
-    <h1 class="doc__title">{t.guides.title}</h1>
-    <p class="doc__lede">{t.guides.lede}</p>
-    <ul class="guide-list" role="list">
-      {SCENARIOS.map((scenario) => (
+  <div class="container guides">
+    <header class="page-head">
+      <h1 class="page-head__title">{t.guides.title}</h1>
+      <p class="page-head__lede">{t.guides.lede}</p>
+    </header>
+
+    <ol class="guide-grid" role="list">
+      {SCENARIOS.map((scenario, index) => (
         <li>
-          <a class="card guide-card" href={href(`/scenarios/${scenario.id}/`)}>
+          <a
+            class="guide-card"
+            href={href(`/scenarios/${scenario.id}/`)}
+            data-scenario={scenario.id}
+          >
+            <span class="guide-card__top">
+              <Icon name={scenario.id} size={28} class="guide-card__icon" />
+              <span class="guide-card__num" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+            </span>
             <span class="guide-card__title">{t.scenarios[scenario.id].title}</span>
             <span class="guide-card__summary">{t.scenarios[scenario.id].summary}</span>
+            <span class="guide-card__facts">
+              <span>{t.lab.ms(fmt.integer(scenario.settings.latencyMs))}</span>
+              <span>{t.guides.failureValues[scenario.settings.failure]}</span>
+              <span>{t.dashboard.roles[scenario.settings.role]}</span>
+            </span>
+            <span class="guide-card__more">
+              {t.guides.readGuide}
+              <Icon name="arrow" size={18} />
+            </span>
           </a>
         </li>
       ))}
-    </ul>
+    </ol>
   </div>
 </BaseLayout>

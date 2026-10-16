@@ -12,6 +12,8 @@ import {
   ChartColumnBig,
   Check,
   ChevronDown,
+  Circle,
+  CircleDashed,
   CircleStop,
   Clock,
   Copy,
@@ -56,6 +58,9 @@ export const ICONS = {
   arrow: ArrowRight,
   play: Play,
   pause: Pause,
+  // Roadmap states
+  planned: Circle,
+  progress: CircleDashed,
   // Scenario and state icons
   loaded: ChartColumnBig,
   loading: Hourglass,

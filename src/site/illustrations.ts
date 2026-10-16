@@ -18,7 +18,7 @@
 export type IllustrationSlot = 'hero' | 'problem' | 'approach';
 const SLOTS: readonly IllustrationSlot[] = ['hero', 'problem', 'approach'];
 
-/** Storyset's shared neutral palette → theme tokens (see .illustration in pages.css). */
+/** Storyset's shared neutral palette → theme tokens (see .illustration in home.css). */
 const NEUTRALS: Record<string, string> = {
   '#263238': 'var(--ill-ink)',
   '#455a64': 'var(--ill-ink-2)',

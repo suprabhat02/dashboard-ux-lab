@@ -7,6 +7,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { localePaths, pageI18n, type LocaleProps } from '../../site/i18n';
 import { LOCALES } from '../../spec/i18n';
 import { SCENARIOS } from '../../spec/scenarios';
+import type { ScenarioId } from '../../spec/types';
 import '../../styles/dashboard.css';
 import '../../styles/pages.css';
 import '../../styles/home.css';
@@ -29,26 +30,34 @@ const stats = [
   { value: BROWSER_ENGINES, label: h.stats.engines },
 ];
 const statementWords = h.statement.split(' ');
+const [ctaBefore = '', ctaAfter = ''] = h.cta.title.split(h.cta.highlight);
+/** Scenario each closing action opens, in the order of h.cta.actions. */
+const BREAKS = ['slow', 'error', 'restricted'] as const satisfies readonly ScenarioId[];
 
 /* Hero title: words rise in one by one; the highlight phrase gets a marker. */
 const [titleBefore = '', titleAfter = ''] = h.hero.title.split(h.hero.highlight);
 const words = (text: string) => text.split(' ').filter(Boolean);
 
-/* Proper nouns, identical in every language. */
+/* Tools behind the lab, with their original logos (svg-logos, CC0; marks belong
+   to their owners). Names are proper nouns, identical in every language. */
+const logos = import.meta.glob<string>('/src/assets/logos/*.svg', {
+  query: '?url',
+  import: 'default',
+  eager: true,
+});
+const logo = (file: string): string => logos[`/src/assets/logos/${file}.svg`] ?? '';
 const STACK = [
-  'Astro',
-  'React 19',
-  'TypeScript',
-  'Vanilla TypeScript',
-  'Playwright',
-  'axe-core',
-  'Vitest',
-  'ESLint',
-  'Lucide',
-  'Storyset',
-  'GitHub Actions',
-  'WCAG 2.2 AA',
-];
+  { name: 'Astro', logo: logo('astro') },
+  { name: 'React 19', logo: logo('react') },
+  { name: 'TypeScript', logo: logo('typescript') },
+  { name: 'Playwright', logo: logo('playwright') },
+  { name: 'Vitest', logo: logo('vitest') },
+  { name: 'ESLint', logo: logo('eslint') },
+  { name: 'Prettier', logo: logo('prettier') },
+  { name: 'Lucide', logo: logo('lucide') },
+  { name: 'GitHub Actions', logo: logo('github-actions') },
+  { name: 'WCAG 2.2 AA', logo: logo('w3c') },
+] as const;
 ---
 
 <BaseLayout
@@ -134,13 +143,33 @@ const STACK = [
       <div class="marquee__track">
         <ul class="marquee__list" role="list">
           {STACK.map((item) => (
-            <li>{item}</li>
+            <li>
+              <img
+                src={item.logo}
+                alt=""
+                width="40"
+                height="40"
+                loading="lazy"
+                decoding="async"
+              />
+              <span>{item.name}</span>
+            </li>
           ))}
         </ul>
         {/* Second copy makes the loop seamless; assistive tech reads the first only. */}
         <ul class="marquee__list" role="list" aria-hidden="true">
           {STACK.map((item) => (
-            <li>{item}</li>
+            <li>
+              <img
+                src={item.logo}
+                alt=""
+                width="40"
+                height="40"
+                loading="lazy"
+                decoding="async"
+              />
+              <span>{item.name}</span>
+            </li>
           ))}
         </ul>
       </div>
@@ -331,34 +360,79 @@ const STACK = [
 
   <section class="cta" aria-labelledby="cta-title">
     <div class="container cta__inner">
-      <span class="cta__mark" aria-hidden="true">
-        <Icon name="error" size={30} />
-      </span>
-      <h2 class="cta__title reveal" id="cta-title">
-        {h.cta.title}
-      </h2>
-      <p class="cta__body reveal">{h.cta.body}</p>
-      <p class="hero__actions reveal">
-        <a class="btn btn--ink btn--xl" href={href('/lab/react/')}>
-          {h.cta.primary}
-          <Icon name="arrow" size={20} />
-        </a>
-        <a class="btn btn--outline-ink btn--xl" href={repoUrl}>
-          {h.cta.secondary}
-        </a>
-      </p>
+      <div class="cta__intro">
+        <h2 class="cta__title reveal" id="cta-title">
+          {ctaBefore}
+          <span class="cta__highlight">{h.cta.highlight}</span>
+          {ctaAfter}
+        </h2>
+        <p class="cta__body reveal">{h.cta.body}</p>
+        <p class="hero__actions reveal">
+          <a class="btn btn--ink btn--xl" href={href('/lab/react/')}>
+            {h.cta.primary}
+            <Icon name="arrow" size={20} />
+          </a>
+          <a class="btn btn--outline-ink btn--xl" href={repoUrl}>
+            {h.cta.secondary}
+          </a>
+        </p>
+      </div>
+      <div class="cta__breaks">
+        <h3 class="cta__breaks-title" id="cta-breaks-title">
+          {h.cta.actionsTitle}
+        </h3>
+        <ol class="breaks" role="list" aria-labelledby="cta-breaks-title">
+          {h.cta.actions.map((action, index) => (
+            <li class="reveal">
+              <a
+                class="break"
+                href={`${href('/lab/react/')}?scenario=${BREAKS[index] ?? 'loaded'}`}
+              >
+                <span class="break__num" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span class="break__label">{action.label}</span>
+                <span class="break__detail">{action.detail}</span>
+                <Icon name="arrow" size={24} class="break__arrow" />
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
   </section>
 
   <section class="status" aria-labelledby="status-title">
     <div class="container status__inner">
-      <h2 class="status__title" id="status-title">
-        {h.statusTitle}
-      </h2>
-      <p>
-        {h.statusBody} <a href={href('/accessibility/')}>{h.statusA11yLink}</a>.{' '}
-        {h.statusFeedback} <a href={`${repoUrl}/issues`}>{h.statusIssueLink}</a>.
-      </p>
+      <div class="status__intro">
+        <h2 class="status__title" id="status-title">
+          {h.statusTitle}
+        </h2>
+        <p class="status__body">{h.statusBody}</p>
+        <p class="status__links">
+          <a class="link-arrow" href={href('/accessibility/')}>
+            {h.statusA11yLink}
+            <Icon name="arrow" size={18} />
+          </a>
+          <span class="status__feedback">
+            {h.statusFeedback} <a href={`${repoUrl}/issues`}>{h.statusIssueLink}</a>.
+          </span>
+        </p>
+      </div>
+      <ol class="roadmap" role="list">
+        {h.statusItems.map((item) => (
+          <li class="roadmap__item" data-state={item.state}>
+            <span class="roadmap__mark" aria-hidden="true">
+              <Icon
+                name={item.state === 'done' ? 'check' : item.state}
+                size={item.state === 'done' ? 14 : 22}
+              />
+            </span>
+            <span class="roadmap__label">{item.label}</span>
+            <span class="roadmap__state">{h.statusStates[item.state]}</span>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 </BaseLayout>

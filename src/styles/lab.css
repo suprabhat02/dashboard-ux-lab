@@ -65,6 +65,10 @@
     font-size: 0.7rem;
     color: var(--text-3);
   }
+  /* On the lime-tinted selected surface, the muted grey drops below 4.5:1. */
+  .impl-switch__link[aria-current='page'] .impl-switch__note {
+    color: var(--text-2);
+  }
 
   /* ── Grid ────────────────────────────────────────────────── */
   .lab__grid {
@@ -157,15 +161,15 @@
       background-color var(--duration-fast) var(--ease-out);
   }
   .preset:hover {
-    border-color: color-mix(in oklch, var(--text) 18%, transparent);
+    border-color: color-mix(in srgb, var(--text) 18%, transparent);
   }
   .preset:has(input:checked) {
     border-color: var(--accent-border);
     background: var(--accent-subtle);
-    border-inline-start: 3px solid var(--accent);
+    border-inline-start: 3px solid var(--accent-line);
   }
   .preset:has(input:focus-visible) {
-    outline: 3px solid var(--accent);
+    outline: 3px solid var(--focus);
     outline-offset: 2px;
   }
   .preset input {
@@ -307,7 +311,7 @@
       inset 0 0 0 1px var(--accent-border);
   }
   .segmented__option input:focus-visible + span {
-    outline: 3px solid var(--accent);
+    outline: 3px solid var(--focus);
     outline-offset: 1px;
   }
   @media (forced-colors: active) {

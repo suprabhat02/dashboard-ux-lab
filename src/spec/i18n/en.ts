@@ -1,5 +1,12 @@
 import type { AccountStatus, KpiId, PlanFilter, Role, ScenarioId } from '../types';
 
+/** Roadmap state of one line in the home page's project status list. */
+export type ProjectState = 'done' | 'progress' | 'planned';
+interface StatusItem {
+  readonly label: string;
+  readonly state: ProjectState;
+}
+
 /**
  * English catalogue. Its shape IS the `Messages` type: every other locale must
  * provide exactly these keys (missing or extra keys fail type-checking), so a
@@ -242,6 +249,23 @@ export const en = {
       body: 'Slow it down, make it fail, take away access, and watch what a well-built interface does about it.',
       primary: 'Open the lab',
       secondary: 'Read the spec on GitHub',
+      /** Exact substring of title, drawn on an ink band. */
+      highlight: 'on purpose',
+      actionsTitle: 'Three ways to break it',
+      actions: [
+        {
+          label: 'Slow it down',
+          detail: 'A 12-second response. Watch the interface say so, then offer Cancel.',
+        },
+        {
+          label: 'Make it fail',
+          detail: 'A 503 on the first try. One clear message, one Retry, no lost state.',
+        },
+        {
+          label: 'Take away access',
+          detail: 'A viewer without permission. No Retry, just who can grant access.',
+        },
+      ],
     },
     scenariosTitle: 'Six scenarios to explore',
     scenariosIntro:
@@ -279,6 +303,21 @@ export const en = {
     statusA11yLink: 'Read the accessibility status',
     statusFeedback: 'The most useful contribution is feedback on the specification:',
     statusIssueLink: 'open an issue on GitHub',
+    statusStates: {
+      done: 'Done',
+      progress: 'In progress',
+      planned: 'Planned',
+    } satisfies Record<ProjectState, string>,
+    statusItems: [
+      { label: 'Shared specification and timing rules', state: 'done' },
+      { label: 'React implementation', state: 'done' },
+      { label: 'English, Spanish and right-to-left Arabic', state: 'done' },
+      { label: 'Automated tests in Chromium, Firefox and WebKit', state: 'done' },
+      { label: 'Framework-free TypeScript implementation', state: 'progress' },
+      { label: 'Manual testing with screen readers and real devices', state: 'progress' },
+      { label: 'Side-by-side comparison of both implementations', state: 'planned' },
+      { label: 'Native-speaker review of the translations', state: 'planned' },
+    ] satisfies readonly StatusItem[],
   },
 
   lab: {
@@ -614,6 +653,12 @@ export const en = {
       once: 'First attempt only',
       always: 'Every attempt',
     },
+    readGuide: 'Read the guide',
+    position: (index: number, total: number) => `Scenario ${index} of ${total}`,
+    settingsTitle: 'Lab settings',
+    allScenarios: 'All scenarios',
+    previous: 'Previous',
+    next: 'Next',
     more: 'More scenarios',
   },
 

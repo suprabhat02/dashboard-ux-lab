@@ -144,7 +144,7 @@
   }
 
   :focus-visible {
-    outline: 3px solid var(--accent);
+    outline: 3px solid var(--focus);
     outline-offset: 3px;
     border-radius: var(--radius-small);
   }
@@ -208,7 +208,7 @@
         background: var(--header-fill);
         -webkit-backdrop-filter: blur(18px) saturate(180%);
         backdrop-filter: blur(18px) saturate(180%);
-        box-shadow: inset 0 -1px 0 color-mix(in oklch, var(--text) 4%, transparent);
+        box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--text) 4%, transparent);
       }
     }
   }
@@ -263,7 +263,7 @@
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: 0.45em;
-    text-decoration-color: var(--accent);
+    text-decoration-color: var(--accent-line);
   }
   .site-header__tools {
     display: flex;
@@ -404,7 +404,7 @@
   }
 
   /* ── Bullet lists ────────────────────────────────────────── */
-  /* The one bullet style on the site: a filled green circle, centred on the first
+  /* The one bullet style on the site: a filled lime circle, centred on the first
      line whatever the font size or script. */
   .bullets {
     display: grid;
@@ -425,8 +425,8 @@
     inline-size: 0.6em;
     block-size: 0.6em;
     border-radius: 50%;
-    background: var(--success);
-    box-shadow: 0 0 0 0.22em var(--success-soft);
+    background: var(--lime);
+    box-shadow: var(--bullet-ring);
   }
   @media (forced-colors: active) {
     .bullets > li::before {
@@ -462,7 +462,7 @@
   }
   .btn:hover {
     --btn-bg: var(--bg-card-hover);
-    --btn-border: color-mix(in oklch, var(--text) 16%, transparent);
+    --btn-border: color-mix(in srgb, var(--text) 16%, transparent);
   }
   .btn:active {
     transform: translateY(1px);
@@ -473,12 +473,12 @@
     opacity: 0.65;
   }
   .btn--primary {
-    --btn-bg: var(--accent);
-    --btn-fg: var(--on-accent);
+    --btn-bg: var(--btn-primary-bg);
+    --btn-fg: var(--btn-primary-fg);
     --btn-border: transparent;
   }
   .btn--primary:hover {
-    --btn-bg: var(--accent-strong);
+    --btn-bg: var(--btn-primary-hover);
     --btn-border: transparent;
   }
   .btn--ghost {

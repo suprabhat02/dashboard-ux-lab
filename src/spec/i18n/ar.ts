@@ -236,6 +236,23 @@ export const ar: Messages = {
       body: 'أبطئها، واجعلها تُخفق، واسحب منها الصلاحيات، ثم شاهد ما تفعله واجهة متقنة الصنع.',
       primary: 'افتح المختبر',
       secondary: 'اقرأ المواصفة على GitHub',
+      highlight: 'عمدًا',
+      actionsTitle: 'ثلاث طرق لكسرها',
+      actions: [
+        {
+          label: 'أبطئها',
+          detail: 'استجابة تستغرق 12 ثانية. تُصرّح الواجهة بذلك، ثم تعرض الإلغاء.',
+        },
+        {
+          label: 'اجعلها تُخفق',
+          detail:
+            'خطأ 503 في المحاولة الأولى. رسالة واضحة، وإعادة محاولة واحدة، دون فقدان أي شيء.',
+        },
+        {
+          label: 'اسحب الصلاحيات',
+          detail: 'مستخدم بلا صلاحية. لا إعادة محاولة، بل بيان لمن يستطيع منح الوصول.',
+        },
+      ],
     },
     scenariosTitle: 'ستة سيناريوهات للاستكشاف',
     scenariosIntro:
@@ -270,6 +287,17 @@ export const ar: Messages = {
     statusA11yLink: 'اطّلع على حالة إمكانية الوصول',
     statusFeedback: 'أكثر ما يفيد المشروع هو ملاحظاتك على المواصفة:',
     statusIssueLink: 'افتح بلاغًا على GitHub',
+    statusStates: { done: 'مكتمل', progress: 'قيد التنفيذ', planned: 'مُخطَّط له' },
+    statusItems: [
+      { label: 'المواصفة المشتركة وقواعد التوقيت', state: 'done' },
+      { label: 'التنفيذ باستخدام React', state: 'done' },
+      { label: 'الإنجليزية والإسبانية والعربية من اليمين إلى اليسار', state: 'done' },
+      { label: 'اختبارات آلية في Chromium وFirefox وWebKit', state: 'done' },
+      { label: 'تنفيذ بلغة TypeScript دون إطار عمل', state: 'progress' },
+      { label: 'اختبار يدوي بقارئات الشاشة وأجهزة حقيقية', state: 'progress' },
+      { label: 'مقارنة جنبًا إلى جنب بين التنفيذين', state: 'planned' },
+      { label: 'مراجعة الترجمات من متحدثين أصليين', state: 'planned' },
+    ],
   },
 
   lab: {
@@ -589,6 +617,12 @@ export const ar: Messages = {
       plan: 'تصفية الخطة',
     },
     failureValues: { never: 'أبدًا', once: 'المحاولة الأولى فقط', always: 'كل محاولة' },
+    readGuide: 'اقرأ الدليل',
+    position: (index: number, total: number) => `السيناريو ${index} من ${total}`,
+    settingsTitle: 'إعدادات المختبر',
+    allScenarios: 'كل السيناريوهات',
+    previous: 'السابق',
+    next: 'التالي',
     more: 'مزيد من السيناريوهات',
   },
 

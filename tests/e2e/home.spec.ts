@@ -107,7 +107,7 @@ test.describe('home: motion components', () => {
     await expect(strip).not.toHaveAttribute('data-moving');
     await expect(strip.locator('[data-marquee-toggle]')).toBeHidden();
     // One readable list; the duplicate exists only for the visual loop.
-    await expect(strip.getByRole('listitem')).toHaveCount(12);
+    await expect(strip.getByRole('listitem')).toHaveCount(10);
 
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.reload();
