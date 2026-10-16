@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dashboardReducer, initialState } from '../../src/impl-react/state';
+import { dashboardReducer, initialState } from '../../src/spec/dashboard-state';
 import { buildDashboard } from '../../src/spec/data';
 import { DEFAULT_SETTINGS } from '../../src/spec/scenarios';
 import type { FetchOutcome } from '../../src/spec/types';
@@ -11,7 +11,7 @@ const fail: FetchOutcome = {
   error: { kind: 'server', status: 503, requestId: 'req_x' },
 };
 
-describe('React dashboard reducer', () => {
+describe('dashboard reducer (shared by every implementation)', () => {
   it('ignores responses for superseded requests', () => {
     let state = initialState(DEFAULT_SETTINGS, 0);
     const staleId = state.request.id;

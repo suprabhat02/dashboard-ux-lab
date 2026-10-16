@@ -40,7 +40,7 @@ export const en = {
     labReactTitle: 'React implementation',
     labReactDescription:
       'Play with a React dashboard under real-world conditions: loading, slow responses, empty results, failures with retry and restricted access.',
-    labVanillaTitle: 'Vanilla implementation (in progress)',
+    labVanillaTitle: 'Vanilla TypeScript implementation',
     labVanillaDescription:
       'The framework-free implementation of the Dashboard UX Lab, built from the same spec as the React version.',
     scenariosTitle: 'Scenario guides',
@@ -155,7 +155,7 @@ export const en = {
         },
         {
           title: 'One specification, two implementations',
-          body: 'The same behaviour is being built in React and in plain TypeScript, and one shared test suite checks both, so the comparison is fair.',
+          body: 'The same behaviour is built in React and in plain TypeScript, and one shared test suite checks both, so the comparison is fair.',
         },
         {
           title: 'Three languages, including right-to-left',
@@ -307,7 +307,7 @@ export const en = {
     ],
     statusTitle: 'Where the project stands',
     statusBody:
-      'The React implementation, the shared specification and the automated tests are in place. Manual testing with screen readers and on real devices is in progress; results and known issues are published on the accessibility page.',
+      'Both implementations (React and framework-free TypeScript), the shared specification and the automated tests are in place. Manual testing with screen readers and on real devices is in progress; results and known issues are published on the accessibility page.',
     statusA11yLink: 'Read the accessibility status',
     statusFeedback: 'The most useful contribution is feedback on the specification:',
     statusIssueLink: 'open an issue on GitHub',
@@ -321,7 +321,7 @@ export const en = {
       { label: 'React implementation', state: 'done' },
       { label: 'English, Spanish and right-to-left Arabic', state: 'done' },
       { label: 'Automated tests in Chromium, Firefox and WebKit', state: 'done' },
-      { label: 'Framework-free TypeScript implementation', state: 'progress' },
+      { label: 'Framework-free TypeScript implementation', state: 'done' },
       { label: 'Manual testing with screen readers and real devices', state: 'progress' },
       { label: 'Side-by-side comparison of both implementations', state: 'planned' },
       { label: 'Native-speaker review of the translations', state: 'planned' },
@@ -334,7 +334,7 @@ export const en = {
     implNav: 'Implementation',
     impl: {
       react: { label: 'React', note: 'React 19 · hooks + reducer' },
-      vanilla: { label: 'Vanilla', note: 'No framework · in progress' },
+      vanilla: { label: 'Vanilla', note: 'No framework · TypeScript' },
     },
     controlsLabel: 'Lab controls',
     railToggle: 'Scenario:',
@@ -367,12 +367,6 @@ export const en = {
       'Mix the knobs to find edge cases: a slow request that then fails, a viewer on an empty filter, a retry that keeps failing. The dashboard follows the same rules for every combination.',
     customA11y:
       'Watch the Screen reader tab: every change you trigger produces at most one announcement per state, never a queue.',
-    vanilla: {
-      title: 'The vanilla implementation is being built',
-      body: 'It will be written from the written spec, not ported from the React code, and must pass the same end-to-end test suite before it ships here. Until then, the controls on this page only update the URL.',
-      openReact: 'Open the React version',
-      readSpec: 'Read the spec',
-    },
     noscript:
       'This interactive dashboard needs JavaScript. The scenario guides work without it.',
   },
@@ -697,7 +691,6 @@ export const en = {
     knownTitle: 'Known issues',
     known: [
       'Individual chart bars are not keyboard-focusable by design; the data is available as a table.',
-      'The vanilla implementation is not built yet.',
       'On narrow screens the chart scales down and its axis labels become small; the “Show data as table” view is the readable alternative until a narrow-screen chart layout lands.',
       'Spanish and Arabic translations were drafted by the author and have not yet been reviewed by native speakers.',
     ],

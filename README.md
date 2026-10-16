@@ -21,8 +21,9 @@ feature shipped in all three — enforced by the build ([ADR 0004](docs/decision
 | Playground: controls + inspector      | ✅ Done                                              |
 | English, Spanish, Arabic (RTL)        | ✅ Done (Spanish/Arabic await native review)         |
 | Scenario guides                       | ✅ Done                                              |
-| Unit + e2e + axe tests                | ✅ Passing locally (Chromium); CI covers all engines |
-| Vanilla implementation                | 🚧 Next milestone                                    |
+| Vanilla implementation                | ✅ Done (16 KB gz; pixel-identical to React)         |
+| Unit + e2e + axe tests                | ✅ One suite, both builds, three engines, in CI      |
+| Side-by-side comparison page          | 🚧 Next milestone                                    |
 | Manual screen reader / device testing | ⏳ Not yet — see [checklist](docs/manual-testing.md) |
 
 ## What you can do in the lab
@@ -39,18 +40,21 @@ src/
   spec/           Framework-free contract: types, mock data + API, timings, i18n catalogues,
                   formatting, chart geometry, table sorting, lab event protocol
   impl-react/     React 19 implementation (reducer + effect, no fetching library)
-  impl-vanilla/   Framework-free implementation (next milestone)
+  impl-vanilla/   Framework-free implementation (DOM + TypeScript, rendering by region)
   lab/            Playground chrome (vanilla TS): controls, explanation, inspector
   styles/         Shared CSS (cascade layers, OKLCH tokens, container queries)
   pages/          Astro pages: home, lab, scenario guides, accessibility
 tests/
-  unit/           Vitest: spec + React reducer
+  unit/           Vitest: spec, shared reducer and rules
   e2e/            Playwright + axe: one suite, run against every implementation
 docs/             Behaviour spec, decision log, manual testing checklist
 ```
 
 Boundaries are enforced by ESLint (see [ADR 0002](docs/decisions/0002-implementation-boundaries.md)):
 `spec/` imports nothing, implementations import only `spec/`, and neither imports the other.
+Behaviour decisions (state, what to show, announce and focus) live in `spec/` and are
+shared by both builds ([ADR 0006](docs/decisions/0006-vanilla-architecture-and-shared-rules.md));
+how they differ in implementation is tracked in the [divergence log](docs/divergence-log.md).
 
 **Runtime dependencies:** React + React DOM (React page only) and two self-hosted
 variable fonts (Bricolage Grotesque, Geist Mono). No UI, chart, state or CSS library.

@@ -7,7 +7,15 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { CURRENT_MONTH, isEmptyDashboard, PLAN_FILTERS } from '../spec/data';
+import { CURRENT_MONTH, PLAN_FILTERS } from '../spec/data';
+import { dashboardReducer, initialState } from '../spec/dashboard-state';
+import {
+  focusTargetFor,
+  phaseAnnouncement,
+  screenFor,
+  statusAnnouncement,
+  type FocusIntent,
+} from '../spec/dashboard-rules';
 import type { Locale } from '../spec/i18n';
 import { fetchDashboard, isAbortError } from '../spec/mock-api';
 import { createLabChannel, type LabChannel } from '../spec/protocol';
@@ -35,9 +43,6 @@ import { useAnnouncer } from './hooks/useAnnouncer';
 import { useLabSettingsSync } from './hooks/useLabSettingsSync';
 import { useLoadingPhase } from './hooks/useLoadingPhase';
 import { I18nProvider, useI18n } from './i18n';
-import { dashboardReducer, initialState } from './state';
-
-type FocusIntent = 'title' | 'reload' | null;
 
 function Widget({
   title,
@@ -131,7 +136,7 @@ function Dashboard() {
       performance.now(),
     ),
   );
-  const { request, view, retryingFrom, lastData } = state;
+  const { request, view } = state;
   const isLoading = view.status === 'loading';
   const phase = useLoadingPhase(isLoading ? view.startedAt : null);
   const { politeRef, assertiveRef, announce } = useAnnouncer(channel);
@@ -214,31 +219,12 @@ function Dashboard() {
   const previousStatus = useRef<RequestStatus>('idle');
   useEffect(() => {
     const from = previousStatus.current;
-    if (from === view.status) return;
-    previousStatus.current = view.status;
-    channel.emit({ type: 'state', from, to: view.status });
-
-    const { userInitiated, settings } = request;
-    switch (view.status) {
-      case 'success':
-        if (isEmptyDashboard(view.data))
-          announce(copy.empty.announce(copy.plans[settings.plan]));
-        else if (userInitiated) announce(copy.loaded.announce(copy.plans[settings.plan]));
-        break;
-      case 'error':
-        announce(copy.error.announce, view.attempt > 1 ? 'assertive' : 'polite');
-        break;
-      case 'forbidden':
-        if (userInitiated) announce(copy.forbidden.announce);
-        break;
-      case 'cancelled':
-        announce(copy.cancelled.announce);
-        break;
-      case 'loading':
-      case 'idle':
-        break;
-    }
-  }, [view, request, channel, announce, copy]);
+    if (from === state.view.status) return;
+    previousStatus.current = state.view.status;
+    channel.emit({ type: 'state', from, to: state.view.status });
+    const said = statusAnnouncement(state, copy);
+    if (said) announce(said.message, said.politeness);
+  }, [state, channel, announce, copy]);
 
   const previousPhase = useRef<LoadingPhase | null>(null);
   useEffect(() => {
@@ -246,21 +232,9 @@ function Dashboard() {
     previousPhase.current = phase;
     if (phase === null) return;
     channel.emit({ type: 'phase', phase });
-    if (!request.userInitiated && phase === 'skeleton') return;
-    switch (phase) {
-      case 'skeleton':
-        if (!retryingFrom) announce(copy.loading.announce);
-        break;
-      case 'slow':
-        announce(copy.loading.slowTitle);
-        break;
-      case 'stalled':
-        announce(`${copy.loading.stalledTitle} ${copy.loading.stalledBody}`);
-        break;
-      case 'pending':
-        break;
-    }
-  }, [phase, request.userInitiated, retryingFrom, channel, announce, copy]);
+    const said = phaseAnnouncement(phase, state, copy);
+    if (said) announce(said.message, said.politeness);
+  }, [phase, state, channel, announce, copy]);
 
   /* ── Focus management: only when the focused control disappeared ─────── */
 
@@ -274,14 +248,15 @@ function Dashboard() {
     const focusInDashboard = sectionRef.current?.contains(active) ?? false;
     if (!focusWasLost && !focusInDashboard) return; // the user moved on; don't steal focus
 
-    if (intent === 'reload' && view.status === 'cancelled' && reloadRef.current) {
+    const target = focusTargetFor(intent, view.status);
+    if (target === 'reload' && reloadRef.current) {
       reloadRef.current.focus();
       channel.emit({
         type: 'focus',
         target: copy.focus.button(copy.cancelled.action),
         reason: copy.focus.cancelRemoved,
       });
-    } else if (intent === 'title' && view.status !== 'error' && titleRef.current) {
+    } else if (target === 'title' && titleRef.current) {
       titleRef.current.focus();
       channel.emit({
         type: 'focus',
@@ -293,57 +268,46 @@ function Dashboard() {
 
   /* ── Render ──────────────────────────────────────────────────────────── */
 
-  let body: ReactNode;
-  let reserveOnly = false;
-  if (isLoading && retryingFrom) {
-    body = (
-      <ErrorState error={retryingFrom} retrying onRetry={retry} retryRef={retryRef} />
-    );
-  } else if (isLoading) {
-    if (phase === 'pending' && lastData)
-      body = <LoadedContent data={lastData} settings={request.settings} />;
-    else {
-      reserveOnly = phase === 'pending';
+  const { screen, notice, busy } = screenFor(state, phase);
+  let body: ReactNode = null;
+  switch (screen.kind) {
+    case 'error':
+      body = (
+        <ErrorState
+          error={screen.error}
+          retrying={screen.retrying}
+          onRetry={retry}
+          retryRef={retryRef}
+        />
+      );
+      break;
+    case 'stale':
+    case 'loaded':
+      body = <LoadedContent data={screen.data} settings={request.settings} />;
+      break;
+    case 'skeleton':
       body = <SkeletonContent />;
-    }
-  } else {
-    switch (view.status) {
-      case 'success':
-        body = isEmptyDashboard(view.data) ? (
-          <EmptyState
-            plan={view.data.plan}
-            onReset={() => {
-              changePlan('all', 'title');
-            }}
-          />
-        ) : (
-          <LoadedContent data={view.data} settings={request.settings} />
-        );
-        break;
-      case 'error':
-        body = (
-          <ErrorState
-            error={view.error}
-            retrying={false}
-            onRetry={retry}
-            retryRef={retryRef}
-          />
-        );
-        break;
-      case 'forbidden':
-        body = <ForbiddenState error={view.error} />;
-        break;
-      case 'cancelled':
-        body = <CancelledState onReload={replay} reloadRef={reloadRef} />;
-        break;
-      case 'idle':
-        body = null;
-        break;
-    }
+      break;
+    case 'empty':
+      body = (
+        <EmptyState
+          plan={screen.plan}
+          onReset={() => {
+            changePlan('all', 'title');
+          }}
+        />
+      );
+      break;
+    case 'forbidden':
+      body = <ForbiddenState error={screen.error} />;
+      break;
+    case 'cancelled':
+      body = <CancelledState onReload={replay} reloadRef={reloadRef} />;
+      break;
+    case 'idle':
+      break;
   }
-
-  const showNotice =
-    isLoading && !retryingFrom && (phase === 'slow' || phase === 'stalled');
+  const reserveOnly = screen.kind === 'skeleton' && screen.reserveOnly;
 
   return (
     <section
@@ -384,10 +348,10 @@ function Dashboard() {
 
       <div
         className="dash__content"
-        aria-busy={isLoading}
+        aria-busy={busy}
         data-reserve={reserveOnly || undefined}
       >
-        {showNotice && <SlowNotice stalled={phase === 'stalled'} onCancel={cancel} />}
+        {notice && <SlowNotice stalled={notice === 'stalled'} onCancel={cancel} />}
         {body}
       </div>
 

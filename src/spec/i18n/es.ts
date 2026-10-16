@@ -12,7 +12,7 @@ export const es: Messages = {
     labReactTitle: 'Implementación en React',
     labReactDescription:
       'Prueba un panel en React en condiciones reales: carga, respuestas lentas, resultados vacíos, fallos con reintento y acceso restringido.',
-    labVanillaTitle: 'Implementación vanilla (en curso)',
+    labVanillaTitle: 'Implementación en TypeScript sin framework',
     labVanillaDescription:
       'La implementación sin framework del Dashboard UX Lab, construida a partir de la misma especificación que la versión en React.',
     scenariosTitle: 'Guías de escenarios',
@@ -128,7 +128,7 @@ export const es: Messages = {
         },
         {
           title: 'Una especificación, dos implementaciones',
-          body: 'El mismo comportamiento se está construyendo en React y en TypeScript sin framework, y una misma batería de pruebas verifica ambas, así que la comparación es justa.',
+          body: 'El mismo comportamiento está construido en React y en TypeScript sin framework, y una misma batería de pruebas verifica ambas, así que la comparación es justa.',
         },
         {
           title: 'Tres idiomas, incluido uno de derecha a izquierda',
@@ -286,7 +286,7 @@ export const es: Messages = {
     ],
     statusTitle: 'Estado del proyecto',
     statusBody:
-      'La implementación en React, la especificación compartida y las pruebas automáticas ya están listas. Las pruebas manuales con lectores de pantalla y en dispositivos reales están en curso; los resultados y los problemas conocidos se publican en la página de accesibilidad.',
+      'Las dos implementaciones (React y TypeScript sin framework), la especificación compartida y las pruebas automáticas ya están listas. Las pruebas manuales con lectores de pantalla y en dispositivos reales están en curso; los resultados y los problemas conocidos se publican en la página de accesibilidad.',
     statusA11yLink: 'Ver el estado de accesibilidad',
     statusFeedback:
       'Lo más útil que puedes aportar son comentarios sobre la especificación:',
@@ -297,7 +297,7 @@ export const es: Messages = {
       { label: 'Implementación en React', state: 'done' },
       { label: 'Inglés, español y árabe de derecha a izquierda', state: 'done' },
       { label: 'Pruebas automáticas en Chromium, Firefox y WebKit', state: 'done' },
-      { label: 'Implementación en TypeScript sin framework', state: 'progress' },
+      { label: 'Implementación en TypeScript sin framework', state: 'done' },
       {
         label: 'Pruebas manuales con lectores de pantalla y dispositivos reales',
         state: 'progress',
@@ -313,7 +313,7 @@ export const es: Messages = {
     implNav: 'Implementación',
     impl: {
       react: { label: 'React', note: 'React 19 · hooks + reducer' },
-      vanilla: { label: 'Vanilla', note: 'Sin framework · en curso' },
+      vanilla: { label: 'Vanilla', note: 'Sin framework · TypeScript' },
     },
     controlsLabel: 'Controles del laboratorio',
     railToggle: 'Escenario:',
@@ -350,12 +350,6 @@ export const es: Messages = {
       'Combina los controles para encontrar casos límite: una solicitud lenta que luego falla, un lector con un filtro vacío, un reintento que sigue fallando. El panel sigue las mismas reglas en todas las combinaciones.',
     customA11y:
       'Mira la pestaña Lector de pantalla: cada cambio que provocas produce como mucho un anuncio por estado, nunca una cola.',
-    vanilla: {
-      title: 'La implementación vanilla está en construcción',
-      body: 'Se escribirá a partir de la especificación, no portando el código de React, y deberá superar la misma batería de pruebas de extremo a extremo antes de publicarse aquí. Hasta entonces, los controles de esta página solo actualizan la URL.',
-      openReact: 'Abrir la versión en React',
-      readSpec: 'Leer la especificación',
-    },
     noscript:
       'Este panel interactivo necesita JavaScript. Las guías de escenarios funcionan sin él.',
   },
@@ -670,7 +664,6 @@ export const es: Messages = {
     knownTitle: 'Problemas conocidos',
     known: [
       'Las barras del gráfico no reciben el foco del teclado por diseño; los datos están disponibles como tabla.',
-      'La implementación vanilla aún no está construida.',
       'En pantallas estrechas el gráfico se reduce y las etiquetas de los ejes quedan pequeñas; la vista «Ver datos como tabla» es la alternativa legible hasta que llegue un diseño para pantallas estrechas.',
       'Las traducciones al español y al árabe las redactó el autor y aún no las ha revisado un hablante nativo.',
     ],

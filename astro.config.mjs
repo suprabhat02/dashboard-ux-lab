@@ -12,8 +12,6 @@ export default defineConfig({
     sitemap({
       // hreflang alternates in the sitemap, matching <link rel="alternate"> in pages.
       i18n: { defaultLocale: 'en', locales: { en: 'en', es: 'es', ar: 'ar' } },
-      // The vanilla lab page is noindex until that implementation ships.
-      filter: (page) => !page.includes('/lab/vanilla/'),
     }),
   ],
   build: { inlineStylesheets: 'auto' },

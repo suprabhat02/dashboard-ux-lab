@@ -49,6 +49,10 @@ one row at every width and in every language (tested).
 
 - `src/spec/` holds data and pure functions only, framework-free.
 - `impl-react/` and `impl-vanilla/` import only from `spec/`, never from each other.
+- Behaviour changes go in `spec/` (`dashboard-state.ts`, `dashboard-rules.ts`) so both builds
+  pick them up; the shared e2e suite must pass for both.
+- Commits are attributed to the people who wrote them. CI rejects AI co-author or
+  session trailers (`scripts/check-authorship.mjs`).
 - Behaviour changes start in `docs/spec.md` and the shared e2e suite.
 
 ## Before you open a pull request

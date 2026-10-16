@@ -9,10 +9,10 @@ import {
 import type { ImplementationId } from '../../src/spec/types';
 
 /**
- * Implementations under test. The vanilla build joins this list when it ships;
- * every test in the suite then runs against it unchanged. That is the parity contract.
+ * Implementations under test. Every test in the suite runs against each of them
+ * unchanged: that is the parity contract.
  */
-export const IMPLEMENTATIONS: readonly ImplementationId[] = ['react'];
+export const IMPLEMENTATIONS: readonly ImplementationId[] = ['react', 'vanilla'];
 
 /**
  * Every behaviour test runs in every locale. Adding a locale to LOCALES adds it

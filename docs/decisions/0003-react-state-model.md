@@ -1,6 +1,6 @@
 # 0003 — React request state: reducer + effect, no data-fetching library
 
-- Status: accepted
+- Status: accepted; the reducer moved to `spec/` in [0006](0006-vanilla-architecture-and-shared-rules.md)
 - Date: 2026-10-15
 
 ## Context

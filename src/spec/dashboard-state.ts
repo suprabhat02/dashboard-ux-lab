@@ -4,15 +4,18 @@ import type {
   FetchOutcome,
   LabSettings,
   RequestState,
-} from '../spec/types';
+} from './types';
 
 /**
- * Request lifecycle for the React implementation, as a pure reducer.
+ * The request lifecycle, as a pure reducer shared by every implementation.
+ *
+ * React drives it with useReducer; the vanilla build calls it directly. Keeping
+ * the transitions here (stale responses, retries, cancellation) means the two
+ * builds cannot disagree about what happens, only about how it is drawn.
  *
  * Why a reducer and not a data-fetching library: the lab is about making each
  * transition visible and deliberate. A library would hide exactly the decisions
- * (stale responses, retries, cancellation) this project exists to explain.
- * See docs/decisions/0003-react-state-model.md.
+ * this project exists to explain. See docs/decisions/0003-react-state-model.md.
  */
 
 export interface ActiveRequest {

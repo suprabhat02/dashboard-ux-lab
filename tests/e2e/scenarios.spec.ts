@@ -6,6 +6,7 @@ import { TIMING } from '../../src/spec/timing';
 import {
   dashboard,
   expectNoSeriousA11yViolations,
+  freezeClock,
   lastAnnouncement,
   waitForView,
 } from './fixtures';
@@ -36,7 +37,7 @@ for (const v of VARIANTS) {
     test('loading: no skeleton before 300ms, skeleton after, then content', async ({
       page,
     }) => {
-      await page.clock.install();
+      await freezeClock(page);
       await page.goto(labPath(v, 'scenario=loading'));
       // The request starts when the implementation mounts; advance time only after that.
       await expect(dashboard(page)).toHaveAttribute('data-phase', 'pending');
@@ -60,7 +61,7 @@ for (const v of VARIANTS) {
     test('slow: escalates at 3s, offers cancel at 8s, cancel recovers focus', async ({
       page,
     }) => {
-      await page.clock.install();
+      await freezeClock(page);
       await page.goto(labPath(v, 'scenario=slow'));
       await expect(dashboard(page)).toHaveAttribute('data-view', 'loading');
       await page.clock.runFor(TIMING.slowAfterMs + 20);

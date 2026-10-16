@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { loadingPhase, msUntilNextPhase } from '../../spec/timing';
 import type { LoadingPhase } from '../../spec/types';
 
@@ -19,7 +19,10 @@ export function useLoadingPhase(startedAt: number | null): LoadingPhase | null {
     phase: 'pending',
   });
 
-  useEffect(() => {
+  // Layout effect, not effect: the next boundary is armed in the same task as the
+  // commit that shows `pending`, so anything that observes `pending` (a person, an
+  // assistive technology, a test) can rely on the 300ms timer already running.
+  useLayoutEffect(() => {
     if (startedAt === null) return undefined;
     let timer: ReturnType<typeof setTimeout> | undefined;
 

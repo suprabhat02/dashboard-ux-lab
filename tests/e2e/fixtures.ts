@@ -1,6 +1,16 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page } from '@playwright/test';
 
+/**
+ * Fake time that moves only when the test says so. `clock.install()` alone keeps
+ * time flowing in real time, so on a busy CI runner a 300ms boundary can pass
+ * before the test looks. Call before `page.goto`.
+ */
+export async function freezeClock(page: Page): Promise<void> {
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+}
+
 export const dashboard = (page: Page) =>
   page.locator('section.dash[data-implementation]');
 
