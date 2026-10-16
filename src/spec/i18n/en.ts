@@ -61,6 +61,9 @@ export const en = {
     compareDescription:
       'The same dashboard built with React and with no framework, run side by side: one set of controls, start-up time, download size and whether both behave alike.',
     embedTitle: (build: string) => `${build} build, embedded`,
+    screenReadersTitle: 'Screen reader test script',
+    screenReadersDescription:
+      'What a screen reader should say in each dashboard scenario, computed from the spec and checked against both builds, with results from real NVDA, VoiceOver and TalkBack runs.',
     notFoundTitle: 'Page not found',
     notFoundDescription: 'This page doesn’t exist.',
   },
@@ -348,6 +351,7 @@ export const en = {
         },
         {
           stage: 'now',
+          link: { label: 'Run the test script', path: '/accessibility/screen-readers/' },
           title: 'Real assistive technology',
           items: [
             'Testing with NVDA, VoiceOver and TalkBack, with results published',
@@ -811,6 +815,9 @@ export const en = {
   accessibilityPage: {
     title: 'Accessibility',
     lede: 'This page says what has been tested and how. Automated checks catch only part of what matters, so nothing here is called “accessible” until it has been tested with real assistive technology.',
+    scriptBody:
+      'For the manual tests below there is a step-by-step script with the exact words each scenario should produce.',
+    scriptLink: 'Open the screen reader test script',
     matrixTitle: 'Testing matrix',
     updated: (date: string) => `Last updated ${date}`,
     check: 'Check',
@@ -818,6 +825,11 @@ export const en = {
     rows: [
       {
         check: 'axe-core in every scenario, all three languages (automated)',
+        status: 'Automated in CI',
+      },
+      {
+        check:
+          'Expected screen reader speech, both builds, all three languages (automated)',
         status: 'Automated in CI',
       },
       {
@@ -844,6 +856,59 @@ export const en = {
     reportLink: 'Open an issue',
   },
 
+  screenReaders: {
+    title: 'Screen reader test script',
+    lede: 'Automated checks prove the dashboard says what the spec says. Only a person with a real screen reader can tell whether that is pleasant and clear to hear. This is the script for that test: what to do, what you should hear, and the results so far.',
+    verified:
+      'The expected speech on this page is computed from the spec, not written by hand. On every commit, both builds are checked against it in Chromium, Firefox and WebKit, in all three languages, timing included.',
+    howTitle: 'How to run it',
+    how: [
+      'Open a scenario link below and turn on your screen reader.',
+      'Move to the dashboard heading, then do each step without moving focus yourself.',
+      'Listen for the same words in the same order. Screen readers add roles and states, such as “heading level 2”; that is expected.',
+      '“Polite” messages wait until the screen reader finishes what it is saying. “Assertive” messages interrupt it.',
+      'Record what you heard with the result form, including when everything passed.',
+    ],
+    setupsTitle: 'Setups to cover',
+    setups: {
+      nvdaFirefox: 'NVDA with Firefox on Windows',
+      voiceoverMac: 'VoiceOver with Safari on macOS',
+      voiceoverIos: 'VoiceOver with Safari on iPhone',
+      talkback: 'TalkBack with Chrome on Android',
+    },
+    scenariosTitle: 'The script',
+    openIn: 'Open in:',
+    stepLabel: (step: number) => `Step ${step}`,
+    actions: {
+      open: 'Open the link and wait.',
+      replay: (label: string) => `Press “${label}” in the lab controls.`,
+      retry: (label: string) => `Press “${label}”.`,
+      cancel: (label: string) => `When “${label}” appears, press it.`,
+      showAllPlans: (label: string) => `Press “${label}”.`,
+    },
+    expectLabel: 'You should hear:',
+    silence: 'Nothing. Silence is correct here.',
+    after: (time: string) => `after ${time}`,
+    politeness: { polite: 'polite', assertive: 'assertive' },
+    focusMoves: (target: string) => `Focus moves to ${target}.`,
+    resultsTitle: 'Results so far',
+    resultsCaption:
+      'Latest result for each setup and scenario. Each run is recorded in the repository with versions and notes.',
+    setupColumn: 'Setup',
+    outcomes: {
+      pass: 'Pass',
+      partial: 'Partly',
+      fail: 'Fail',
+      untested: 'Not tested yet',
+    },
+    noRuns:
+      'Nobody has run the script with a real screen reader yet. Those first runs are the current phase of the project.',
+    submit: 'Submit a result',
+    reviewTitle: 'Spanish and Arabic review',
+    reviewBody:
+      'The Spanish and Arabic text was drafted by the author and still needs review by native speakers. If something reads wrong, suggest better wording; every accepted suggestion is credited.',
+    reviewLink: 'Suggest a translation fix',
+  },
   notFound: {
     eyebrow: '404',
     title: 'An empty state of our own',

@@ -39,10 +39,10 @@ const SAME_IN_ALL_LOCALES = new Set([
   'home.comparison.rows[2].tool',
   'home.comparison.rows[5].tool',
   // Assistive technology + browser product names
-  'accessibilityPage.rows[2].check',
   'accessibilityPage.rows[3].check',
   'accessibilityPage.rows[4].check',
   'accessibilityPage.rows[5].check',
+  'accessibilityPage.rows[6].check',
   // Roadmap stages are identifiers ('done' | 'now' | 'next' | 'later') and link
   // paths are routes (localised at render), not prose
   ...MESSAGES.en.home.roadmap.phases.flatMap((phase, index) => [

@@ -30,6 +30,9 @@ export const es: Messages = {
     compareDescription:
       'El mismo panel hecho con React y sin framework, lado a lado: unos mismos controles, tiempo de arranque, tamaño de descarga y si ambos se comportan igual.',
     embedTitle: (build: string) => `Versión ${build}, incrustada`,
+    screenReadersTitle: 'Guion de prueba con lector de pantalla',
+    screenReadersDescription:
+      'Lo que un lector de pantalla debe decir en cada escenario del panel, calculado a partir de la especificación y comprobado en las dos versiones, con resultados de NVDA, VoiceOver y TalkBack.',
     notFoundTitle: 'Página no encontrada',
     notFoundDescription: 'Esta página no existe.',
   },
@@ -319,6 +322,10 @@ export const es: Messages = {
         },
         {
           stage: 'now',
+          link: {
+            label: 'Hacer el guion de prueba',
+            path: '/accessibility/screen-readers/',
+          },
           title: 'Tecnologías de apoyo reales',
           items: [
             'Pruebas con NVDA, VoiceOver y TalkBack, con resultados publicados',
@@ -777,6 +784,9 @@ export const es: Messages = {
   accessibilityPage: {
     title: 'Accesibilidad',
     lede: 'Esta página dice qué se ha probado y cómo. Las comprobaciones automáticas solo detectan una parte de lo que importa, así que aquí nada se califica de «accesible» hasta haberlo probado con tecnologías de apoyo reales.',
+    scriptBody:
+      'Para las pruebas manuales hay un guion paso a paso con las palabras exactas que debe producir cada escenario.',
+    scriptLink: 'Abrir el guion de prueba con lector de pantalla',
     matrixTitle: 'Matriz de pruebas',
     updated: (date) => `Última actualización: ${date}`,
     check: 'Comprobación',
@@ -784,6 +794,11 @@ export const es: Messages = {
     rows: [
       {
         check: 'axe-core en cada escenario y en los tres idiomas (automático)',
+        status: 'Automatizado en CI',
+      },
+      {
+        check:
+          'Lo que debe decir un lector de pantalla, en las dos versiones y los tres idiomas (automático)',
         status: 'Automatizado en CI',
       },
       {
@@ -813,6 +828,59 @@ export const es: Messages = {
     reportLink: 'Abrir una incidencia',
   },
 
+  screenReaders: {
+    title: 'Guion de prueba con lector de pantalla',
+    lede: 'Las pruebas automáticas demuestran que el panel dice lo que dice la especificación. Solo una persona con un lector de pantalla real puede saber si se oye de forma clara y agradable. Este es el guion para esa prueba: qué hacer, qué deberías oír y los resultados hasta ahora.',
+    verified:
+      'Lo que deberías oír en esta página se calcula a partir de la especificación, no se escribe a mano. En cada cambio, las dos versiones se comprueban contra ello en Chromium, Firefox y WebKit, en los tres idiomas, incluidos los tiempos.',
+    howTitle: 'Cómo hacerla',
+    how: [
+      'Abre uno de los enlaces de escenario y activa tu lector de pantalla.',
+      'Ve al encabezado del panel y haz cada paso sin mover el foco por tu cuenta.',
+      'Escucha las mismas palabras en el mismo orden. Los lectores añaden roles y estados, como «encabezado de nivel 2»; es lo esperado.',
+      'Los mensajes «educados» esperan a que el lector termine lo que está diciendo. Los «urgentes» lo interrumpen.',
+      'Anota lo que oíste en el formulario de resultados, también cuando todo salió bien.',
+    ],
+    setupsTitle: 'Configuraciones que cubrir',
+    setups: {
+      nvdaFirefox: 'NVDA con Firefox en Windows',
+      voiceoverMac: 'VoiceOver con Safari en macOS',
+      voiceoverIos: 'VoiceOver con Safari en iPhone',
+      talkback: 'TalkBack con Chrome en Android',
+    },
+    scenariosTitle: 'El guion',
+    openIn: 'Abrir en:',
+    stepLabel: (step: number) => `Paso ${step}`,
+    actions: {
+      open: 'Abre el enlace y espera.',
+      replay: (label: string) => `Pulsa «${label}» en los controles del laboratorio.`,
+      retry: (label: string) => `Pulsa «${label}».`,
+      cancel: (label: string) => `Cuando aparezca «${label}», púlsalo.`,
+      showAllPlans: (label: string) => `Pulsa «${label}».`,
+    },
+    expectLabel: 'Deberías oír:',
+    silence: 'Nada. Aquí lo correcto es el silencio.',
+    after: (time: string) => `a los ${time}`,
+    politeness: { polite: 'educado', assertive: 'urgente' },
+    focusMoves: (target: string) => `El foco pasa a ${target}.`,
+    resultsTitle: 'Resultados hasta ahora',
+    resultsCaption:
+      'Último resultado de cada configuración y escenario. Cada prueba queda registrada en el repositorio con versiones y notas.',
+    setupColumn: 'Configuración',
+    outcomes: {
+      pass: 'Bien',
+      partial: 'En parte',
+      fail: 'Mal',
+      untested: 'Sin probar aún',
+    },
+    noRuns:
+      'Nadie ha hecho aún el guion con un lector de pantalla real. Esas primeras pruebas son la fase actual del proyecto.',
+    submit: 'Enviar un resultado',
+    reviewTitle: 'Revisión del español y del árabe',
+    reviewBody:
+      'El autor redactó los textos en español y árabe, y aún necesitan la revisión de hablantes nativos. Si algo suena mal, propón una redacción mejor; cada sugerencia aceptada se reconoce.',
+    reviewLink: 'Proponer una corrección',
+  },
   notFound: {
     eyebrow: '404',
     title: 'Un estado vacío propio',

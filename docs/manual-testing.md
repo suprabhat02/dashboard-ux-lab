@@ -1,9 +1,15 @@
 # Manual testing checklist
 
 Automated checks (axe, Playwright) catch a portion of accessibility issues. These need
-a person. Record results, with date, browser and AT version, on /accessibility/.
+a person.
 
 ## Screen readers (each scenario)
+
+Follow the step-by-step script at `/accessibility/screen-readers/`: it lists exactly
+what each scenario should say and where focus should go, computed from the spec
+and checked against both builds in CI ([ADR 0008](decisions/0008-computed-screen-reader-script.md)).
+Submit each run with the “Screen reader result” issue form; accepted runs are
+recorded in `src/site/at-results.ts` and appear in the results table.
 
 - [ ] NVDA + Firefox (Windows)
 - [ ] VoiceOver + Safari (macOS)
@@ -17,7 +23,7 @@ Does focus land where docs/spec.md §6 says? Are KPI deltas read as sentences?
 
 - [ ] Arabic with VoiceOver (macOS/iOS) and NVDA: correct language switching, numbers read correctly, RTL reading order
 - [ ] Arabic layout: chart mirrored, tabs arrow keys reversed, no clipped diacritics, no letter-spacing
-- [ ] Spanish and Arabic copy reviewed by a native speaker
+- [ ] Spanish and Arabic copy reviewed by a native speaker (“Translation review” issue form)
 
 ## Visual and input
 

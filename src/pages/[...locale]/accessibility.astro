@@ -31,6 +31,10 @@ const updated = new Intl.DateTimeFormat(LOCALE_META[locale].intl, {
   <div class="container doc">
     <h1 class="doc__title">{page.title}</h1>
     <p class="doc__lede">{page.lede}</p>
+    <p>
+      {page.scriptBody}{' '}
+      <a href={href('/accessibility/screen-readers/')}>{page.scriptLink}</a>
+    </p>
 
     <h2 id="matrix-title">{page.matrixTitle}</h2>
     <p class="doc__meta">

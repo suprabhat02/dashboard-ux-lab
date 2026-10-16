@@ -18,18 +18,19 @@ feature shipped in all three — enforced by the build ([ADR 0004](docs/decision
 
 ## Status
 
-| Part                                         | Status                                                               |
-| -------------------------------------------- | -------------------------------------------------------------------- |
-| Shared spec, mock API, copy, CSS             | ✅ Done                                                              |
-| React implementation                         | ✅ Done                                                              |
-| Playground: controls + inspector             | ✅ Done                                                              |
-| English, Spanish, Arabic (RTL)               | ✅ Done (Spanish/Arabic await native review)                         |
-| Scenario guides                              | ✅ Done                                                              |
-| Vanilla implementation                       | ✅ Done (16 KB gz; pixel-identical to React)                         |
-| Unit + e2e + axe tests                       | ✅ One suite, both builds, three engines, in CI                      |
-| Side-by-side comparison page                 | ✅ Done ([ADR 0007](docs/decisions/0007-side-by-side-comparison.md)) |
-| Manual screen reader / device testing        | 🚧 Now — see [checklist](docs/manual-testing.md)                     |
-| Request timeline you can scrub; tests export | ⏳ Next                                                              |
+| Part                                         | Status                                                                                    |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Shared spec, mock API, copy, CSS             | ✅ Done                                                                                   |
+| React implementation                         | ✅ Done                                                                                   |
+| Playground: controls + inspector             | ✅ Done                                                                                   |
+| English, Spanish, Arabic (RTL)               | ✅ Done (Spanish/Arabic await native review)                                              |
+| Scenario guides                              | ✅ Done                                                                                   |
+| Vanilla implementation                       | ✅ Done (16 KB gz; pixel-identical to React)                                              |
+| Unit + e2e + axe tests                       | ✅ One suite, both builds, three engines, in CI                                           |
+| Side-by-side comparison page                 | ✅ Done ([ADR 0007](docs/decisions/0007-side-by-side-comparison.md))                      |
+| Screen reader script, checked in CI          | ✅ Done ([ADR 0008](docs/decisions/0008-computed-screen-reader-script.md))                |
+| Real screen reader runs and native review    | 🚧 Now: [script and results](https://lab.suprabhat-dev.com/accessibility/screen-readers/) |
+| Request timeline you can scrub; tests export | ⏳ Next                                                                                   |
 
 ## What you can do in the lab
 

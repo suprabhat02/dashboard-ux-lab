@@ -1,4 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { loadingPhase, msUntilNextPhase } from '../../spec/timing';
 import type { LoadingPhase } from '../../spec/types';
 
@@ -28,7 +29,14 @@ export function useLoadingPhase(startedAt: number | null): LoadingPhase | null {
 
     const schedule = (): void => {
       const elapsed = performance.now() - startedAt;
-      setObserved({ startedAt, phase: loadingPhase(elapsed) });
+      // Commit now, not in a later batch. On a busy main thread React would
+      // otherwise fold this phase into the render of the response that ends it,
+      // and the skeleton (and its announcement) would never happen. The spec says
+      // every boundary reached is shown; the vanilla build renders here too.
+      // Found by the comparison page; see docs/divergence-log.md.
+      flushSync(() => {
+        setObserved({ startedAt, phase: loadingPhase(elapsed) });
+      });
       const wait = msUntilNextPhase(elapsed);
       if (wait !== null) timer = setTimeout(schedule, wait + 1);
     };

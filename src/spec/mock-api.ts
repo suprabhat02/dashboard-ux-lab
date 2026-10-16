@@ -59,6 +59,14 @@ export async function fetchDashboard(
 ): Promise<FetchOutcome> {
   await wait(settings.latencyMs, signal);
 
+  return outcomeFor(settings, attempt);
+}
+
+/**
+ * What the server answers, without the wait: pure, so a simulation of a whole
+ * session (spec/speech-script.ts) gets exactly the outcomes the builds get.
+ */
+export function outcomeFor(settings: LabSettings, attempt: number): FetchOutcome {
   const requestId = requestIdFor(settings, attempt);
 
   if (settings.role === 'none') {

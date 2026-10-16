@@ -14,7 +14,17 @@ const root = (page: Page) => page.locator('[data-compare]');
 /** The verdict of a finished run, not a passing state mid-run. */
 const expectFinalAgreement = async (page: Page) => {
   await expect(root(page)).toHaveAttribute('data-run', 'final');
-  await expect(root(page)).toHaveAttribute('data-agreement', 'agree');
+  // On failure, say which step differed and how.
+  const detail = await page.evaluate(() =>
+    [
+      document.querySelector('[data-verdict]')?.textContent,
+      ...[...document.querySelectorAll('[data-diff-step]')].map(
+        (node) =>
+          `${(node as HTMLElement).dataset.diffStep ?? ''}: ${node.textContent ?? ''}`,
+      ),
+    ].join(' | '),
+  );
+  await expect(root(page), detail).toHaveAttribute('data-agreement', 'agree');
 };
 
 for (const locale of LOCALES) {

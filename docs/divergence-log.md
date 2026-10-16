@@ -14,6 +14,17 @@ were used only to cross-check that contract, so both builds share one stylesheet
 
 ## Entries
 
+### A phase that ends in the same moment it starts (fixed)
+
+- **Found by:** the comparison page, under a heavily loaded main thread: React
+  reported `request settled` where vanilla reported `phase skeleton`.
+- **Cause:** React batches state updates. When the 300 ms phase timer and the
+  response arrived before React rendered either, both landed in one render, so the
+  skeleton phase was never shown or announced ("Loading dashboard data." skipped
+  on a visitor-initiated reload). Vanilla renders at the timer and never skipped.
+- **Fix:** the phase timer commits with `flushSync`, so every boundary reached is
+  rendered, as the spec requires (`impl-react/hooks/useLoadingPhase.ts`).
+
 ### View state that React keeps for free
 
 - **React:** reconciliation keeps a component's state (the table's sort order, the
