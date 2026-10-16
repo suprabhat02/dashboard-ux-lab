@@ -48,10 +48,12 @@
     --radius-small: 5px;
     --radius-pill: 999px;
 
-    /* Type: Space Grotesk for interface text, Geist Mono for data and code */
+    /* Type: Bricolage Grotesque for interface text (optical-size axis, so display
+       sizes get tighter, more characterful shapes), Geist Mono for data and code.
+       Arabic falls through to Noto Kufi, which is scoped to Arabic by unicode-range. */
     --font-sans:
-      'Space Grotesk Variable', 'Space Grotesk', 'Noto Kufi Arabic Variable',
-      'Space Grotesk Fallback', system-ui, sans-serif;
+      'Bricolage Grotesque Variable', 'Noto Kufi Arabic Variable',
+      'Bricolage Grotesque Fallback', ui-sans-serif, system-ui, sans-serif;
     --font-mono:
       'Geist Mono Variable', 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo,
       monospace;
@@ -82,12 +84,12 @@
     --gutter: clamp(1rem, 0.6rem + 1.8vw, 2rem);
   }
 
-  /* Metric-matched fallback so the swap to Space Grotesk barely shifts layout. */
+  /* Metric-matched fallback (hhea 930/270 per 1000) so the swap barely shifts layout. */
   @font-face {
-    font-family: 'Space Grotesk Fallback';
+    font-family: 'Bricolage Grotesque Fallback';
     src: local('Arial');
-    size-adjust: 104%;
-    ascent-override: 92%;
+    size-adjust: 100%;
+    ascent-override: 93%;
     descent-override: 27%;
     line-gap-override: 0%;
   }
@@ -196,6 +198,19 @@
     z-index: 50;
     background: var(--bg);
     border-block-end: 1px solid var(--border);
+  }
+  /* Glass: a translucent fill over a blurred backdrop. Opaque wherever the blur is
+     unsupported or the visitor asks for less transparency, so text contrast never
+     depends on what scrolls underneath. */
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    @media not (prefers-reduced-transparency: reduce) {
+      .site-header {
+        background: var(--header-fill);
+        -webkit-backdrop-filter: blur(18px) saturate(180%);
+        backdrop-filter: blur(18px) saturate(180%);
+        box-shadow: inset 0 -1px 0 color-mix(in oklch, var(--text) 4%, transparent);
+      }
+    }
   }
   /* One row, always: nothing in the header may wrap. */
   .site-header__inner {
@@ -386,6 +401,37 @@
   [data-current='dark'] .theme-icon--dark,
   [data-current='system'] .theme-icon--system {
     display: block;
+  }
+
+  /* ── Bullet lists ────────────────────────────────────────── */
+  /* The one bullet style on the site: a filled green circle, centred on the first
+     line whatever the font size or script. */
+  .bullets {
+    display: grid;
+    gap: var(--bullets-gap, var(--space-2));
+    padding: 0;
+    list-style: none;
+  }
+  .bullets > li {
+    position: relative;
+    padding-inline-start: 1.6em;
+  }
+  .bullets > li::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0.2em;
+    inset-block-start: 0.45em;
+    inset-block-start: calc(0.5lh - 0.3em);
+    inline-size: 0.6em;
+    block-size: 0.6em;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 0.22em var(--success-soft);
+  }
+  @media (forced-colors: active) {
+    .bullets > li::before {
+      background: CanvasText;
+    }
   }
 
   /* ── Buttons ─────────────────────────────────────────────── */

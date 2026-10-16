@@ -72,6 +72,8 @@ export const en = {
   home: {
     hero: {
       title: 'Design the dashboard states nobody screenshots',
+      /** Part of the title drawn with a marker. Must be an exact substring of title. */
+      highlight: 'nobody screenshots',
       lede: 'Real dashboards spend much of their time loading, waiting on slow services, showing nothing, failing or hiding data a viewer isn’t allowed to see. This lab lets you trigger each of those states on purpose and see exactly how a well-built dashboard should respond: on screen, to a screen reader and to keyboard focus.',
       openLab: 'Open the lab',
       readGuides: 'Read the scenario guides',
@@ -220,6 +222,11 @@ export const en = {
           'A temporary failure, explained in plain words, with a request ID and a single Retry.',
         restricted: 'No access is not an error: no Retry, just who can grant access.',
       },
+    },
+    stack: {
+      title: 'Built and tested with',
+      pause: 'Pause the moving list',
+      play: 'Play the moving list',
     },
     statement:
       'A dashboard is judged less by how it looks with perfect data than by how it behaves while that data is late, missing, failing or off-limits.',

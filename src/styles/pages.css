@@ -38,10 +38,7 @@
   .doc li {
     color: var(--text-2);
   }
-  .doc ul {
-    display: grid;
-    gap: var(--space-2);
-    padding-inline-start: 1.25rem;
+  .doc .bullets {
     margin-block-start: var(--space-3);
   }
   .doc .guide-list {

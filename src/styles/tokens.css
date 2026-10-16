@@ -21,6 +21,8 @@
     --seed-success-h: 155;
     --seed-warning-h: 75;
     --seed-danger-h: 25;
+    /* Complement of the primary (225 + 180 ≈ 45): a bold tangerine. */
+    --seed-spark-h: 48;
 
     /* ── Roles: dark (default) ───────────────────────────────────────── */
     --bg: oklch(0.15 0.035 var(--seed-neutral-h));
@@ -44,6 +46,14 @@
     --warning: oklch(0.82 0.15 var(--seed-warning-h));
     --danger: oklch(0.7 0.18 var(--seed-danger-h));
 
+    /* Spark: the bold complementary colour. Blue does the work (links, actions,
+       focus, data); spark adds energy (emphasis, numerals, markers, the closing
+       band). Never used for dashboard states, so it never reads as a warning. */
+    --spark: oklch(0.72 0.18 var(--seed-spark-h));
+    --spark-ink: var(--spark);
+    --on-spark: oklch(0.14 0.03 var(--seed-neutral-h));
+    --spark-soft: color-mix(in oklch, var(--spark) 16%, transparent);
+
     /* Alpha tints and structural colors, derived from the roles above. */
     --accent-glow: color-mix(in oklch, var(--accent) 24%, transparent);
     --accent-soft: color-mix(in oklch, var(--accent) 14%, transparent);
@@ -57,7 +67,7 @@
     --shadow: 0 24px 70px oklch(0 0 0 / 0.4);
     --shadow-sm: 0 2px 12px oklch(0 0 0 / 0.35);
     --shadow-card: 0 1px 1px oklch(0 0 0 / 0.2), 0 4px 24px oklch(0 0 0 / 0.3);
-    --header-fill: color-mix(in oklch, var(--bg) 80%, transparent);
+    --header-fill: color-mix(in oklch, var(--bg) 62%, transparent);
     color-scheme: dark;
   }
 
@@ -82,13 +92,15 @@
     --success: oklch(0.48 0.13 var(--seed-success-h));
     --warning: oklch(0.5 0.12 var(--seed-warning-h));
     --danger: oklch(0.52 0.19 var(--seed-danger-h));
+    /* Spark text on light surfaces is darkened to 4.9:1; fills keep the vivid tone. */
+    --spark-ink: oklch(0.55 0.15 var(--seed-spark-h));
 
     --shadow: 0 24px 70px oklch(0.3 0.05 var(--seed-neutral-h) / 0.12);
     --shadow-sm: 0 2px 12px oklch(0.3 0.05 var(--seed-neutral-h) / 0.08);
     --shadow-card:
       0 1px 1px oklch(0.3 0.05 var(--seed-neutral-h) / 0.05),
       0 4px 24px oklch(0.3 0.05 var(--seed-neutral-h) / 0.09);
-    --header-fill: color-mix(in oklch, var(--bg-card) 86%, transparent);
+    --header-fill: color-mix(in oklch, var(--bg-card) 66%, transparent);
     color-scheme: light;
   }
 
@@ -115,13 +127,15 @@
       --success: oklch(0.48 0.13 var(--seed-success-h));
       --warning: oklch(0.5 0.12 var(--seed-warning-h));
       --danger: oklch(0.52 0.19 var(--seed-danger-h));
+      /* Spark text on light surfaces is darkened to 4.9:1; fills keep the vivid tone. */
+      --spark-ink: oklch(0.55 0.15 var(--seed-spark-h));
 
       --shadow: 0 24px 70px oklch(0.3 0.05 var(--seed-neutral-h) / 0.12);
       --shadow-sm: 0 2px 12px oklch(0.3 0.05 var(--seed-neutral-h) / 0.08);
       --shadow-card:
         0 1px 1px oklch(0.3 0.05 var(--seed-neutral-h) / 0.05),
         0 4px 24px oklch(0.3 0.05 var(--seed-neutral-h) / 0.09);
-      --header-fill: color-mix(in oklch, var(--bg-card) 86%, transparent);
+      --header-fill: color-mix(in oklch, var(--bg-card) 66%, transparent);
       color-scheme: light;
     }
   }
@@ -148,6 +162,10 @@
       --success: #4ed589;
       --warning: #fcb442;
       --danger: #fa6863;
+      --spark: #fb7b28;
+      --spark-ink: #fb7b28;
+      --on-spark: #000b14;
+      --spark-soft: rgb(251 123 40 / 0.16);
     }
 
     [data-theme='light'] {
@@ -171,6 +189,7 @@
       --success: #00723b;
       --warning: #9d6400;
       --danger: #be222a;
+      --spark-ink: #b44f00;
     }
   }
 

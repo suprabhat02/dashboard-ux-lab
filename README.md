@@ -53,7 +53,7 @@ Boundaries are enforced by ESLint (see [ADR 0002](docs/decisions/0002-implementa
 `spec/` imports nothing, implementations import only `spec/`, and neither imports the other.
 
 **Runtime dependencies:** React + React DOM (React page only) and two self-hosted
-variable fonts (Space Grotesk, Geist Mono). No UI, chart, state or CSS library.
+variable fonts (Bricolage Grotesque, Geist Mono). No UI, chart, state or CSS library.
 
 ## Contributing
 

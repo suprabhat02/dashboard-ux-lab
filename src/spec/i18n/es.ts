@@ -52,6 +52,7 @@ export const es: Messages = {
   home: {
     hero: {
       title: 'Diseña los estados del panel que nadie captura en pantalla',
+      highlight: 'nadie captura en pantalla',
       lede: 'Un panel real pasa gran parte del tiempo cargando, esperando a servicios lentos, sin nada que mostrar, fallando u ocultando datos que la persona no tiene permiso para ver. Este laboratorio te permite provocar cada uno de esos estados a propósito y ver cómo debe responder un panel bien hecho: en pantalla, en el lector de pantalla y con el foco del teclado.',
       openLab: 'Abrir el laboratorio',
       readGuides: 'Leer las guías de escenarios',
@@ -204,6 +205,11 @@ export const es: Messages = {
         restricted:
           'Sin acceso no es un error: no hay Reintentar, solo quién puede dar acceso.',
       },
+    },
+    stack: {
+      title: 'Construido y probado con',
+      pause: 'Pausar la lista en movimiento',
+      play: 'Reanudar la lista en movimiento',
     },
     statement:
       'Un panel se juzga menos por cómo se ve con datos perfectos que por cómo se comporta cuando esos datos llegan tarde, faltan, fallan o no se pueden ver.',

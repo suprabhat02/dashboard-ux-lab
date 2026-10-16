@@ -98,6 +98,13 @@ describe.each(LOCALES)('catalogue: %s', (locale) => {
   }
 });
 
+describe.each(LOCALES)('home copy: %s', (locale) => {
+  it('highlights an exact part of the hero title', () => {
+    const { title, highlight } = MESSAGES[locale].home.hero;
+    expect(title).toContain(highlight);
+  });
+});
+
 describe('Arabic catalogue', () => {
   it('uses Arabic script for user-facing prose', () => {
     const prose = leaves(MESSAGES.ar).filter(

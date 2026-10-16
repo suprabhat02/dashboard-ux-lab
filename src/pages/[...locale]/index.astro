@@ -29,6 +29,26 @@ const stats = [
   { value: BROWSER_ENGINES, label: h.stats.engines },
 ];
 const statementWords = h.statement.split(' ');
+
+/* Hero title: words rise in one by one; the highlight phrase gets a marker. */
+const [titleBefore = '', titleAfter = ''] = h.hero.title.split(h.hero.highlight);
+const words = (text: string) => text.split(' ').filter(Boolean);
+
+/* Proper nouns, identical in every language. */
+const STACK = [
+  'Astro',
+  'React 19',
+  'TypeScript',
+  'Vanilla TypeScript',
+  'Playwright',
+  'axe-core',
+  'Vitest',
+  'ESLint',
+  'Lucide',
+  'Storyset',
+  'GitHub Actions',
+  'WCAG 2.2 AA',
+];
 ---
 
 <BaseLayout
@@ -43,7 +63,27 @@ const statementWords = h.statement.split(' ');
     <div class="container hero__inner">
       <div class="hero__text">
         <h1 class="hero__title" id="hero-title">
-          {h.hero.title}
+          {words(titleBefore).map((word, i) => (
+            <>
+              <span class="hero__word" style={`--i: ${i}`}>
+                {word}
+              </span>{' '}
+            </>
+          ))}
+          <span class="hero__highlight" style={`--i: ${words(titleBefore).length}`}>
+            {h.hero.highlight}
+          </span>
+          {words(titleAfter).map((word, i) => (
+            <>
+              {' '}
+              <span
+                class="hero__word"
+                style={`--i: ${words(titleBefore).length + 1 + i}`}
+              >
+                {word}
+              </span>
+            </>
+          ))}
         </h1>
         <p class="hero__lede">{h.hero.lede}</p>
         <p class="hero__actions">
@@ -63,11 +103,47 @@ const statementWords = h.statement.split(' ');
       <ul class="stats" aria-label={h.stats.label}>
         {stats.map((stat) => (
           <li class="stats__item">
-            <span class="stats__value">{stat.value}</span>
+            <span class="stats__value" data-ticker={stat.value}>
+              {stat.value}
+            </span>
             <span class="stats__label">{stat.label}</span>
           </li>
         ))}
       </ul>
+    </div>
+  </section>
+
+  <section class="marquee" aria-labelledby="stack-title" data-marquee>
+    <div class="container marquee__head">
+      <h2 class="marquee__title" id="stack-title">
+        {h.stack.title}
+      </h2>
+      <button
+        class="marquee__toggle"
+        type="button"
+        data-marquee-toggle
+        data-label-play={h.stack.play}
+        data-label-pause={h.stack.pause}
+        aria-label={h.stack.pause}
+      >
+        <Icon name="pause" size={16} class="marquee__icon-pause" />
+        <Icon name="play" size={16} class="marquee__icon-play" />
+      </button>
+    </div>
+    <div class="marquee__viewport">
+      <div class="marquee__track">
+        <ul class="marquee__list" role="list">
+          {STACK.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        {/* Second copy makes the loop seamless; assistive tech reads the first only. */}
+        <ul class="marquee__list" role="list" aria-hidden="true">
+          {STACK.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -94,12 +170,9 @@ const statementWords = h.statement.split(' ');
           intro={h.problem.intro}
         />
         <h3 class="subhead reveal">{h.problem.symptomsTitle}</h3>
-        <ul class="symptoms">
+        <ul class="bullets symptoms">
           {h.problem.symptoms.map((item) => (
-            <li class="reveal">
-              <Icon name="flat" size={18} class="symptoms__mark" />
-              <span>{item}</span>
-            </li>
+            <li class="reveal">{item}</li>
           ))}
         </ul>
       </div>
@@ -115,11 +188,17 @@ const statementWords = h.statement.split(' ');
         title={h.traditional.title}
         intro={h.traditional.intro}
       />
-      <ol class="timeline">
-        {h.traditional.steps.map((step) => (
-          <li class="timeline__item reveal">
-            <h3 class="timeline__title">{step.title}</h3>
-            <p>{step.body}</p>
+      <ol class="tl" role="list">
+        {h.traditional.steps.map((step, index) => (
+          <li class="tl__item">
+            <span class="tl__dot" aria-hidden="true" />
+            <div class="tl__head">
+              <span class="tl__num" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <h3 class="tl__title">{step.title}</h3>
+            </div>
+            <p class="tl__body reveal">{step.body}</p>
           </li>
         ))}
       </ol>
@@ -136,14 +215,11 @@ const statementWords = h.statement.split(' ');
           title={h.approach.title}
           intro={h.approach.intro}
         />
-        <ul class="points">
+        <ul class="bullets points">
           {h.approach.points.map((point) => (
-            <li class="points__item reveal">
-              <Icon name="check" size={20} class="points__mark" />
-              <div>
-                <h3>{point.title}</h3>
-                <p>{point.body}</p>
-              </div>
+            <li class="reveal">
+              <h3>{point.title}</h3>
+              <p>{point.body}</p>
             </li>
           ))}
         </ul>
@@ -203,22 +279,25 @@ const statementWords = h.statement.split(' ');
         title={h.scenariosTitle}
         intro={h.scenariosIntro}
       />
-      <ul class="tiles">
-        {SCENARIOS.map((scenario) => (
-          <li class="reveal">
-            <a
-              class="tile"
-              href={`${href('/lab/react/')}?scenario=${scenario.id}`}
-              data-scenario={scenario.id}
-            >
-              <Icon name={scenario.id} size={28} class="tile__icon" />
-              <span class="tile__title">{t.scenarios[scenario.id].title}</span>
-              <span class="tile__summary">{t.scenarios[scenario.id].summary}</span>
-              <Icon name="arrow" size={20} class="tile__arrow" />
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div class="tiles-wrap" data-hover-cards>
+        <span class="tiles__glow" aria-hidden="true" data-hover-glow></span>
+        <ul class="tiles">
+          {SCENARIOS.map((scenario) => (
+            <li class="reveal">
+              <a
+                class="tile"
+                href={`${href('/lab/react/')}?scenario=${scenario.id}`}
+                data-scenario={scenario.id}
+              >
+                <Icon name={scenario.id} size={28} class="tile__icon" />
+                <span class="tile__title">{t.scenarios[scenario.id].title}</span>
+                <span class="tile__summary">{t.scenarios[scenario.id].summary}</span>
+                <Icon name="arrow" size={20} class="tile__arrow" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -252,28 +331,34 @@ const statementWords = h.statement.split(' ');
 
   <section class="cta" aria-labelledby="cta-title">
     <div class="container cta__inner">
+      <span class="cta__mark" aria-hidden="true">
+        <Icon name="error" size={30} />
+      </span>
       <h2 class="cta__title reveal" id="cta-title">
         {h.cta.title}
       </h2>
       <p class="cta__body reveal">{h.cta.body}</p>
       <p class="hero__actions reveal">
-        <a class="btn btn--primary btn--xl" href={href('/lab/react/')}>
+        <a class="btn btn--ink btn--xl" href={href('/lab/react/')}>
           {h.cta.primary}
           <Icon name="arrow" size={20} />
         </a>
-        <a class="btn btn--xl" href={repoUrl}>
+        <a class="btn btn--outline-ink btn--xl" href={repoUrl}>
           {h.cta.secondary}
         </a>
       </p>
-      <div class="cta__status" aria-labelledby="status-title" role="group">
-        <h3 class="cta__status-title" id="status-title">
-          {h.statusTitle}
-        </h3>
-        <p>
-          {h.statusBody} <a href={href('/accessibility/')}>{h.statusA11yLink}</a>.{' '}
-          {h.statusFeedback} <a href={`${repoUrl}/issues`}>{h.statusIssueLink}</a>.
-        </p>
-      </div>
+    </div>
+  </section>
+
+  <section class="status" aria-labelledby="status-title">
+    <div class="container status__inner">
+      <h2 class="status__title" id="status-title">
+        {h.statusTitle}
+      </h2>
+      <p>
+        {h.statusBody} <a href={href('/accessibility/')}>{h.statusA11yLink}</a>.{' '}
+        {h.statusFeedback} <a href={`${repoUrl}/issues`}>{h.statusIssueLink}</a>.
+      </p>
     </div>
   </section>
 </BaseLayout>

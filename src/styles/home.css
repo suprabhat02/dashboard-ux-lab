@@ -44,7 +44,23 @@
 
   /* ── Hero ────────────────────────────────────────────────── */
   .hero {
+    position: relative;
+    isolation: isolate;
     padding-block: clamp(3.5rem, 2rem + 7vw, 8rem) clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+  /* Dot grid (Aceternity "dot background"), drawn by masking a solid fill with a
+     tiny SVG dot, so it follows the theme and needs no gradient. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0 0 40%;
+    background-color: color-mix(in oklch, var(--text) 16%, transparent);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E")
+      0 0 / 22px 22px;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='2' cy='2' r='1.1'/%3E%3C/svg%3E")
+      0 0 / 22px 22px;
+    pointer-events: none;
   }
   .hero__inner {
     display: grid;
@@ -57,12 +73,26 @@
     }
   }
   .hero__title {
-    font-size: clamp(2.6rem, 1.4rem + 5.6vw, 5.75rem);
-    font-weight: 720;
-    line-height: 1;
-    letter-spacing: -0.045em;
-    max-inline-size: 15ch;
+    font-size: clamp(2.75rem, 1.4rem + 6vw, 6.25rem);
+    font-weight: 780;
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    max-inline-size: 14ch;
     text-wrap: balance;
+  }
+  .hero__word {
+    display: inline-block;
+  }
+  /* Aceternity "Hero Highlight": the key phrase in spark with a solid marker
+     stroke under it. Inline (not inline-block) so the phrase can wrap; the stroke
+     is an inset shadow, cloned on every line. */
+  .hero__highlight {
+    --mark: 0.09em;
+    color: var(--spark-ink);
+    box-shadow: inset 0 calc(-1 * var(--mark)) 0 var(--spark);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding-inline: 0.04em;
   }
   .hero__lede {
     margin-block-start: clamp(1.25rem, 1rem + 1vw, 2rem);
@@ -90,9 +120,14 @@
   }
 
   /* Arabic script must never be tracked tighter: letters are joined. */
-  :lang(ar) :is(.hero__title, .shead__title, .statement, .cta__title) {
+  :lang(ar) :is(.hero__title, .shead__title, .statement, .cta__title, .tl__title) {
     letter-spacing: 0;
     line-height: 1.3;
+  }
+  /* Arabic words are longer on average; give the display title more room. */
+  :lang(ar) .hero__title {
+    max-inline-size: 19ch;
+    font-size: clamp(2.5rem, 1.3rem + 5vw, 5.25rem);
   }
 
   /* ── Stats ───────────────────────────────────────────────── */
@@ -120,7 +155,7 @@
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.04em;
-    color: var(--accent-ink);
+    color: var(--spark-ink);
     font-variant-numeric: tabular-nums;
   }
   .stats__label {
@@ -137,8 +172,8 @@
   .shead__index {
     font-family: var(--font-mono);
     font-size: var(--text-sm);
-    font-weight: 500;
-    color: var(--accent-ink);
+    font-weight: 600;
+    color: var(--spark-ink);
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -150,10 +185,10 @@
     background: currentColor;
   }
   .shead__title {
-    font-size: clamp(2rem, 1.3rem + 2.8vw, 3.4rem);
-    font-weight: 720;
-    line-height: 1.08;
-    letter-spacing: -0.035em;
+    font-size: clamp(2.1rem, 1.3rem + 3.2vw, 3.75rem);
+    font-weight: 760;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
     max-inline-size: 22ch;
     text-wrap: balance;
   }
@@ -188,9 +223,23 @@
     border-radius: var(--radius-shell);
     background: var(--bg-card);
     box-shadow: var(--shadow-card);
-    overflow: hidden;
     transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
     transition: transform 400ms var(--ease-out);
+  }
+  /* Aceternity "3D Card": layers float at different depths while the card tilts.
+     Only on fine pointers without reduced motion (home.ts sets data-tilt). */
+  [data-tilt] .mock,
+  [data-tilt] .mock__body {
+    transform-style: preserve-3d;
+  }
+  [data-tilt] .mock__bar {
+    transform: translateZ(18px);
+  }
+  [data-tilt] .mock__kpis {
+    transform: translateZ(42px);
+  }
+  [data-tilt] .mock__chart {
+    transform: translateZ(26px);
   }
   .mock__bar {
     display: flex;
@@ -198,6 +247,8 @@
     gap: var(--space-2);
     padding: var(--space-3) var(--mock-pad);
     border-block-end: 1px solid var(--border);
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
     font-size: var(--text-sm);
     color: var(--text-2);
   }
@@ -528,9 +579,9 @@
     padding-block: clamp(3rem, 2rem + 5vw, 7rem);
   }
   .statement {
-    font-size: clamp(1.75rem, 1.1rem + 2.9vw, 3.5rem);
-    font-weight: 650;
-    line-height: 1.2;
+    font-size: clamp(1.85rem, 1.1rem + 3.2vw, 3.75rem);
+    font-weight: 700;
+    line-height: 1.15;
     letter-spacing: -0.03em;
     text-wrap: balance;
   }
@@ -557,112 +608,130 @@
     margin-block-end: var(--space-4);
   }
   .symptoms {
-    display: grid;
-    gap: var(--space-3);
+    --bullets-gap: var(--space-3);
     max-inline-size: 64ch;
-    padding: 0;
-    list-style: none;
   }
   .symptoms li {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-3);
     color: var(--text-2);
     font-size: var(--text-lg);
     line-height: 1.55;
   }
-  .symptoms__mark {
-    margin-block-start: 0.3em;
-    color: var(--danger);
-  }
 
-  /* ── Timeline (traditional approach) ─────────────────────── */
-  .timeline {
-    --rail: 2px;
-    --dot: 14px;
+  /* ── Timeline (Aceternity "Timeline") ────────────────────── */
+  /*
+   * A rail with a beam that fills as you scroll. Each step: a dot on the rail, a
+   * large number and title (sticky beside the text on wide screens), the body.
+   * Rail and beam are pseudo-elements of the list, so the list stays a list.
+   */
+  .tl {
+    --rail-x: 1.25rem;
+    --dot: 1.125rem;
+    --sticky-top: calc(60px + 2rem);
     position: relative;
     display: grid;
-    gap: clamp(2rem, 1.5rem + 2vw, 3rem);
-    max-inline-size: 52rem;
     padding: 0;
-    padding-inline-start: calc(var(--dot) + var(--space-6));
+    padding-inline-start: calc(var(--rail-x) * 2 + var(--space-4));
     list-style: none;
-    counter-reset: step;
-    view-timeline-name: --timeline;
+    view-timeline-name: --tl;
   }
-  .timeline::before,
-  .timeline::after {
+  .tl::before,
+  .tl::after {
     content: '';
     position: absolute;
-    inset-block: 0.4rem;
-    inset-inline-start: calc((var(--dot) - var(--rail)) / 2);
-    inline-size: var(--rail);
+    inset-block: 0.75rem 0;
+    inset-inline-start: calc(var(--rail-x) - 1px);
+    inline-size: 2px;
+    border-radius: 2px;
     background: var(--border);
   }
-  .timeline::after {
-    background: var(--accent);
+  .tl::before {
+    background: color-mix(in oklch, var(--text) 12%, transparent);
+  }
+  .tl::after {
+    background: var(--spark);
     transform-origin: top;
-    transform: scaleY(1);
   }
-  .timeline__item {
+  .tl__item {
     position: relative;
-    counter-increment: step;
+    display: grid;
+    gap: var(--space-3);
+    padding-block: 0 clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
   }
-  .timeline__item::before {
-    content: '';
+  .tl__item:last-child {
+    padding-block-end: 0;
+  }
+  .tl__dot {
     position: absolute;
-    inset-block-start: 0.35rem;
-    inset-inline-start: calc(-1 * (var(--dot) + var(--space-6)));
+    z-index: 1;
+    inset-block-start: 0.6rem;
+    inset-inline-start: calc(-1 * (var(--rail-x) + var(--space-4)) - var(--dot) / 2);
     inline-size: var(--dot);
     block-size: var(--dot);
     border-radius: 50%;
-    border: 2px solid var(--accent);
-    background: var(--bg-2);
+    border: 3px solid var(--spark);
+    background: var(--spark);
+    box-shadow: 0 0 0 6px var(--bg-2);
   }
-  .timeline__title {
-    font-size: var(--text-xl);
-    margin-block-end: var(--space-2);
+  .tl__head {
+    display: grid;
+    gap: var(--space-1);
+    align-content: start;
   }
-  .timeline__title::before {
-    content: counter(step, decimal-leading-zero) '  ';
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    color: var(--text-3);
-    white-space: pre;
+  .tl__num {
+    font-size: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--spark-ink);
+    font-variant-numeric: tabular-nums;
   }
-  .timeline__item p {
-    max-inline-size: 62ch;
+  .tl__title {
+    font-size: clamp(1.35rem, 1.1rem + 1vw, 2rem);
+    font-weight: 720;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    max-inline-size: 20ch;
+    text-wrap: balance;
+  }
+  .tl__body {
+    max-inline-size: 58ch;
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+    line-height: 1.65;
     color: var(--text-2);
-    font-size: var(--text-lg);
-    line-height: 1.6;
   }
+  @media (min-width: 62rem) {
+    .tl {
+      --rail-x: 1.5rem;
+    }
+    .tl__item {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: clamp(2rem, 1rem + 3vw, 4rem);
+      padding-block-end: clamp(4rem, 2rem + 6vw, 8rem);
+    }
+    .tl__head {
+      position: sticky;
+      inset-block-start: var(--sticky-top);
+      align-self: start;
+    }
+    .tl__body {
+      padding-block-start: clamp(1.75rem, 1rem + 2vw, 3rem);
+    }
+  }
+
   .callout {
     max-inline-size: 52rem;
-    margin-block-start: clamp(2.5rem, 2rem + 2vw, 4rem);
+    margin-block-start: clamp(3rem, 2rem + 3vw, 5rem);
     padding-inline-start: var(--space-5);
-    border-inline-start: 3px solid var(--accent);
-    font-size: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
-    font-weight: 550;
-    line-height: 1.5;
+    border-inline-start: 4px solid var(--spark);
+    font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
+    font-weight: 650;
+    line-height: 1.4;
     text-wrap: pretty;
   }
 
   /* ── Approach points ─────────────────────────────────────── */
   .points {
-    display: grid;
-    gap: var(--space-5);
-    padding: 0;
-    list-style: none;
-  }
-  .points__item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-4);
-  }
-  .points__mark {
-    margin-block-start: 0.2em;
-    color: var(--success);
+    --bullets-gap: var(--space-5);
   }
   .points h3,
   .columns h3 {
@@ -691,12 +760,45 @@
   }
   .comparison__ours {
     background: var(--accent-subtle);
+    box-shadow: inset 4px 0 0 var(--spark);
+  }
+  [dir='rtl'] .comparison__ours {
+    box-shadow: inset -4px 0 0 var(--spark);
   }
   .comparison__ours th {
     color: var(--accent-ink);
   }
 
-  /* ── Scenario tiles ──────────────────────────────────────── */
+  /* ── Scenario tiles (Aceternity "Card Hover Effect") ─────── */
+  /* One surface glides to whichever tile is hovered or focused (home.ts). Without
+     the script, each tile lights up on its own. */
+  .tiles-wrap {
+    position: relative;
+    isolation: isolate;
+  }
+  .tiles__glow {
+    position: absolute;
+    z-index: -1;
+    inset: 0 auto auto 0;
+    inline-size: var(--glow-w, 0);
+    block-size: var(--glow-h, 0);
+    border-radius: var(--radius-shell);
+    background: var(--bg-card);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklch, var(--spark) 55%, transparent),
+      var(--shadow-card);
+    transform: translate(var(--glow-x, 0), var(--glow-y, 0));
+    opacity: 0;
+    transition:
+      transform 360ms var(--ease-out),
+      inline-size 360ms var(--ease-out),
+      block-size 360ms var(--ease-out),
+      opacity 200ms var(--ease-out);
+    pointer-events: none;
+  }
+  [data-hover-cards][data-active] .tiles__glow {
+    opacity: 1;
+  }
   .tiles {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
@@ -719,18 +821,18 @@
     gap: var(--space-2);
     padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
     border-radius: var(--radius-shell);
-    background: var(--bg);
     color: var(--text);
     text-decoration: none;
     transition:
       transform var(--duration) var(--ease-out),
-      background-color var(--duration) var(--ease-out),
-      box-shadow var(--duration) var(--ease-out);
+      background-color var(--duration) var(--ease-out);
   }
-  .tile:hover {
-    transform: translateY(-4px);
+  :not([data-ready]) > .tiles .tile:hover {
     background: var(--bg-card);
-    box-shadow: var(--shadow-card);
+  }
+  .tile:hover,
+  .tile:focus-visible {
+    transform: translateY(-3px);
   }
   .tile__icon {
     margin-block-end: var(--space-3);
@@ -747,7 +849,7 @@
   }
   .tile__title {
     font-size: var(--text-xl);
-    font-weight: 680;
+    font-weight: 700;
     letter-spacing: -0.015em;
   }
   .tile__summary {
@@ -758,7 +860,7 @@
     margin-block-start: auto;
     padding-block-start: var(--space-4);
     box-sizing: content-box;
-    color: var(--accent-ink);
+    color: var(--spark-ink);
     transition: transform var(--duration) var(--ease-out);
   }
   .tile:hover .tile__arrow {
@@ -766,6 +868,99 @@
   }
   [dir='rtl'] .tile:hover .tile__arrow {
     transform: scaleX(-1) translateX(6px);
+  }
+
+  /* ── Moving stack strip (Aceternity "Infinite Moving Cards") ─ */
+  .marquee {
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3rem);
+    border-block: 1px solid var(--border);
+    background: var(--bg-2);
+    overflow: hidden;
+  }
+  .marquee__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-block-end: var(--space-4);
+  }
+  .marquee__title {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  .marquee__toggle {
+    display: none;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .marquee__toggle:hover {
+    background: var(--surface-strong);
+  }
+  .marquee__toggle svg {
+    grid-area: 1 / 1;
+  }
+  [data-marquee][data-paused] .marquee__icon-pause,
+  [data-marquee]:not([data-paused]) .marquee__icon-play {
+    display: none;
+  }
+  .marquee__viewport {
+    overflow: hidden;
+  }
+  .marquee__track {
+    display: flex;
+    inline-size: max-content;
+  }
+  .marquee__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) 0;
+    margin: 0;
+    padding: 0;
+    padding-inline: var(--gutter);
+    list-style: none;
+  }
+  .marquee__list li {
+    display: inline-flex;
+    align-items: center;
+    font-size: clamp(1.35rem, 1rem + 1.6vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    color: var(--text);
+  }
+  /* Separator: a small spark square between names. */
+  .marquee__list li::after {
+    content: '';
+    inline-size: 0.32em;
+    block-size: 0.32em;
+    margin-inline: 0.9em;
+    border-radius: 2px;
+    background: var(--spark);
+    transform: rotate(45deg);
+  }
+  /* Static by default: one wrapped list, aligned with the page, no duplicate. */
+  [data-marquee]:not([data-moving]) .marquee__viewport {
+    inline-size: min(var(--page-width), 100% - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+  [data-marquee]:not([data-moving]) .marquee__list {
+    padding-inline: 0;
+  }
+  [data-marquee]:not([data-moving]) .marquee__track {
+    inline-size: auto;
+  }
+  [data-marquee]:not([data-moving]) .marquee__list li:last-child::after {
+    display: none;
+  }
+  .marquee__list[aria-hidden='true'] {
+    display: none;
   }
 
   /* ── Rules ───────────────────────────────────────────────── */
@@ -808,11 +1003,43 @@
     list-style: none;
   }
 
-  /* ── Closing call to action ──────────────────────────────── */
+  /* ── Closing call to action: the one full-spark surface ──── */
   .cta {
     padding-block: clamp(5rem, 3rem + 8vw, 10rem);
-    background: var(--bg-deep);
-    border-block-start: 1px solid var(--border);
+    background: var(--spark);
+    color: var(--on-spark);
+  }
+  .cta__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 4rem;
+    block-size: 4rem;
+    margin-block-end: var(--space-5);
+    border-radius: 50%;
+    background: var(--on-spark);
+    color: var(--spark);
+  }
+  .btn--ink {
+    --btn-bg: var(--on-spark);
+    --btn-fg: oklch(0.98 0.01 var(--seed-neutral-h));
+    --btn-border: transparent;
+  }
+  .btn--ink:hover {
+    --btn-bg: oklch(0.26 0.04 var(--seed-neutral-h));
+    --btn-border: transparent;
+  }
+  .btn--outline-ink {
+    --btn-bg: transparent;
+    --btn-fg: var(--on-spark);
+    --btn-border: var(--on-spark);
+    border-width: 2px;
+  }
+  .btn--outline-ink:hover {
+    --btn-bg: color-mix(in oklch, var(--on-spark) 10%, transparent);
+    --btn-border: var(--on-spark);
+  }
+  .cta :focus-visible {
+    outline-color: var(--on-spark);
   }
   .cta__inner {
     display: grid;
@@ -832,23 +1059,22 @@
     max-inline-size: 52ch;
     font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
     line-height: 1.6;
-    color: var(--text-2);
+    color: var(--on-spark);
   }
   .cta .hero__actions {
     justify-content: center;
   }
-  .cta__status {
-    margin-block-start: clamp(3.5rem, 2.5rem + 3vw, 5.5rem);
-    padding-block-start: var(--space-5);
-    border-block-start: 1px solid var(--border);
-    max-inline-size: 62ch;
-    color: var(--text-2);
-    font-size: var(--text-sm);
-    line-height: 1.6;
+  .status {
+    padding-block: clamp(3rem, 2rem + 3vw, 4.5rem);
   }
-  .cta__status-title {
+  .status__inner {
+    max-inline-size: 72ch;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+  .status__title {
     margin-block-end: var(--space-2);
-    font-size: var(--text-md);
+    font-size: var(--text-lg);
     color: var(--text);
   }
 
@@ -871,23 +1097,52 @@
 
   /* ── Motion ──────────────────────────────────────────────── */
   @media (prefers-reduced-motion: no-preference) {
-    /* Page-load entrance for the hero. */
-    .hero__text > *,
+    /* Hero entrance (Aceternity "Text Generate Effect"): words rise out of a
+       blur one after another, then the marker sweeps under the key phrase. */
+    .hero__word {
+      animation: home-rise 760ms var(--ease-out) both;
+      animation-delay: calc(var(--i, 0) * 65ms);
+    }
+    .hero__highlight {
+      animation: home-mark 700ms var(--ease-out) both;
+      animation-delay: calc(var(--i, 0) * 65ms + 240ms);
+    }
+    .hero__lede,
+    .hero__actions,
     .hero__art {
       animation: home-rise 900ms var(--ease-out) both;
     }
     .hero__lede {
-      animation-delay: 80ms;
+      animation-delay: 260ms;
     }
     .hero__actions {
-      animation-delay: 160ms;
+      animation-delay: 380ms;
     }
     .hero__art {
-      animation-delay: 220ms;
+      animation-delay: 300ms;
     }
 
-    .mock {
-      transition: transform 400ms var(--ease-out);
+    /* Moving strip: only once home.ts confirms motion is allowed. */
+    [data-marquee][data-moving] .marquee__toggle {
+      display: grid;
+    }
+    [data-marquee][data-moving] .marquee__list {
+      flex-wrap: nowrap;
+    }
+    [data-marquee][data-moving] .marquee__list[aria-hidden='true'] {
+      display: flex;
+    }
+    [data-marquee][data-moving] .marquee__track {
+      animation: home-marquee 48s linear infinite;
+    }
+    [dir='rtl'] [data-marquee][data-moving] .marquee__track {
+      animation-name: home-marquee-rtl;
+    }
+    [data-marquee][data-paused] .marquee__track,
+    [data-marquee][data-offscreen] .marquee__track,
+    .marquee__viewport:hover .marquee__track,
+    [data-marquee]:focus-within .marquee__track {
+      animation-play-state: paused;
     }
   }
 
@@ -900,7 +1155,7 @@
         inset-block-start: 0;
         inset-inline: 0;
         block-size: 3px;
-        background: var(--accent);
+        background: var(--spark);
         transform-origin: left;
         animation: home-grow linear both;
         animation-timeline: scroll(root block);
@@ -929,10 +1184,18 @@
         animation-range: cover 30% cover 48%;
       }
 
-      .timeline::after {
+      /* Timeline beam: its tip tracks the middle of the viewport, from the moment
+         the list's top reaches the middle until its bottom does. */
+      .tl::after {
         animation: home-grow-y linear both;
-        animation-timeline: --timeline;
-        animation-range: entry 40% cover 65%;
+        animation-timeline: --tl;
+        animation-range: entry 50% exit 50%;
+      }
+      /* Each dot fills as the beam reaches it. */
+      .tl__dot {
+        animation: home-dot linear both;
+        animation-timeline: view();
+        animation-range: cover 46% cover 50%;
       }
     }
   }
@@ -947,6 +1210,26 @@
     from {
       transform: translateY(32px);
       filter: blur(6px);
+    }
+  }
+  @keyframes home-mark {
+    from {
+      box-shadow: inset 0 0 0 var(--spark);
+    }
+  }
+  @keyframes home-dot {
+    from {
+      background: var(--bg-2);
+    }
+  }
+  @keyframes home-marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes home-marquee-rtl {
+    to {
+      transform: translateX(50%);
     }
   }
   @keyframes home-pop {

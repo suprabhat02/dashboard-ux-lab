@@ -36,7 +36,7 @@ loads one catalogue through `spec/i18n/load/<locale>.ts` (per-locale React islan
 and lab-chrome entries); build-time code and tests use `spec/i18n/all.ts`. ESLint
 forbids importing `all` from client code; size budgets apply to every locale.
 
-**Typography.** Space Grotesk has no Arabic glyphs; Noto Kufi Arabic (geometric, a
+**Typography.** Bricolage Grotesque has no Arabic glyphs; Noto Kufi Arabic (geometric, a
 good match) is self-hosted with a `unicode-range`, so English and Spanish pages
 never download it. Arabic disables letter-spacing and uppercase, and uses taller
 line-height.

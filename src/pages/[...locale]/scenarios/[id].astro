@@ -87,7 +87,7 @@ const settings = SCENARIOS.find((scenario) => scenario.id === id)?.settings;
     <section aria-labelledby="why">
       <h2 id="why">{t.guides.why}</h2>
       <p>{copy.why}</p>
-      <ul>
+      <ul class="bullets">
         {copy.guidance.map((item) => (
           <li>{item}</li>
         ))}
@@ -101,7 +101,7 @@ const settings = SCENARIOS.find((scenario) => scenario.id === id)?.settings;
 
     <section aria-labelledby="anti">
       <h2 id="anti">{t.guides.antiPatterns}</h2>
-      <ul>
+      <ul class="bullets">
         {copy.antiPatterns.map((item) => (
           <li>{item}</li>
         ))}

@@ -1,7 +1,8 @@
 ---
-import spaceGroteskLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import bricolageLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
 import notoKufiArabic from '@fontsource-variable/noto-kufi-arabic/files/noto-kufi-arabic-arabic-wght-normal.woff2?url';
-import '@fontsource-variable/space-grotesk/wght.css';
+/* opsz build: weight + optical size, which gives display sizes their character. */
+import '@fontsource-variable/bricolage-grotesque/opsz.css';
 import '@fontsource-variable/geist-mono/wght.css';
 /* Arabic glyphs only. Its @font-face is scoped by unicode-range, so English and
    Spanish pages never download it. */
@@ -64,13 +65,7 @@ const ogLocale = { en: 'en_US', es: 'es_ES', ar: 'ar_AR' }[locale];
     <meta name="theme-color" content="#f6fbfe" media="(prefers-color-scheme: light)" />
     <meta name="author" content="Suprabhat Kumar" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link
-      rel="preload"
-      href={spaceGroteskLatin}
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+    <link rel="preload" href={bricolageLatin} as="font" type="font/woff2" crossorigin />
     {dir === 'rtl' && (
       <link rel="preload" href={notoKufiArabic} as="font" type="font/woff2" crossorigin />
     )}

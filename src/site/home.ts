@@ -193,7 +193,109 @@ export function initTilt(element: HTMLElement): void {
   });
 }
 
+/**
+ * Number ticker: counts up to the value already in the HTML when it scrolls into
+ * view. The final number is the server-rendered text, so nothing depends on this.
+ */
+export function initTickers(elements: Iterable<HTMLElement>): void {
+  if (reducedMotion()) return;
+  const DURATION_MS = 1100;
+  const run = (element: HTMLElement): void => {
+    const target = Number(element.dataset.ticker);
+    if (!Number.isFinite(target)) return;
+    const start = performance.now();
+    const step = (now: number): void => {
+      const progress = Math.min(1, (now - start) / DURATION_MS);
+      const eased = 1 - (1 - progress) ** 3;
+      element.textContent = String(Math.round(target * eased));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        run(entry.target as HTMLElement);
+      }
+    },
+    { threshold: 0.6 },
+  );
+  for (const element of elements) observer.observe(element);
+}
+
+/**
+ * Aceternity "Card Hover Effect": one surface glides to the tile under the pointer
+ * or keyboard focus. The surface is decorative; tiles stay plain links.
+ */
+export function initHoverCards(wrap: HTMLElement): void {
+  const glow = wrap.querySelector<HTMLElement>('[data-hover-glow]');
+  if (!glow) return;
+  wrap.dataset.ready = '';
+  const moveTo = (tile: HTMLElement): void => {
+    const outer = wrap.getBoundingClientRect();
+    const box = tile.getBoundingClientRect();
+    glow.style.setProperty('--glow-x', `${String(box.left - outer.left)}px`);
+    glow.style.setProperty('--glow-y', `${String(box.top - outer.top)}px`);
+    glow.style.setProperty('--glow-w', `${String(box.width)}px`);
+    glow.style.setProperty('--glow-h', `${String(box.height)}px`);
+    wrap.dataset.active = '';
+  };
+  const clear = (): void => {
+    delete wrap.dataset.active;
+  };
+  const tileFrom = (target: EventTarget | null): HTMLElement | null =>
+    target instanceof Element ? target.closest<HTMLElement>('.tile') : null;
+
+  wrap.addEventListener('pointerover', (event) => {
+    const tile = tileFrom(event.target);
+    if (tile) moveTo(tile);
+  });
+  wrap.addEventListener('pointerleave', clear);
+  wrap.addEventListener('focusin', (event) => {
+    const tile = tileFrom(event.target);
+    if (tile) moveTo(tile);
+  });
+  wrap.addEventListener('focusout', (event) => {
+    if (!wrap.contains(event.relatedTarget as Node | null)) clear();
+  });
+  window.addEventListener('resize', clear, { passive: true });
+}
+
+/**
+ * Aceternity "Infinite Moving Cards", as a strip of names. Moves only without
+ * reduced motion and while on screen; pauses on hover or focus; the Pause button
+ * satisfies WCAG 2.2.2. Otherwise it is a static, wrapped list.
+ */
+export function initMarquee(root: HTMLElement): void {
+  if (reducedMotion()) return;
+  const toggle = root.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
+  if (!toggle) return;
+  const labels = {
+    play: toggle.dataset.labelPlay ?? '',
+    pause: toggle.dataset.labelPause ?? '',
+  };
+  root.dataset.moving = '';
+  toggle.addEventListener('click', () => {
+    const paused = root.dataset.paused === undefined;
+    if (paused) root.dataset.paused = '';
+    else delete root.dataset.paused;
+    toggle.setAttribute('aria-label', paused ? labels.play : labels.pause);
+  });
+  new IntersectionObserver(([entry]) => {
+    if (!entry) return;
+    if (entry.isIntersecting) delete root.dataset.offscreen;
+    else root.dataset.offscreen = '';
+  }).observe(root);
+}
+
 export function initHome(): void {
+  initTickers(document.querySelectorAll<HTMLElement>('[data-ticker]'));
+  const cards = document.querySelector<HTMLElement>('[data-hover-cards]');
+  if (cards) initHoverCards(cards);
+  const marquee = document.querySelector<HTMLElement>('[data-marquee]');
+  if (marquee) initMarquee(marquee);
   const demo = document.querySelector<HTMLElement>('[data-demo]');
   if (demo) initStateDemo(demo);
   const tilt = document.querySelector<HTMLElement>('[data-demo-tilt]');
