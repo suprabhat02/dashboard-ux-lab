@@ -79,9 +79,9 @@ export const en = {
   home: {
     hero: {
       title: 'Design the dashboard states nobody screenshots',
-      /** Part of the title drawn with a marker. Must be an exact substring of title. */
-      highlight: 'nobody screenshots',
       lede: 'Real dashboards spend much of their time loading, waiting on slow services, showing nothing, failing or hiding data a viewer isn’t allowed to see. This lab lets you trigger each of those states on purpose and see exactly how a well-built dashboard should respond: on screen, to a screen reader and to keyboard focus.',
+      facts:
+        'Six scenarios, three languages and two independent builds of one spec, tested in Chromium, Firefox and WebKit on every change.',
       openLab: 'Open the lab',
       readGuides: 'Read the scenario guides',
     },
@@ -211,13 +211,17 @@ export const en = {
       ],
     },
     demo: {
-      title: 'One dashboard, six states, live',
-      intro:
-        'The same widget cycles through every state this lab specifies. Choose a state to hold it, or let it play.',
       controlsLabel: 'Preview state',
       play: 'Play the preview',
       pause: 'Pause the preview',
       openInLab: 'Open this state in the lab',
+      ruler: {
+        label: 'Time since the request was sent',
+        skeleton: 'Placeholders',
+        slow: 'Says it is slow',
+        cancel: 'Offers Cancel',
+        response: 'Response',
+      },
       captions: {
         loaded:
           'Data arrives in under a second, and content replaces placeholders of exactly the same size.',
@@ -232,25 +236,14 @@ export const en = {
     },
     stack: {
       title: 'Built and tested with',
-      pause: 'Pause the moving list',
-      play: 'Play the moving list',
     },
     statement:
       'A dashboard is judged less by how it looks with perfect data than by how it behaves while that data is late, missing, failing or off-limits.',
-    stats: {
-      label: 'The lab in numbers',
-      scenarios: 'scenarios, each with a written guide',
-      languages: 'languages, including right-to-left Arabic',
-      implementations: 'independent implementations of one spec',
-      engines: 'browser engines tested on every change',
-    },
     cta: {
       title: 'Break a dashboard on purpose',
       body: 'Slow it down, make it fail, take away access, and watch what a well-built interface does about it.',
       primary: 'Open the lab',
       secondary: 'Read the spec on GitHub',
-      /** Exact substring of title, drawn on an ink band. */
-      highlight: 'on purpose',
       actionsTitle: 'Three ways to break it',
       actions: [
         {

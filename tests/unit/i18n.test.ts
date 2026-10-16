@@ -101,16 +101,6 @@ describe.each(LOCALES)('catalogue: %s', (locale) => {
 });
 
 describe.each(LOCALES)('home copy: %s', (locale) => {
-  it('highlights an exact part of the hero title', () => {
-    const { title, highlight } = MESSAGES[locale].home.hero;
-    expect(title).toContain(highlight);
-  });
-
-  it('highlights an exact part of the closing title', () => {
-    const { title, highlight } = MESSAGES[locale].home.cta;
-    expect(title).toContain(highlight);
-  });
-
   it('reports the same roadmap state as English, line by line', () => {
     expect(MESSAGES[locale].home.statusItems.map((item) => item.state)).toEqual(
       MESSAGES.en.home.statusItems.map((item) => item.state),

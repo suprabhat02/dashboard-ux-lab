@@ -52,8 +52,9 @@ export const es: Messages = {
   home: {
     hero: {
       title: 'Diseña los estados del panel que nadie captura en pantalla',
-      highlight: 'nadie captura en pantalla',
       lede: 'Un panel real pasa gran parte del tiempo cargando, esperando a servicios lentos, sin nada que mostrar, fallando u ocultando datos que la persona no tiene permiso para ver. Este laboratorio te permite provocar cada uno de esos estados a propósito y ver cómo debe responder un panel bien hecho: en pantalla, en el lector de pantalla y con el foco del teclado.',
+      facts:
+        'Seis escenarios, tres idiomas y dos implementaciones independientes de una misma especificación, probadas en Chromium, Firefox y WebKit con cada cambio.',
       openLab: 'Abrir el laboratorio',
       readGuides: 'Leer las guías de escenarios',
     },
@@ -185,13 +186,17 @@ export const es: Messages = {
       ],
     },
     demo: {
-      title: 'Un panel, seis estados, en directo',
-      intro:
-        'El mismo widget recorre todos los estados que especifica el laboratorio. Elige uno para fijarlo o deja que avance solo.',
       controlsLabel: 'Estado de la vista previa',
       play: 'Reproducir la vista previa',
       pause: 'Pausar la vista previa',
       openInLab: 'Abrir este estado en el laboratorio',
+      ruler: {
+        label: 'Tiempo desde que se envió la solicitud',
+        skeleton: 'Marcadores',
+        slow: 'Avisa de la demora',
+        cancel: 'Ofrece cancelar',
+        response: 'Respuesta',
+      },
       captions: {
         loaded:
           'Los datos llegan en menos de un segundo y el contenido sustituye a marcadores exactamente del mismo tamaño.',
@@ -208,24 +213,14 @@ export const es: Messages = {
     },
     stack: {
       title: 'Construido y probado con',
-      pause: 'Pausar la lista en movimiento',
-      play: 'Reanudar la lista en movimiento',
     },
     statement:
       'Un panel se juzga menos por cómo se ve con datos perfectos que por cómo se comporta cuando esos datos llegan tarde, faltan, fallan o no se pueden ver.',
-    stats: {
-      label: 'El laboratorio en cifras',
-      scenarios: 'escenarios, cada uno con su guía escrita',
-      languages: 'idiomas, incluido el árabe de derecha a izquierda',
-      implementations: 'implementaciones independientes de una misma especificación',
-      engines: 'motores de navegador probados en cada cambio',
-    },
     cta: {
       title: 'Rompe un panel a propósito',
       body: 'Ralentízalo, haz que falle, quítale el acceso y observa qué hace una interfaz bien construida al respecto.',
       primary: 'Abrir el laboratorio',
       secondary: 'Leer la especificación en GitHub',
-      highlight: 'a propósito',
       actionsTitle: 'Tres formas de romperlo',
       actions: [
         {

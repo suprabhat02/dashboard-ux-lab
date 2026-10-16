@@ -97,44 +97,35 @@ test('home: section headings form one outline', async ({ page }) => {
   expect(unlabelled).toBe(0);
 });
 
-test.describe('home: motion components', () => {
-  test('moving strip: static under reduced motion, pausable otherwise (WCAG 2.2.2)', async ({
+test.describe('home: request console', () => {
+  test('reduced motion: each scenario shows its key frame, nothing plays', async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
-    const strip = page.locator('[data-marquee]');
-    await expect(strip).not.toHaveAttribute('data-moving');
-    await expect(strip.locator('[data-marquee-toggle]')).toBeHidden();
-    // One readable list; the duplicate exists only for the visual loop.
-    await expect(strip.getByRole('listitem')).toHaveCount(10);
-
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
-    await page.reload();
-    const toggle = strip.locator('[data-marquee-toggle]');
-    await expect(strip).toHaveAttribute('data-moving', '');
-    await expect(toggle).toHaveAccessibleName('Pause the moving list');
-    await toggle.click();
-    await expect(strip).toHaveAttribute('data-paused', '');
-    await expect(toggle).toHaveAccessibleName('Play the moving list');
+    const tabs = demo(page).getByRole('tab');
+    await tabs.nth(2).click(); // slow
+    await expect(mock(page)).toHaveAttribute('data-state', 'slow');
+    // The slow scenario is explained at the moment it offers Cancel.
+    await expect(mock(page)).toHaveAttribute('data-phase', 'cancel');
+    await tabs.nth(1).click(); // loading
+    await expect(mock(page)).toHaveAttribute('data-phase', 'skeleton');
+    await tabs.nth(4).click(); // error
+    await expect(mock(page)).toHaveAttribute('data-phase', 'done');
   });
 
-  test('stats keep their real values in the HTML and after counting', async ({
-    page,
-  }) => {
+  test('a picked scenario replays its request in real time', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/');
-    const first = page.locator('[data-ticker]').first();
-    await first.scrollIntoViewIfNeeded();
-    await expect(first).toHaveText(String(SCENARIO_IDS.length));
+    await demo(page).getByRole('tab').nth(1).click(); // loading: 2 s
+    // Nothing for 300 ms, then placeholders, then the data.
+    await expect(mock(page)).toHaveAttribute('data-phase', 'skeleton');
+    await expect(mock(page)).toHaveAttribute('data-phase', 'done', { timeout: 5000 });
   });
 
-  test('card hover effect follows keyboard focus', async ({ page }) => {
+  test('the ruler marks where each response lands', async ({ page }) => {
     await page.goto('/');
-    const wrap = page.locator('[data-hover-cards]');
-    await wrap.locator('.tile').nth(2).focus();
-    await expect(wrap).toHaveAttribute('data-active', '');
-    await page.locator('body').click({ position: { x: 5, y: 5 } });
-    await expect(wrap).not.toHaveAttribute('data-active');
+    await expect(page.locator('.ruler__mark')).toHaveCount(5);
+    await expect(page.locator('.index__ruler')).toHaveCount(SCENARIO_IDS.length);
   });
 });

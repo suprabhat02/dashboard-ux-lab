@@ -45,19 +45,19 @@ distract from a project whose credibility depends on restraint and precision.
 - **Illustrations: Storyset only**, inlined as SVG and recoloured to the theme
   accent at build time (`docs/illustrations.md`), decorative (`aria-hidden`), with
   the required attribution in the footer.
-- **Aceternity UI patterns, rebuilt without dependencies.** The home page uses the
-  Text Generate, Hero Highlight, 3D Card, Timeline, Card Hover Effect and Infinite
-  Moving Cards patterns, re-implemented in CSS and a few lines of TypeScript
-  (`src/site/home.ts`) instead of importing the React + Tailwind + Motion
-  originals: the page stays static HTML with ~2.5 KB of script, and the
-  gradient-based parts of those components are replaced with solid colour.
-- **Motion is scroll-linked and optional** (home page, `src/styles/home.css`).
-  Reveals animate transform, blur and colour only — never opacity, so text is
-  always legible and contrast checks never see a half-faded frame. Scroll-driven
-  effects sit inside `@supports (animation-timeline: view())` and
-  `prefers-reduced-motion: no-preference`; without either, the page is static and
-  complete. The live state preview follows the APG tabbed-carousel pattern: a
-  Pause control (WCAG 2.2.2), no auto-rotation under reduced motion, a pause while
+- **One idea, one moment of motion.** The home page is built around a single
+  device: a request is a span of time, drawn as a ruler from 0 to 12 s with the
+  spec's thresholds marked (placeholders at 300 ms, "slow" at 3 s, Cancel at 8 s).
+  The hero replays each scenario along it in real time; the scenario index repeats
+  it in miniature (`src/site/ruler.ts` keeps both on one scale). That replay is
+  the page's only motion: no scroll reveals, counters, marquees or hover theatre.
+- **Structure means something.** Only real sequences are numbered (the
+  "usually handled" steps); sets such as the rules are plain lists. No accented
+  word inside a headline, no labels above headings, no arrows appended to links
+  and buttons.
+- **The replay is accessible** (APG tabbed carousel): a Pause control that also
+  freezes a request mid-flight (WCAG 2.2.2), no auto-rotation under reduced
+  motion (each scenario then shows the one frame that explains it), a pause while
   it has focus or the pointer, and announcements only when the visitor drives it.
 - **Header: always one row.** Language and theme are dropdowns (APG disclosure
   pattern); on narrow screens the section links move into a Menu dropdown.
