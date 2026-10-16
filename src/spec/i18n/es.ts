@@ -26,6 +26,10 @@ export const es: Messages = {
     accessibilityTitle: 'Accesibilidad',
     accessibilityDescription:
       'Qué se ha probado y qué no en el Dashboard UX Lab, cómo se ha probado y los problemas conocidos.',
+    compareTitle: 'React y sin framework, lado a lado',
+    compareDescription:
+      'El mismo panel hecho con React y sin framework, lado a lado: unos mismos controles, tiempo de arranque, tamaño de descarga y si ambos se comportan igual.',
+    embedTitle: (build: string) => `Versión ${build}, incrustada`,
     notFoundTitle: 'Página no encontrada',
     notFoundDescription: 'Esta página no existe.',
   },
@@ -37,6 +41,7 @@ export const es: Messages = {
     lab: 'Laboratorio',
     scenarios: 'Escenarios',
     accessibility: 'Accesibilidad',
+    compare: 'Comparar',
     github: 'GitHub',
     language: 'Idioma',
     menu: 'Menú',
@@ -294,6 +299,7 @@ export const es: Messages = {
       phases: [
         {
           stage: 'done',
+          link: { label: 'Abrir el laboratorio', path: '/lab/react/' },
           title: 'Cimientos',
           items: [
             'Una especificación escrita de seis estados de un panel, con sus tiempos',
@@ -304,6 +310,7 @@ export const es: Messages = {
         },
         {
           stage: 'done',
+          link: { label: 'Verlas lado a lado', path: '/compare/' },
           title: 'Comparación lado a lado',
           items: [
             'Las dos versiones en una sola vista, con los mismos controles',
@@ -388,6 +395,105 @@ export const es: Messages = {
       'Este panel interactivo necesita JavaScript. Las guías de escenarios funcionan sin él.',
   },
 
+  compare: {
+    title: 'Dos versiones, un comportamiento',
+    lede: 'El mismo panel, escrito dos veces a partir de una especificación: una con React y otra sin ningún framework. Elige un escenario y las dos lo ejecutan a la vez, aquí en tu navegador.',
+    controlsHeading: 'Escenario para las dos versiones',
+    replay: 'Repetir en ambas',
+    listenLegend: 'Lector de pantalla y teclado en',
+    listenHint:
+      'Las dos versiones anuncian los cambios con regiones activas, así que un lector de pantalla oiría cada mensaje dos veces. Solo una versión a la vez es accesible con el teclado y las tecnologías de apoyo; la otra sigue visible.',
+    builds: {
+      react: {
+        name: 'React',
+        note: 'React 19, hooks y un reducer',
+        frameTitle: 'Panel hecho con React',
+      },
+      vanilla: {
+        name: 'TypeScript sin framework',
+        note: 'Sin framework ni dependencias en ejecución',
+        frameTitle: 'Panel hecho con TypeScript sin framework',
+      },
+    },
+    active: 'El teclado y el lector de pantalla están en esta versión.',
+    muted:
+      'Solo visible: ahora no es accesible con el teclado ni con un lector de pantalla.',
+    useThis: 'Usar esta versión',
+    metrics: {
+      label: (build: string) => `${build}: mediciones`,
+      ready: 'Lista en',
+      script: 'JavaScript descargado',
+      steps: 'Pasos en esta ejecución',
+      measuring: 'Midiendo…',
+      kb: (value: string) => `${value} KB`,
+      files: (count: number) =>
+        `${count} ${plural.select(count) === 'one' ? 'archivo' : 'archivos'}`,
+    },
+    lastHeard: 'Último anuncio:',
+    nothingHeard: 'ninguno todavía',
+    agreement: {
+      heading: '¿Se comportan igual?',
+      waiting: 'Esperando a que arranquen las dos versiones.',
+      agree: (steps: number) =>
+        `Los mismos ${steps} ${plural.select(steps) === 'one' ? 'paso' : 'pasos'}, en el mismo orden.`,
+      catching: (steps: number) =>
+        `Coinciden en ${steps} ${plural.select(steps) === 'one' ? 'paso' : 'pasos'} por ahora. Una versión sigue en marcha.`,
+      differ: (step: number) => `Difieren en el paso ${step}.`,
+      nothing: 'nada',
+      uneven:
+        'Una versión aún estaba cargando cuando empezó esta ejecución, así que partieron de estados distintos. Repitiendo ambas desde el mismo punto…',
+      interacted:
+        'Cambiaste una versión desde dentro, así que las dos ejecuciones ya no parten del mismo punto. Repite en ambas para volver a comparar.',
+      explain:
+        'Un paso es cualquier cosa que una persona puede notar: una solicitud, un cambio de estado, una fase de carga, un anuncio o un movimiento del foco. El tiempo no cuenta; el orden y el contenido deben coincidir.',
+    },
+    measuredNote:
+      'Medido en tu navegador en esta visita, con las dos versiones cargando a la vez. Las cifras cambian con el dispositivo, la red y la caché; recarga para medir de nuevo.',
+    facts: {
+      heading: 'Al compilar',
+      caption:
+        'Tamaño del código y dependencias de cada versión, contados al generar esta página.',
+      measure: 'Medida',
+      source: 'Líneas de código (no vacías)',
+      files: 'Archivos de código',
+      deps: 'Dependencias en ejecución',
+      none: 'Ninguna',
+      shared: (lines: string) =>
+        `Las dos versiones usan además la especificación compartida: ${lines} líneas de datos, reglas, formatos y textos que ninguna repite.`,
+    },
+    harder: {
+      heading: 'Dónde costó más cada versión',
+      topic: 'Tema',
+      caption: 'Lo que una versión obtiene gratis y la otra tuvo que hacer a mano.',
+      items: [
+        {
+          topic: 'Conservar el orden y las vistas',
+          react:
+            'Gratis: el estado del componente sobrevive a una actualización de datos.',
+          vanilla:
+            'Un pequeño objeto de memoria los guarda mientras se reconstruye el cuerpo.',
+        },
+        {
+          topic: 'Conservar el foco del teclado',
+          react: 'Gratis: un botón que se vuelve a renderizar es el mismo elemento.',
+          vanilla:
+            'Los controles reconstruibles llevan una clave; el foco vuelve al que coincide.',
+        },
+        {
+          topic: 'Activar a tiempo los temporizadores de carga',
+          react:
+            'Necesita useLayoutEffect; si no, el temporizador de 300 ms empieza un fotograma tarde.',
+          vanilla: 'Se activan directamente en la misma tarea que el renderizado.',
+        },
+        {
+          topic: 'Tamaño de descarga',
+          react: 'El runtime de React es la mayor parte del paquete.',
+          vanilla: 'Solo se envía el propio panel.',
+        },
+      ],
+      logLink: 'Leer el registro completo de diferencias',
+    },
+  },
   inspector: {
     heading: 'Inspector',
     tablist: 'Vistas del inspector',

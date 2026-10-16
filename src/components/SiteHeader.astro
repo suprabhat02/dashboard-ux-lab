@@ -12,7 +12,7 @@ import Icon from './Icon.astro';
 
 interface Props {
   locale: Locale;
-  section?: 'home' | 'lab' | 'scenarios' | 'accessibility' | undefined;
+  section?: 'home' | 'lab' | 'compare' | 'scenarios' | 'accessibility' | undefined;
 }
 
 const { locale, section } = Astro.props;
@@ -21,6 +21,7 @@ const alternates = alternatesFor(Astro.url.pathname);
 const repoUrl = 'https://github.com/suprabhat02/dashboard-ux-lab';
 const links = [
   { id: 'lab', href: href('/lab/react/'), label: t.nav.lab },
+  { id: 'compare', href: href('/compare/'), label: t.nav.compare },
   { id: 'scenarios', href: href('/scenarios/'), label: t.nav.scenarios },
   { id: 'accessibility', href: href('/accessibility/'), label: t.nav.accessibility },
 ] as const;

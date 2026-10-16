@@ -11,6 +11,10 @@ const BASE_BUDGETS_KB = {
   'lab/react/index.html': 90,
   'lab/vanilla/index.html': 20,
   'index.html': 5,
+  // The comparison page itself only drives the frames; each frame is one build plus a ~1 KB bridge.
+  'compare/index.html': 10,
+  'embed/react/index.html': 91,
+  'embed/vanilla/index.html': 21,
 };
 // Every locale gets the same budget: a page must not grow because of other languages.
 const BUDGETS_KB = Object.fromEntries(

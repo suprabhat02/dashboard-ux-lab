@@ -8,8 +8,8 @@ import type { ImplementationId, LabSettings, LoadingPhase, RequestStatus } from 
  *   chrome ◀─telemetry── implementation      (state, announcements, focus, settings)
  *
  * Events travel as `CustomEvent`s on an `EventTarget` the caller injects (the page's
- * `window` in production, a fresh `EventTarget` in tests). The same messages can
- * be forwarded through `postMessage` for the side-by-side iframe mode later.
+ * `window` in production, a fresh `EventTarget` in tests). The comparison page
+ * forwards the same messages between frames with `postMessage` (end of file).
  *
  * Implementations must work without the chrome: they read the URL on start and
  * only treat commands as an optional extra.
@@ -115,4 +115,98 @@ export function createLabChannel(
       });
     },
   };
+}
+
+/* ── Across frames: the side-by-side comparison ─────────────────────────────
+ *
+ *   host page ──HostMessage──▶ iframe (bridge)   commands for its lab channel, theme
+ *   host page ◀─FrameMessage── iframe (bridge)   telemetry, content height, metrics
+ *
+ * Both ends check the origin and the sending window before trusting a message;
+ * the guards below then check its shape, because postMessage data is untyped.
+ */
+
+export const FRAME_SOURCE = 'dux-frame';
+export const HOST_SOURCE = 'dux-host';
+
+export type ThemeChoice = 'light' | 'dark' | null;
+
+/** Measured in the iframe's own document, from its navigation start. */
+export interface FrameMetrics {
+  /** When the implementation reported `ready`, in ms. */
+  readonly readyMs: number;
+  /** JavaScript the build downloaded, as transferred (compressed if the server compresses). */
+  readonly scriptBytes: number;
+  readonly scriptCount: number;
+}
+
+export type FrameMessage =
+  | {
+      readonly source: typeof FRAME_SOURCE;
+      readonly type: 'telemetry';
+      readonly telemetry: LabTelemetry;
+    }
+  | {
+      readonly source: typeof FRAME_SOURCE;
+      readonly type: 'size';
+      readonly height: number;
+    }
+  | {
+      readonly source: typeof FRAME_SOURCE;
+      readonly type: 'metrics';
+      readonly metrics: FrameMetrics;
+    };
+
+export type HostMessage =
+  | {
+      readonly source: typeof HOST_SOURCE;
+      readonly type: 'command';
+      readonly command: LabCommand;
+    }
+  | {
+      readonly source: typeof HOST_SOURCE;
+      readonly type: 'theme';
+      readonly theme: ThemeChoice;
+    };
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value);
+
+export function isFrameMessage(value: unknown): value is FrameMessage {
+  if (!isRecord(value) || value.source !== FRAME_SOURCE) return false;
+  switch (value.type) {
+    case 'telemetry':
+      return isRecord(value.telemetry) && typeof value.telemetry.type === 'string';
+    case 'size':
+      return isFiniteNumber(value.height) && value.height >= 0;
+    case 'metrics': {
+      const metrics = value.metrics;
+      return (
+        isRecord(metrics) &&
+        isFiniteNumber(metrics.readyMs) &&
+        isFiniteNumber(metrics.scriptBytes) &&
+        isFiniteNumber(metrics.scriptCount)
+      );
+    }
+    default:
+      return false;
+  }
+}
+
+export function isHostMessage(value: unknown): value is HostMessage {
+  if (!isRecord(value) || value.source !== HOST_SOURCE) return false;
+  switch (value.type) {
+    case 'command':
+      return (
+        isRecord(value.command) &&
+        (value.command.type === 'replay' ||
+          (value.command.type === 'apply' && isRecord(value.command.settings)))
+      );
+    case 'theme':
+      return value.theme === 'light' || value.theme === 'dark' || value.theme === null;
+    default:
+      return false;
+  }
 }

@@ -6,6 +6,8 @@ interface RoadmapPhase {
   readonly stage: RoadmapStage;
   readonly title: string;
   readonly items: readonly string[];
+  /** Where to see a finished phase; a path inside the site, localised at render. */
+  readonly link?: { readonly label: string; readonly path: string };
 }
 
 /**
@@ -55,6 +57,10 @@ export const en = {
     accessibilityTitle: 'Accessibility',
     accessibilityDescription:
       'What has and hasn’t been tested in the Dashboard UX Lab, how, and the known issues.',
+    compareTitle: 'React and framework-free, side by side',
+    compareDescription:
+      'The same dashboard built with React and with no framework, run side by side: one set of controls, start-up time, download size and whether both behave alike.',
+    embedTitle: (build: string) => `${build} build, embedded`,
     notFoundTitle: 'Page not found',
     notFoundDescription: 'This page doesn’t exist.',
   },
@@ -66,6 +72,7 @@ export const en = {
     lab: 'Lab',
     scenarios: 'Scenarios',
     accessibility: 'Accessibility',
+    compare: 'Compare',
     github: 'GitHub',
     language: 'Language',
     menu: 'Menu',
@@ -321,6 +328,7 @@ export const en = {
       phases: [
         {
           stage: 'done',
+          link: { label: 'Open the lab', path: '/lab/react/' },
           title: 'Foundations',
           items: [
             'A written specification of six dashboard states, with timings',
@@ -331,6 +339,7 @@ export const en = {
         },
         {
           stage: 'done',
+          link: { label: 'See them side by side', path: '/compare/' },
           title: 'Side-by-side comparison',
           items: [
             'Both builds in one view, driven by one set of controls',
@@ -411,6 +420,101 @@ export const en = {
       'This interactive dashboard needs JavaScript. The scenario guides work without it.',
   },
 
+  compare: {
+    title: 'Two builds, one behaviour',
+    lede: 'The same dashboard, written twice from one spec: once with React, once with no framework at all. Pick a scenario and both run it at the same moment, here in your browser.',
+    controlsHeading: 'Scenario for both builds',
+    replay: 'Replay both',
+    listenLegend: 'Screen reader and keyboard go to',
+    listenHint:
+      'Both builds announce changes through live regions, so a screen reader would hear every message twice. One build at a time is reachable by keyboard and assistive technology; the other stays visible.',
+    builds: {
+      react: {
+        name: 'React',
+        note: 'React 19, hooks and a reducer',
+        frameTitle: 'Dashboard built with React',
+      },
+      vanilla: {
+        name: 'Framework-free TypeScript',
+        note: 'No framework, no runtime dependencies',
+        frameTitle: 'Dashboard built with framework-free TypeScript',
+      },
+    },
+    active: 'Keyboard and screen reader are on this build.',
+    muted: 'Visible only: not reachable by keyboard or screen reader right now.',
+    useThis: 'Use this build',
+    metrics: {
+      label: (build: string) => `${build}: measurements`,
+      ready: 'Ready in',
+      script: 'JavaScript downloaded',
+      steps: 'Steps this run',
+      measuring: 'Measuring…',
+      kb: (value: string) => `${value} KB`,
+      files: (count: number) =>
+        `${count} ${plural.select(count) === 'one' ? 'file' : 'files'}`,
+    },
+    lastHeard: 'Last announcement:',
+    nothingHeard: 'none yet',
+    agreement: {
+      heading: 'Do they behave the same?',
+      waiting: 'Waiting for both builds to start.',
+      agree: (steps: number) =>
+        `Same ${steps} ${plural.select(steps) === 'one' ? 'step' : 'steps'}, in the same order.`,
+      catching: (steps: number) =>
+        `Agree on ${steps} ${plural.select(steps) === 'one' ? 'step' : 'steps'} so far. One build is still running.`,
+      differ: (step: number) => `They differ at step ${step}.`,
+      nothing: 'nothing',
+      uneven:
+        'One build was still loading when this run began, so the two started from different states. Replaying both from the same point…',
+      interacted:
+        'You changed one build from inside it, so the two runs no longer share a starting point. Replay both to compare again.',
+      explain:
+        'A step is anything a person could notice: a request, a state change, a loading phase, an announcement or a focus move. Timing is left out; order and content must match.',
+    },
+    measuredNote:
+      'Measured in your browser for this visit, with both builds loading at the same time. Numbers change with device, network and cache; reload to measure again.',
+    facts: {
+      heading: 'At build time',
+      caption:
+        'Source size and dependencies of each build, counted when this page was built.',
+      measure: 'Measure',
+      source: 'Source lines (non-blank)',
+      files: 'Source files',
+      deps: 'Runtime dependencies',
+      none: 'None',
+      shared: (lines: string) =>
+        `Both builds also use the shared spec: ${lines} lines of data, rules, formatting and text that neither build repeats.`,
+    },
+    harder: {
+      heading: 'Where each build was harder to write',
+      topic: 'Topic',
+      caption: 'What one build gets for free and the other had to do by hand.',
+      items: [
+        {
+          topic: 'Keeping sort order and view toggles',
+          react: 'Free: component state survives a data update.',
+          vanilla: 'A small memory object keeps them while the body is rebuilt.',
+        },
+        {
+          topic: 'Keeping keyboard focus',
+          react: 'Free: a re-rendered button is the same element.',
+          vanilla:
+            'Rebuildable controls carry a key; focus is restored to the matching one.',
+        },
+        {
+          topic: 'Arming the loading timers on time',
+          react: 'Needs useLayoutEffect, or the 300 ms timer starts a frame late.',
+          vanilla: 'Armed directly in the same task as the render.',
+        },
+        {
+          topic: 'Download size',
+          react: 'The React runtime is most of the bundle.',
+          vanilla: 'Only the dashboard itself is shipped.',
+        },
+      ],
+      logLink: 'Read the full divergence log',
+    },
+  },
   inspector: {
     heading: 'Inspector',
     tablist: 'Inspector views',

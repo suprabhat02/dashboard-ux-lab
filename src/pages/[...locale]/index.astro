@@ -385,6 +385,11 @@ const STACK = [
                 <li>{item}</li>
               ))}
             </ul>
+            {phase.link && (
+              <a class="phase__link" href={href(phase.link.path)}>
+                {phase.link.label}
+              </a>
+            )}
           </li>
         ))}
       </ol>

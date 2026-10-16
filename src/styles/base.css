@@ -364,7 +364,7 @@
   .menu--nav {
     display: none;
   }
-  @media (max-width: 52rem) {
+  @media (max-width: 58rem) {
     .site-nav {
       display: none;
     }

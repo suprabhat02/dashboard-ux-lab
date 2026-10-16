@@ -33,6 +33,7 @@ const SAME_IN_ALL_LOCALES = new Set([
   'notFound.eyebrow',
   'lab.impl.react.label',
   'lab.impl.react.note',
+  'compare.builds.react.name',
   // Product names in the comparison table (MSW, Storybook, this project)
   'home.comparison.rows[1].tool',
   'home.comparison.rows[2].tool',
@@ -42,8 +43,12 @@ const SAME_IN_ALL_LOCALES = new Set([
   'accessibilityPage.rows[3].check',
   'accessibilityPage.rows[4].check',
   'accessibilityPage.rows[5].check',
-  // Roadmap states are identifiers ('done' | 'progress' | 'planned'), not prose
-  ...MESSAGES.en.home.roadmap.phases.map((_, index) => `home.roadmap.phases[${index}].stage`),
+  // Roadmap stages are identifiers ('done' | 'now' | 'next' | 'later') and link
+  // paths are routes (localised at render), not prose
+  ...MESSAGES.en.home.roadmap.phases.flatMap((phase, index) => [
+    `home.roadmap.phases[${index}].stage`,
+    ...(phase.link ? [`home.roadmap.phases[${index}].link.path`] : []),
+  ]),
 ]);
 const SAME_IN_SPANISH = new Set([
   'lab.impl.vanilla.label',

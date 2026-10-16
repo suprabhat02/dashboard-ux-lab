@@ -20,6 +20,40 @@ function accountsCount(count: number): string {
   }
 }
 
+function filesCount(count: number): string {
+  switch (plural.select(count)) {
+    case 'zero':
+      return 'لا ملفات';
+    case 'one':
+      return 'ملف واحد';
+    case 'two':
+      return 'ملفان';
+    case 'few':
+      return `${count} ملفات`;
+    case 'many':
+      return `${count} ملفًا`;
+    case 'other':
+      return `${count} ملف`;
+  }
+}
+
+function stepsCount(count: number): string {
+  switch (plural.select(count)) {
+    case 'zero':
+      return 'لا خطوات';
+    case 'one':
+      return 'خطوة واحدة';
+    case 'two':
+      return 'خطوتان';
+    case 'few':
+      return `${count} خطوات`;
+    case 'many':
+      return `${count} خطوةً`;
+    case 'other':
+      return `${count} خطوة`;
+  }
+}
+
 /** Modern Standard Arabic. Drafted by the author; native review pending. */
 export const ar: Messages = {
   meta: {
@@ -44,6 +78,10 @@ export const ar: Messages = {
     accessibilityTitle: 'إمكانية الوصول',
     accessibilityDescription:
       'ما الذي اختُبر وما لم يُختبر بعد في Dashboard UX Lab، وكيف، والمشكلات المعروفة.',
+    compareTitle: 'React ودون إطار عمل، جنبًا إلى جنب',
+    compareDescription:
+      'لوحة المعلومات نفسها مبنية بـ React ودون إطار عمل، جنبًا إلى جنب: عناصر تحكم واحدة، وزمن البدء، وحجم التنزيل، وهل تتصرفان بالطريقة نفسها.',
+    embedTitle: (build: string) => `نسخة ${build}، مضمّنة`,
     notFoundTitle: 'الصفحة غير موجودة',
     notFoundDescription: 'هذه الصفحة غير موجودة.',
   },
@@ -55,6 +93,7 @@ export const ar: Messages = {
     lab: 'المختبر',
     scenarios: 'السيناريوهات',
     accessibility: 'إمكانية الوصول',
+    compare: 'المقارنة',
     github: 'GitHub',
     language: 'اللغة',
     menu: 'القائمة',
@@ -300,6 +339,7 @@ export const ar: Messages = {
       phases: [
         {
           stage: 'done',
+          link: { label: 'افتح المختبر', path: '/lab/react/' },
           title: 'الأساسات',
           items: [
             'مواصفة مكتوبة لست حالات للوحة المعلومات، مع توقيتاتها',
@@ -310,6 +350,7 @@ export const ar: Messages = {
         },
         {
           stage: 'done',
+          link: { label: 'شاهدهما جنبًا إلى جنب', path: '/compare/' },
           title: 'المقارنة جنبًا إلى جنب',
           items: [
             'النسختان في عرض واحد، تتحكم فيهما مجموعة واحدة من الأدوات',
@@ -394,6 +435,98 @@ export const ar: Messages = {
       'تحتاج لوحة المعلومات التفاعلية هذه إلى JavaScript. أما أدلة السيناريوهات فتعمل من دونه.',
   },
 
+  compare: {
+    title: 'نسختان وسلوك واحد',
+    lede: 'لوحة المعلومات نفسها مكتوبة مرتين من مواصفة واحدة: مرة بـ React ومرة دون أي إطار عمل. اختر سيناريو فتشغّله النسختان في اللحظة نفسها، هنا في متصفحك.',
+    controlsHeading: 'السيناريو للنسختين',
+    replay: 'أعد التشغيل في النسختين',
+    listenLegend: 'قارئ الشاشة ولوحة المفاتيح على',
+    listenHint:
+      'تعلن النسختان التغييرات عبر مناطق حية، فيسمع قارئ الشاشة كل رسالة مرتين. لذا تكون نسخة واحدة فقط في كل مرة متاحة للوحة المفاتيح والتقنيات المساعدة، وتبقى الأخرى ظاهرة.',
+    builds: {
+      react: {
+        name: 'React',
+        note: 'React 19 مع hooks وreducer',
+        frameTitle: 'لوحة معلومات مبنية بـ React',
+      },
+      vanilla: {
+        name: 'TypeScript دون إطار عمل',
+        note: 'دون إطار عمل ودون اعتماديات وقت التشغيل',
+        frameTitle: 'لوحة معلومات مبنية بـ TypeScript دون إطار عمل',
+      },
+    },
+    active: 'لوحة المفاتيح وقارئ الشاشة على هذه النسخة.',
+    muted: 'ظاهرة فقط: لا يمكن الوصول إليها الآن بلوحة المفاتيح أو بقارئ الشاشة.',
+    useThis: 'استخدم هذه النسخة',
+    metrics: {
+      label: (build: string) => `${build}: القياسات`,
+      ready: 'جاهزة خلال',
+      script: 'JavaScript المُنزَّل',
+      steps: 'الخطوات في هذا التشغيل',
+      measuring: 'جارٍ القياس…',
+      kb: (value: string) => `${value} KB`,
+      files: (count: number) => filesCount(count),
+    },
+    lastHeard: 'آخر إعلان:',
+    nothingHeard: 'لا شيء بعد',
+    agreement: {
+      heading: 'هل تتصرفان بالطريقة نفسها؟',
+      waiting: 'بانتظار بدء النسختين.',
+      agree: (steps: number) => `${stepsCount(steps)} متطابقة وبالترتيب نفسه.`,
+      catching: (steps: number) =>
+        `تتفقان على ${stepsCount(steps)} حتى الآن. ما زالت إحدى النسختين تعمل.`,
+      differ: (step: number) => `تختلفان عند الخطوة ${step}.`,
+      nothing: 'لا شيء',
+      uneven:
+        'كانت إحدى النسختين ما زالت تُحمَّل عند بدء هذا التشغيل، فبدأتا من حالتين مختلفتين. تجري إعادة تشغيلهما من النقطة نفسها…',
+      interacted:
+        'غيّرت إحدى النسختين من داخلها، فلم يعد التشغيلان يبدآن من النقطة نفسها. أعد التشغيل في النسختين للمقارنة من جديد.',
+      explain:
+        'الخطوة هي أي شيء يمكن أن يلاحظه شخص: طلب، أو تغيّر في الحالة، أو مرحلة تحميل، أو إعلان، أو نقل للتركيز. التوقيت لا يُحتسب؛ يجب أن يتطابق الترتيب والمحتوى.',
+    },
+    measuredNote:
+      'قِيس في متصفحك خلال هذه الزيارة، والنسختان تُحمَّلان في الوقت نفسه. تتغير الأرقام بحسب الجهاز والشبكة والذاكرة المؤقتة؛ أعد تحميل الصفحة للقياس من جديد.',
+    facts: {
+      heading: 'عند البناء',
+      caption: 'حجم الشيفرة والاعتماديات لكل نسخة، محسوبة عند بناء هذه الصفحة.',
+      measure: 'المقياس',
+      source: 'أسطر الشيفرة (غير الفارغة)',
+      files: 'ملفات الشيفرة',
+      deps: 'اعتماديات وقت التشغيل',
+      none: 'لا شيء',
+      shared: (lines: string) =>
+        `تستخدم النسختان أيضًا المواصفة المشتركة: ${lines} سطرًا من البيانات والقواعد والتنسيق والنصوص لا تكررها أيٌّ منهما.`,
+    },
+    harder: {
+      heading: 'أين كانت كتابة كل نسخة أصعب',
+      topic: 'الموضوع',
+      caption: 'ما تحصل عليه نسخة مجانًا واضطرت الأخرى إلى صنعه يدويًا.',
+      items: [
+        {
+          topic: 'الحفاظ على الترتيب وطرق العرض',
+          react: 'مجانًا: تبقى حالة المكوّن بعد تحديث البيانات.',
+          vanilla: 'كائن ذاكرة صغير يحفظها أثناء إعادة بناء المحتوى.',
+        },
+        {
+          topic: 'الحفاظ على تركيز لوحة المفاتيح',
+          react: 'مجانًا: الزر المعاد عرضه هو العنصر نفسه.',
+          vanilla:
+            'تحمل عناصر التحكم القابلة لإعادة البناء مفتاحًا، ويعود التركيز إلى العنصر المطابق.',
+        },
+        {
+          topic: 'تشغيل مؤقتات التحميل في وقتها',
+          react: 'يحتاج إلى useLayoutEffect، وإلا بدأ مؤقت 300 ms متأخرًا بإطار.',
+          vanilla: 'تُشغَّل مباشرة في المهمة نفسها التي يتم فيها العرض.',
+        },
+        {
+          topic: 'حجم التنزيل',
+          react: 'بيئة تشغيل React هي معظم الحزمة.',
+          vanilla: 'تُرسل لوحة المعلومات نفسها فقط.',
+        },
+      ],
+      logLink: 'اقرأ سجل الاختلافات كاملًا',
+    },
+  },
   inspector: {
     heading: 'المفتش',
     tablist: 'عروض المفتش',

@@ -3,9 +3,13 @@
 **An interactive lab for how dashboards should behave when data isn’t perfect:**
 loading, slow responses, empty results, failures with retry, and restricted access.
 
-The same dashboard is being built twice, in **React** and in **framework-free
+The same dashboard is built twice, in **React** and in **framework-free
 TypeScript**, from one shared behaviour spec and verified by one shared test suite,
-so the two approaches can be compared on equal terms.
+and the two run [side by side](https://lab.suprabhat-dev.com/compare/) so they can be
+compared on equal terms.
+
+**The goal:** make a dashboard's behaviour easier to see, hear and test than any
+browser developer tool does today.
 
 Available in **English**, **Español** and **العربية** (right-to-left), with every
 feature shipped in all three — enforced by the build ([ADR 0004](docs/decisions/0004-internationalisation.md)).
@@ -14,17 +18,18 @@ feature shipped in all three — enforced by the build ([ADR 0004](docs/decision
 
 ## Status
 
-| Part                                  | Status                                               |
-| ------------------------------------- | ---------------------------------------------------- |
-| Shared spec, mock API, copy, CSS      | ✅ Done                                              |
-| React implementation                  | ✅ Done                                              |
-| Playground: controls + inspector      | ✅ Done                                              |
-| English, Spanish, Arabic (RTL)        | ✅ Done (Spanish/Arabic await native review)         |
-| Scenario guides                       | ✅ Done                                              |
-| Vanilla implementation                | ✅ Done (16 KB gz; pixel-identical to React)         |
-| Unit + e2e + axe tests                | ✅ One suite, both builds, three engines, in CI      |
-| Side-by-side comparison page          | 🚧 Next milestone                                    |
-| Manual screen reader / device testing | ⏳ Not yet — see [checklist](docs/manual-testing.md) |
+| Part                                         | Status                                                               |
+| -------------------------------------------- | -------------------------------------------------------------------- |
+| Shared spec, mock API, copy, CSS             | ✅ Done                                                              |
+| React implementation                         | ✅ Done                                                              |
+| Playground: controls + inspector             | ✅ Done                                                              |
+| English, Spanish, Arabic (RTL)               | ✅ Done (Spanish/Arabic await native review)                         |
+| Scenario guides                              | ✅ Done                                                              |
+| Vanilla implementation                       | ✅ Done (16 KB gz; pixel-identical to React)                         |
+| Unit + e2e + axe tests                       | ✅ One suite, both builds, three engines, in CI                      |
+| Side-by-side comparison page                 | ✅ Done ([ADR 0007](docs/decisions/0007-side-by-side-comparison.md)) |
+| Manual screen reader / device testing        | 🚧 Now — see [checklist](docs/manual-testing.md)                     |
+| Request timeline you can scrub; tests export | ⏳ Next                                                              |
 
 ## What you can do in the lab
 
@@ -32,6 +37,8 @@ feature shipped in all three — enforced by the build ([ADR 0004](docs/decision
 - Watch the **inspector**: every state transition, every live-region announcement and
   every programmatic focus move.
 - Share any combination: settings live in the URL.
+- Open **Compare** to run both builds at once: one set of controls, live start-up
+  time and download size, and a step-by-step check that both behave the same.
 
 ## Architecture
 
@@ -41,9 +48,10 @@ src/
                   formatting, chart geometry, table sorting, lab event protocol
   impl-react/     React 19 implementation (reducer + effect, no fetching library)
   impl-vanilla/   Framework-free implementation (DOM + TypeScript, rendering by region)
-  lab/            Playground chrome (vanilla TS): controls, explanation, inspector
+  lab/            Playground chrome (vanilla TS): controls, explanation, inspector,
+                  and the comparison page (host + in-frame bridge)
   styles/         Shared CSS (cascade layers, OKLCH tokens, container queries)
-  pages/          Astro pages: home, lab, scenario guides, accessibility
+  pages/          Astro pages: home, lab, compare, embedded builds, guides, accessibility
 tests/
   unit/           Vitest: spec, shared reducer and rules
   e2e/            Playwright + axe: one suite, run against every implementation

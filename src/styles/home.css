@@ -1241,6 +1241,12 @@
       inset-inline-start: 0;
     }
   }
+  .phase__link {
+    justify-self: start;
+    margin-block-start: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 650;
+  }
   .plan__links {
     display: flex;
     flex-wrap: wrap;

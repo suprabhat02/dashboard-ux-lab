@@ -9,3 +9,4 @@ New entries are numbered and never rewritten; a reversed decision gets a new ent
 - [0004 — Three locales (en, es, ar) as a build-time guarantee](0004-internationalisation.md)
 - [0005 — Visual language: flat, editorial, no decorative effects](0005-visual-language.md)
 - [0006 — Vanilla implementation, and the rules both builds share](0006-vanilla-architecture-and-shared-rules.md)
+- [0007 — Side-by-side comparison in iframes, over postMessage](0007-side-by-side-comparison.md)
